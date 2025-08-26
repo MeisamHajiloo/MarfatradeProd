@@ -1,0 +1,18 @@
+:root {
+    --primary-color: #ACA39A;
+    --secondary-color1: #221C35;
+    --secondary-color2: #F1F0D8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: var(--secondary-color2);
+    color: var(--secondary-color1);
+    overflow-x: hidden;
+}
