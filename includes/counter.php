@@ -9,17 +9,17 @@ try {
     // مقادیر پیش‌فرض در صورت خطا
     $counters = [
         [
-            'title' => 'مشتریان',
+            'title' => 'Our Customers',
             'count' => 5,
             'icon' => 'fas fa-users'
         ],
         [
-            'title' => 'محصولات',
+            'title' => 'Products',
             'count' => 1480,
             'icon' => 'fas fa-box'
         ],
         [
-            'title' => 'Inquiryها',
+            'title' => 'Inquiries',
             'count' => 205321,
             'icon' => 'fas fa-question-circle'
         ]

@@ -4,6 +4,7 @@ class Counter {
     this.counterItems = document.querySelectorAll(".counter-item");
     this.counters = document.querySelectorAll(".counter-number");
     this.hasCounted = false;
+    this.rayEffects = [];
 
     this.init();
   }
@@ -14,10 +15,28 @@ class Counter {
       this.checkScroll();
     });
 
+    // ایجاد و افزودن افکت‌های Ray به آیتم‌ها
+    this.createRayEffects();
+
     // بررسی موقعیت هنگام لود صفحه
     setTimeout(() => {
       this.checkScroll();
     }, 500);
+  }
+
+  createRayEffects() {
+    // حذف افکت‌های قبلی اگر وجود دارند
+    document
+      .querySelectorAll(".counter-ray-effect")
+      .forEach((el) => el.remove());
+
+    // ایجاد افکت‌های جدید
+    this.counterItems.forEach((item) => {
+      const rayEffect = document.createElement("div");
+      rayEffect.className = "counter-ray-effect";
+      item.appendChild(rayEffect);
+      this.rayEffects.push(rayEffect);
+    });
   }
 
   checkScroll() {
@@ -67,4 +86,35 @@ class Counter {
 // راه‌اندازی شمارنده هنگام لود کامل صفحه
 document.addEventListener("DOMContentLoaded", () => {
   new Counter();
+
+  // بازنشانی افکت‌ها هنگام hover
+  const counterItems = document.querySelectorAll(".counter-item");
+
+  counterItems.forEach((item) => {
+    item.addEventListener("mouseenter", function () {
+      const rayEffect = this.querySelector(".counter-ray-effect");
+      if (rayEffect) {
+        // بازنشانی انیمیشن
+        rayEffect.style.animation = "none";
+        rayEffect.offsetHeight; // trigger reflow
+        rayEffect.style.animation = null;
+
+        // بازنشانی transform
+        const beforeEl =
+          rayEffect.querySelector(":before") ||
+          window.getComputedStyle(rayEffect, ":before");
+        rayEffect.style.transform = "none";
+      }
+    });
+
+    item.addEventListener("mouseleave", function () {
+      const rayEffect = this.querySelector(".counter-ray-effect");
+      if (rayEffect) {
+        // پاک کردن transform برای آماده‌سازی برای hover بعدی
+        setTimeout(() => {
+          rayEffect.style.transform = "none";
+        }, 600); // بعد از اتمام انیمیشن
+      }
+    });
+  });
 });
