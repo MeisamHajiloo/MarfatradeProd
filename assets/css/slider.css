@@ -3,7 +3,7 @@
     height: 100vh;
     position: relative;
     overflow: hidden;
-    margin-top: 80px;
+    /* margin-top: 80px; */
 }
 
 .slides-container {
