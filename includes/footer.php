@@ -44,6 +44,7 @@
 </footer>
 <script src="assets/js/navigation.js"></script>
 <script src="assets/js/slider.js"></script>
+<script src="assets/js/counter.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 

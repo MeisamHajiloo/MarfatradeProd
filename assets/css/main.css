@@ -1,18 +1,99 @@
 :root {
-    --primary-color: #ACA39A;
-    --secondary-color1: #221C35;
-    --secondary-color2: #F1F0D8;
+  --primary-color: #aca39a;
+  --secondary-color1: #221c35;
+  --secondary-color2: #f1f0d8;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 body {
-    background-color: var(--secondary-color2);
-    color: var(--secondary-color1);
-    overflow-x: hidden;
+  background-color: var(--secondary-color2);
+  color: var(--secondary-color1);
+  overflow-x: hidden;
+}
+
+/* Counter Section Styles */
+.counter-section {
+  background-color: var(--secondary-color1);
+  color: white;
+  padding: 80px 5%;
+  text-align: center;
+}
+
+.counter-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.counter-item {
+  flex: 1;
+  min-width: 250px;
+  margin: 20px;
+  padding: 30px 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.counter-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.counter-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.counter-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: all 0.5s ease;
+}
+
+.counter-title {
+  font-size: 1.2rem;
+  color: #ddd;
+}
+
+/* Animation for counter */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.counter-item.animated .counter-number {
+  animation: countUp 1s ease-out forwards;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .counter-item {
+    min-width: 100%;
+    margin: 10px 0;
+  }
+
+  .counter-number {
+    font-size: 2rem;
+  }
+
+  .counter-icon {
+    font-size: 2.5rem;
+  }
 }

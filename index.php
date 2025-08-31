@@ -41,4 +41,5 @@ try {
 ?>
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/slider.php'; ?>
+<?php include 'includes/counter.php'; ?>
 <?php include 'includes/footer.php'; ?>
