@@ -27,10 +27,6 @@
     flex-shrink: 0;
 }
 
-.slide.clone {
-    display: none; /* کلون‌ها به طور پیش‌فرض مخفی هستند */
-}
-
 .slide-content {
     position: absolute;
     top: 50%;
@@ -39,19 +35,21 @@
     text-align: center;
     color: white;
     z-index: 2;
-    width: 80%;
+    width: 90%;
+    max-width: 1200px;
+    padding: 0 20px;
 }
 
 .slide h2 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
 }
 
 .slide p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    margin-bottom: 25px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
 .btn {
@@ -63,18 +61,20 @@
     border-radius: 30px;
     font-weight: bold;
     transition: all 0.3s ease;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
 }
 .btn:hover {
     background-color: var(--primary-color);
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
-.slide img {
+.slide-bg {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    filter: brightness(0.7);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* Navigation dots */
@@ -120,17 +120,36 @@
     transition: all 0.3s ease;
     border: none;
 }
-.slider-arrow:hover { background-color: rgba(0,0,0,0.6); }
+.slider-arrow:hover { 
+    background-color: rgba(0,0,0,0.6); 
+}
 .slider-arrow.prev { left: 30px; }
 .slider-arrow.next { right: 30px; }
 
 @media (max-width: 768px) {
-    .slide h2 { font-size: 2rem; }
-    .slide p { font-size: 1rem; }
+    .slider {
+        height: 60vh;
+        margin-top: 70px;
+    }
+    
     .slider-arrow {
         width: 40px;
         height: 40px;
         font-size: 20px;
+    }
+    .slider-arrow.prev { left: 15px; }
+    .slider-arrow.next { right: 15px; }
+}
+
+@media (max-width: 480px) {
+    .slider {
+        height: 50vh;
+    }
+    
+    .slider-arrow {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
     }
     .slider-arrow.prev { left: 10px; }
     .slider-arrow.next { right: 10px; }

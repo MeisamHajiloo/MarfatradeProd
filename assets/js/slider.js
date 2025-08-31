@@ -4,25 +4,28 @@
     const prevBtn = document.getElementById('prev-slide');
     const nextBtn = document.getElementById('next-slide');
     const allSlides = document.querySelectorAll('.slide');
-    let currentSlide = 1; // شروع از اسلاید واقعی اول (نه کلون)
-    let slideCount = document.querySelectorAll('.slide:not(.clone)').length;
+    let currentSlide = 0;
+    const slideCount = allSlides.length;
     let slideInterval;
-    let touchStartX = 0, touchEndX = 0;
-    let isAnimating = false;
 
-    // نمایش کلون‌ها برای اسلایدهای بیشتر از 1
+    // اضافه کردن کلون‌ها برای اسلایدر بی‌نهایت
     if (slideCount > 1) {
-        document.querySelectorAll('.slide.clone').forEach(clone => {
-            clone.style.display = 'block';
-        });
+        const firstClone = allSlides[0].cloneNode(true);
+        const lastClone = allSlides[slideCount - 1].cloneNode(true);
+        
+        firstClone.classList.add('clone');
+        lastClone.classList.add('clone');
+        
+        slides.appendChild(firstClone);
+        slides.insertBefore(lastClone, allSlides[0]);
+        
         // تنظیم موقعیت اولیه
         slides.style.transform = `translateX(-100%)`;
+        currentSlide = 1;
     }
 
     function goToSlide(index, animate = true) {
-        if (slideCount <= 1 || isAnimating) return;
-        
-        isAnimating = true;
+        if (slideCount <= 1) return;
         
         if (animate) {
             slides.style.transition = 'transform 0.8s ease-in-out';
@@ -33,7 +36,7 @@
         slides.style.transform = `translateX(-${index * 100}%)`;
         currentSlide = index;
         
-        // به‌روزرسانی dots
+        // Update dots
         let realIndex = index - 1;
         if (realIndex < 0) realIndex = slideCount - 1;
         if (realIndex >= slideCount) realIndex = 0;
@@ -44,21 +47,16 @@
         
         resetInterval();
         
-        // پس از اتمام انیمیشن، بررسی برای پرش به موقعیت مناسب
+        // بررسی برای پرش به موقعیت مناسب (اسلایدر بی‌نهایت)
         setTimeout(() => {
-            isAnimating = false;
-            
-            // اگر به کلون آخر رسیدیم، بدون انیمیشن به اسلاید واقعی اول برو
-            if (index === slideCount + 1) {
-                slides.style.transition = 'none';
-                slides.style.transform = `translateX(-100%)`;
-                currentSlide = 1;
-            }
-            // اگر به کلون اول رسیدیم، بدون انیمیشن به اسلاید واقعی آخر برو
-            else if (index === 0) {
+            if (index === 0) {
                 slides.style.transition = 'none';
                 slides.style.transform = `translateX(-${slideCount * 100}%)`;
                 currentSlide = slideCount;
+            } else if (index === slideCount + 1) {
+                slides.style.transition = 'none';
+                slides.style.transform = `translateX(-100%)`;
+                currentSlide = 1;
             }
         }, 800);
     }
@@ -78,12 +76,6 @@
         }
     }
 
-    function handleSwipe() {
-        const difference = touchStartX - touchEndX;
-        if (difference > 50) nextSlide();
-        else if (difference < -50) prevSlide();
-    }
-
     // Event listeners
     if (nextBtn) {
         nextBtn.addEventListener('click', nextSlide);
@@ -95,39 +87,25 @@
 
     if (dots.length > 0) {
         dots.forEach((dot, i) => {
-            dot.addEventListener('click', () => {
-                goToSlide(i + 1); // +1 because we start from index 1 (first real slide)
-            });
+            dot.addEventListener('click', () => goToSlide(i + 1));
         });
     }
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') nextSlide();
-        if (e.key === 'ArrowLeft') prevSlide();
+    // مدیریت resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            slides.style.transition = 'none';
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            setTimeout(() => {
+                slides.style.transition = 'transform 0.8s ease-in-out';
+            }, 50);
+        }, 100);
     });
 
-    // Touch swipe
-    if (slides) {
-        slides.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-            clearInterval(slideInterval);
-        }, {passive: true});
-
-        slides.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].clientX;
-            handleSwipe();
-            resetInterval();
-        }, {passive: true});
-    }
-
-    // Pause on hover
-    const slider = document.querySelector('.slider');
-    if (slider) {
-        slider.addEventListener('mouseenter', () => clearInterval(slideInterval));
-        slider.addEventListener('mouseleave', resetInterval);
-    }
-
-    // Initialize autoplay
+    // Initialize
     if (slideCount > 1) {
         resetInterval();
     }
