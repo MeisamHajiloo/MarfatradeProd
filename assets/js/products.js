@@ -7,6 +7,10 @@
   const toolbarEl = document.getElementById("products-toolbar");
   const paginationEl = document.getElementById("pagination");
   const categorySelect = document.getElementById("category-filter");
+  const toolbarToggle = document.getElementById("toolbar-toggle");
+  const toolbarContent = document.querySelector(".toolbar-content");
+  const toolbarOverlay = document.getElementById("toolbar-overlay");
+  const viewSwitchDesktop = document.getElementById("view-switch-desktop");
 
   let state = {
     page: 1,
@@ -17,6 +21,73 @@
     view: window.innerWidth < 768 ? "list" : "card",
   };
 
+  // Initialize toolbar
+  function initToolbar() {
+    // Set initial view mode
+    updateViewMode();
+
+    // Mobile toolbar toggle
+    if (toolbarToggle && toolbarContent) {
+      toolbarToggle.addEventListener("click", function () {
+        toolbarContent.classList.add("active");
+        if (toolbarOverlay) {
+          toolbarOverlay.style.display = "block";
+        }
+        document.body.style.overflow = "hidden";
+      });
+
+      if (toolbarOverlay) {
+        toolbarOverlay.addEventListener("click", function () {
+          toolbarContent.classList.remove("active");
+          toolbarOverlay.style.display = "none";
+          document.body.style.overflow = "";
+        });
+      }
+    }
+
+    // View mode toggle for desktop
+    if (viewSwitchDesktop) {
+      const viewBtn = viewSwitchDesktop.querySelector(".view-btn");
+      if (viewBtn) {
+        viewBtn.addEventListener("click", function () {
+          // Toggle between card and list view
+          state.view = state.view === "card" ? "list" : "card";
+          updateViewMode();
+          load();
+        });
+      }
+    }
+  }
+
+  // Update view mode UI
+  function updateViewMode() {
+    if (!viewSwitchDesktop) return;
+
+    const viewBtn = viewSwitchDesktop.querySelector(".view-btn");
+    if (!viewBtn) return;
+
+    if (state.view === "card") {
+      viewBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      `;
+      viewBtn.title = "Change to list";
+    } else {
+      viewBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="4" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="3" y="10" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="3" y="16" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      `;
+      viewBtn.title = "Change to card";
+    }
+  }
+
   // Load categories
   async function loadCategories() {
     try {
@@ -25,9 +96,11 @@
       const categories = await res.json();
 
       // Fill category dropdown
-      categories.forEach((cat) => {
-        addCategoryOption(cat);
-      });
+      if (categorySelect) {
+        categories.forEach((cat) => {
+          addCategoryOption(cat);
+        });
+      }
     } catch (err) {
       console.error("Error loading categories:", err);
     }
@@ -35,6 +108,8 @@
 
   // Add category to dropdown (recursive for subcategories)
   function addCategoryOption(category, level = 0) {
+    if (!categorySelect) return;
+
     const option = document.createElement("option");
     option.value = category.id;
     option.textContent = " ".repeat(level) + category.name;
@@ -65,36 +140,85 @@
   }
 
   function renderProducts(data) {
+    if (!gridEl) return;
+
     gridEl.innerHTML = "";
+
+    // Set grid class based on view mode
+    gridEl.className = state.view === "card" ? "card-view" : "list-view";
+
     if (!data || !data.length) {
       gridEl.innerHTML = `<div class="no-results">No products found</div>`;
       return;
     }
+
     data.forEach((p) => {
-      const card = document.createElement("div");
-      card.className =
-        state.view === "card" ? "product-card" : "product-list-item";
-      card.innerHTML = `
-        <a href="product.php?slug=${p.slug}" class="inner">
-          <div class="thumb"><img src="${
-            p.thumbnail || "/assets/images/no-image.png"
-          }" alt="${p.name}"></div>
-          <div class="info">
-            <h3 class="name">${p.name}</h3>
-            <div class="price">${p.price ? p.price + " $" : ""}</div>
-            ${
-              state.view === "list"
-                ? `<p class="desc">${p.short_desc || ""}</p>`
-                : ""
-            }
-          </div>
-        </a>
-      `;
-      gridEl.appendChild(card);
+      if (state.view === "card") {
+        renderProductCard(p);
+      } else {
+        renderProductListItem(p);
+      }
     });
   }
 
+  function renderProductCard(p) {
+    if (!gridEl) return;
+
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <a href="product.php?slug=${p.slug}" class="thumb">
+        <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
+      p.name
+    }">
+      </a>
+      <div class="info">
+        <h3 class="name">${p.name}</h3>
+        <div class="price">${
+          p.price ? p.price + " $" : "Price not available"
+        }</div>
+        <div class="actions">
+          <a href="product.php?slug=${
+            p.slug
+          }" class="btn btn-primary">View Details</a>
+          <button class="btn btn-outline">Add to Cart</button>
+        </div>
+      </div>
+    `;
+    gridEl.appendChild(card);
+  }
+
+  function renderProductListItem(p) {
+    if (!gridEl) return;
+
+    const listItem = document.createElement("div");
+    listItem.className = "product-list-item";
+    listItem.innerHTML = `
+      <a href="product.php?slug=${p.slug}" class="thumb">
+        <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
+      p.name
+    }">
+      </a>
+      <div class="info">
+        <h3 class="name">${p.name}</h3>
+        <div class="price">${
+          p.price ? p.price + " $" : "Price not available"
+        }</div>
+        <p class="desc">${p.short_desc || "No description available."}</p>
+        <div class="actions">
+          <a href="product.php?slug=${
+            p.slug
+          }" class="btn btn-primary">View Details</a>
+          <button class="btn btn-outline">Add to Cart</button>
+        </div>
+      </div>
+    `;
+    gridEl.appendChild(listItem);
+  }
+
   function renderPagination(meta) {
+    if (!paginationEl) return;
+
     paginationEl.innerHTML = "";
     if (!meta || meta.total <= meta.per_page) return;
     const totalPages = Math.ceil(meta.total / meta.per_page);
@@ -146,6 +270,8 @@
   }
 
   async function load() {
+    if (!gridEl) return;
+
     gridEl.classList.add("loading");
     try {
       const { data, meta } = await fetchProducts();
@@ -162,18 +288,6 @@
   // Change view mode (card/list)
   function bindToolbar() {
     if (!toolbarEl) return;
-
-    // Change view mode
-    const viewSwitch = toolbarEl.querySelector(".view-switch");
-    if (viewSwitch) {
-      viewSwitch.addEventListener("click", (e) => {
-        const mode = e.target.dataset.view;
-        if (mode) {
-          state.view = mode;
-          load();
-        }
-      });
-    }
 
     // Search
     const searchInput = toolbarEl.querySelector("input[name=q]");
@@ -219,6 +333,9 @@
       console.error("Toolbar element not found!");
       return;
     }
+
+    // Initialize toolbar functionality
+    initToolbar();
 
     // Load categories
     loadCategories().then(() => {
