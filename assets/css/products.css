@@ -1,0 +1,125 @@
+/* assets/css/products.css */
+
+/* کانتینر اصلی محصولات */
+#products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+/* حالت لیست برای موبایل یا زمانی که state.view = list باشد */
+.product-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  transition: box-shadow 0.2s ease;
+}
+
+.product-list-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.product-list-item .thumb {
+  flex: 0 0 100px;
+}
+
+.product-list-item .thumb img {
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.product-list-item .info {
+  flex: 1;
+}
+
+/* حالت کارت */
+.product-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.product-card .thumb img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.product-card .info {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.product-card .name,
+.product-list-item .name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.product-card .price,
+.product-list-item .price {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.product-list-item .desc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* pagination */
+#pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+#pagination button {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#pagination button.active,
+#pagination button:hover {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* حالت لودینگ */
+#products-grid.loading::after {
+  content: "در حال بارگذاری...";
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 2rem;
+  color: #555;
+}
+
+/* no-results / error */
+#products-grid .no-results,
+#products-grid .error {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
