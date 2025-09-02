@@ -1,7 +1,5 @@
 // Authentication Modal Functionality
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Auth script loaded");
-
   // Get modal elements
   const authModal = document.getElementById("auth-modal");
   const authLink = document.getElementById("auth-link");

@@ -30,7 +30,7 @@ project/
 ├── classes/
 │   └── Database.php
 ├── includes/
-│   ├── config/
+│   ├── components/
 │   │   ├── products-grid.php
 │   │   └── products-toolbar.php
 │   ├── config/

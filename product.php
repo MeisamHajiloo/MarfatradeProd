@@ -3,6 +3,10 @@ require_once __DIR__ . '/includes/header.php';
 
 // گرفتن slug از URL
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : null;
+
+// عدم بارگذاری اسکریپت‌های slider و counter
+$loadSlider = false;
+$loadCounter = false;
 ?>
 
 <main class="product-page">

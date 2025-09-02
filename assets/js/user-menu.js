@@ -1,7 +1,5 @@
 // User Menu Functionality
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("User menu script loaded");
-
   const desktopUserMenu = document.getElementById("desktop-user-menu");
   const userAvatar = document.getElementById("user-avatar");
   const userDropdown = document.getElementById("user-dropdown");
@@ -191,8 +189,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Logout user
   async function logoutUser() {
     try {
-      console.log("Logging out user...");
-
       const response = await fetch("api/auth/logout.php", {
         method: "POST",
         headers: {

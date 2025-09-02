@@ -38,6 +38,10 @@ try {
         ]
     ];
 }
+
+// تعیین متغیرهای بارگذاری شرطی
+$loadSlider = true;
+$loadCounter = true;
 ?>
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/slider.php'; ?>

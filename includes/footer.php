@@ -42,10 +42,18 @@
         <p>&copy; <?= date('Y'); ?> Marfa Trade. All rights reserved.</p>
     </div>
 </footer>
-<script src="assets/js/navigation.js"></script>
-<script src="assets/js/slider.js"></script>
-<script src="assets/js/counter.js"></script>
+
 <script src="assets/js/main.js"></script>
+
+<!-- بارگذاری شرطی اسکریپت‌ها -->
+<?php if (isset($loadSlider) && $loadSlider): ?>
+    <script src="assets/js/slider.js"></script>
+<?php endif; ?>
+
+<?php if (isset($loadCounter) && $loadCounter): ?>
+    <script src="assets/js/counter.js"></script>
+<?php endif; ?>
+
 </body>
 
 </html>

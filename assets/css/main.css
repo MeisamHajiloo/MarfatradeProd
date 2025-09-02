@@ -236,3 +236,16 @@ body {
 .counter-item:hover .counter-ray-effect::before {
   animation: raySweep 1.5s ease-out forwards;
 }
+
+/* در فایل main.css */
+main {
+  margin-top: 80px;
+  min-height: calc(100vh - 80px);
+  padding-top: 20px; /* اضافه کردن این خط */
+}
+
+.header-scrolled ~ main {
+  margin-top: 50px;
+  min-height: calc(100vh - 50px);
+  padding-top: 15px; /* اضافه کردن این خط */
+}
