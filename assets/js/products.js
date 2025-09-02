@@ -29,11 +29,18 @@
     // Mobile toolbar toggle
     if (toolbarToggle && toolbarContent) {
       toolbarToggle.addEventListener("click", function () {
-        toolbarContent.classList.add("active");
-        if (toolbarOverlay) {
-          toolbarOverlay.style.display = "block";
+        toolbarContent.classList.toggle("active");
+        if (toolbarContent.classList.contains("active")) {
+          if (toolbarOverlay) {
+            toolbarOverlay.style.display = "block";
+          }
+          document.body.style.overflow = "hidden";
+        } else {
+          if (toolbarOverlay) {
+            toolbarOverlay.style.display = "none";
+          }
+          document.body.style.overflow = "";
         }
-        document.body.style.overflow = "hidden";
       });
 
       if (toolbarOverlay) {

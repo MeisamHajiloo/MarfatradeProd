@@ -151,23 +151,29 @@
         }
 
         .toolbar-content {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 85%;
-            height: 100%;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
             background: white;
             z-index: 999;
             flex-direction: column;
             align-items: stretch;
-            padding: 2rem 1.5rem;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            transition: right 0.3s ease;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .toolbar-content.active {
-            right: 0;
+            max-height: 500px;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .products-toolbar input[name=q],
@@ -185,7 +191,7 @@
 
     @media (max-width: 768px) {
         .toolbar-content {
-            width: 100%;
+            padding: 1rem;
         }
     }
 </style>
