@@ -45,7 +45,7 @@
 
 <script src="assets/js/main.js"></script>
 
-<!-- بارگذاری شرطی اسکریپت‌ها -->
+<!-- Conditional script loading -->
 <?php if (isset($loadSlider) && $loadSlider): ?>
     <script src="assets/js/slider.js"></script>
 <?php endif; ?>

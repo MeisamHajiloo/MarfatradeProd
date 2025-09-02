@@ -2,38 +2,37 @@
 
 /**
  * GET /api/products/list.php
- * JSON API برای فهرست محصولات با صفحه‌بندی، جستجو، فیلتر دسته، و مرتب‌سازی
+ * JSON API for product listing with pagination, search, category filter, and sorting
  *
- * پارامترها (GET):
- * - page: شماره صفحه (۱+)
- * - per_page: تعداد اقلام هر صفحه (پیشنهادی: 12/24/48)
- * - category: شناسه دسته (int)
- * - include_descendants: اگر 1 باشد و DB از CTE پشتیبانی کند، زیر‌دسته‌ها نیز لحاظ می‌شوند
- * - q: جست‌وجو در نام/اسلاگ/توضیح کوتاه
- * - sort: یکی از: price_asc | price_desc | newest | popular | name_asc | name_desc
- * - status: پیش‌فرض 'published'
+ * Parameters (GET):
+ * - page: Page number (1+)
+ * - per_page: Items per page (suggested: 12/24/48)
+ * - category: Category ID (int)
+ * - include_descendants: If 1 and DB supports CTE, subcategories will be included
+ * - q: Search in name/slug/short description
+ * - sort: One of: price_asc | price_desc | newest | popular | name_asc | name_desc
+ * - status: Default 'published'
  *
- * خروجی:
+ * Output:
  * {
  *   "data": [ { product... }, ... ],
  *   "meta": { page, per_page, total, has_next }
- * }
  */
 
-// هدرهای JSON
+// JSON headers
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
-// اگر نیاز دارید CORS اضافه کنید (در صورت جدا بودن دامنه فرانت)
+// Add CORS if needed (if frontend is on different domain)
 // header('Access-Control-Allow-Origin: *');
 
 require_once __DIR__ . '/../../classes/Database.php';
-// اگر ثابت‌های مسیر/پیکربندی دارید:
-// بارگذاری ثابت‌ها (سازگار با ساختار فعلی پروژه)
+// If you have path/configuration constants:
+// Load constants (compatible with current project structure)
 $constCandidates = [
     __DIR__ . '/../../includes/config/constants.php',
     __DIR__ . '/../../constants.php',
-    __DIR__ . '/../../includes/config/constant.php', // در صورت وجود نسخه تک‌عدد
+    __DIR__ . '/../../includes/config/constant.php', // If single version exists
 ];
 foreach ($constCandidates as $cp) {
     if (file_exists($cp)) {
@@ -48,10 +47,10 @@ $response = function ($payload, int $code = 200) {
     exit;
 };
 
-// ورودی‌ها
+// Input parameters
 $page        = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $perPageRaw  = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 12;
-// محدودیت برای جلوگیری از فشار سرور
+// Limit to prevent server overload
 $perPage     = in_array($perPageRaw, [12, 24, 48], true) ? $perPageRaw : 12;
 $offset      = ($page - 1) * $perPage;
 
@@ -64,7 +63,7 @@ $allowedSort = [
     'price_asc'  => 'p.price ASC',
     'price_desc' => 'p.price DESC',
     'newest'     => 'p.created_at DESC',
-    'popular'    => 'p.views DESC', // در صورت نبود ستون views می‌توانید به sold_count یا مشابه نگاشت کنید
+    'popular'    => 'p.views DESC', // If views column doesn't exist, map to sold_count or similar
     'name_asc'   => 'p.name ASC',
     'name_desc'  => 'p.name DESC',
 ];
@@ -73,9 +72,9 @@ $orderBy     = $allowedSort[$sortKey] ?? $allowedSort['newest'];
 
 try {
     $db = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-    $pdo = $db->getConnection(); // انتظار می‌رود PDO برگرداند
+    $pdo = $db->getConnection(); // Expected to return PDO
 
-    // بررسی پشتیبانی از CTE (MySQL 8+)
+    // Check CTE support (MySQL 8+)
     $cteSupported = true;
     try {
         $pdo->query('WITH _x AS (SELECT 1 AS id) SELECT * FROM _x LIMIT 1');
@@ -85,14 +84,14 @@ try {
 
     $params = [];
 
-    // ساخت WHERE
+    // Build WHERE clause
     $where = [];
     if ($status !== '') {
         $where[] = 'p.status = :status';
         $params[':status'] = $status;
     }
 
-    // جستجو در چند ستون
+    // Search in multiple columns
     if ($q !== '') {
         $where[] = '(p.name LIKE :q OR p.slug LIKE :q OR p.short_desc LIKE :q)';
         $params[':q'] = '%' . $q . '%';
@@ -101,7 +100,7 @@ try {
     $categoryFilterSql = '';
     if ($categoryId) {
         if ($withDesc && $cteSupported) {
-            // استفاده از CTE برای واکشی همه زیر‌دسته‌ها
+            // Use CTE to fetch all subcategories
             $categoryFilterSql = "WITH RECURSIVE cat_tree AS (
                 SELECT id FROM categories WHERE id = :cat_id
                 UNION ALL
@@ -110,20 +109,20 @@ try {
             ) SELECT p.* FROM products p
             INNER JOIN cat_tree ct2 ON p.category_id = ct2.id";
         } else {
-            // فیلتر روی همان دسته (بدون زیر‌دسته)
+            // Filter on same category only (no subcategories)
             $where[] = 'p.category_id = :cat_id';
             $params[':cat_id'] = $categoryId;
         }
     }
 
-    // پایه SELECT
+    // Base SELECT
     $baseSelect = 'SELECT p.id, p.slug, p.name, p.price, p.thumbnail, p.short_desc, p.category_id, p.created_at, p.views';
     $baseFrom   = ' FROM products p ';
 
-    // اگر CTE دسته‌ها فعال شد، از آن در Query اصلی استفاده می‌کنیم
+    // If category CTE is active, use it in main query
     $useCteQuery = ($categoryFilterSql !== '');
 
-    // کوئری شمارش
+    // Count query
     if ($useCteQuery) {
         $countSql = "WITH RECURSIVE cat_tree AS (
                 SELECT id FROM categories WHERE id = :cat_id
@@ -149,9 +148,9 @@ try {
     $stmtCount->execute();
     $total = (int)$stmtCount->fetchColumn();
 
-    // کوئری داده‌ها
+    // Data query
     if ($useCteQuery) {
-        $dataSql = $categoryFilterSql; // شامل JOIN با cat_tree است
+        $dataSql = $categoryFilterSql; // Includes JOIN with cat_tree
         if (!empty($where)) {
             $dataSql .= ' WHERE ' . implode(' AND ', $where);
         }
@@ -174,7 +173,7 @@ try {
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-    // نرمال‌سازی خروجی
+    // Normalize output
     $data = array_map(function ($r) {
         return [
             'id'          => (int)$r['id'],
@@ -204,13 +203,6 @@ try {
             'descendants_included' => ($withDesc && $cteSupported),
         ],
     ]);
-    // } catch (Throwable $e) {
-    //     $response([
-    //         'error' => true,
-    //         'message' => 'Server error',
-    //         'detail' => getenv('APP_DEBUG') ? $e->getMessage() : null,
-    //     ], 500);
-
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode([

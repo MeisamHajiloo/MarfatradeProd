@@ -432,7 +432,7 @@ header {
   display: none;
 }
 
-/* برای صفحه‌های با عرض متوسط */
+/* For midrange screen */
 @media (min-width: 769px) and (max-width: 1024px) {
   .nav-links li {
     margin-left: 15px;
@@ -443,14 +443,14 @@ header {
   }
 }
 
-/* برای صفحه‌های خیلی بزرگ */
+/* For widescreen */
 @media (min-width: 1400px) {
   .topbar {
     padding: 20px 10%;
   }
 }
 
-/* اطمینان از نمایش صحیح در حالت‌های مختلف */
+/* Ensuring correct display in different modes*/
 @media (max-width: 968px) {
   .nav-links {
     flex-wrap: wrap;

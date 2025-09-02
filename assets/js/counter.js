@@ -10,27 +10,27 @@ class Counter {
   }
 
   init() {
-    // افزودن رویداد اسکرول
+    // Add scroll event
     window.addEventListener("scroll", () => {
       this.checkScroll();
     });
 
-    // ایجاد و افزودن افکت‌های Ray به آیتم‌ها
+    // Create and add Ray effects to items
     this.createRayEffects();
 
-    // بررسی موقعیت هنگام لود صفحه
+    // Check position on page load
     setTimeout(() => {
       this.checkScroll();
     }, 500);
   }
 
   createRayEffects() {
-    // حذف افکت‌های قبلی اگر وجود دارند
+    // Remove previous effects if they exist
     document
       .querySelectorAll(".counter-ray-effect")
       .forEach((el) => el.remove());
 
-    // ایجاد افکت‌های جدید
+    // Create new effects
     this.counterItems.forEach((item) => {
       const rayEffect = document.createElement("div");
       rayEffect.className = "counter-ray-effect";
@@ -55,8 +55,8 @@ class Counter {
   startCounting() {
     this.counters.forEach((counter) => {
       const target = parseInt(counter.getAttribute("data-target"));
-      const duration = 2000; // 2 ثانیه
-      const step = target / (duration / 16); // 60 فریم در ثانیه
+      const duration = 2000; // 2 seconds
+      const step = target / (duration / 16); // 60 frames per second
 
       let current = 0;
 
@@ -68,38 +68,38 @@ class Counter {
           current = target;
         }
 
-        // فرمت اعداد برای خوانایی بهتر
+        // Format numbers for better readability
         counter.textContent = this.formatNumber(Math.floor(current));
       }, 16);
 
-      // افزودن کلاس انیمیشن
+      // Add animation class
       counter.parentElement.classList.add("animated");
     });
   }
 
   formatNumber(num) {
-    // افزودن جداکننده هزارگان
+    // Add thousand separators
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 }
 
-// راه‌اندازی شمارنده هنگام لود کامل صفحه
+// Initialize counter when page is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   new Counter();
 
-  // بازنشانی افکت‌ها هنگام hover
+  // Reset effects on hover
   const counterItems = document.querySelectorAll(".counter-item");
 
   counterItems.forEach((item) => {
     item.addEventListener("mouseenter", function () {
       const rayEffect = this.querySelector(".counter-ray-effect");
       if (rayEffect) {
-        // بازنشانی انیمیشن
+        // Reset animation
         rayEffect.style.animation = "none";
         rayEffect.offsetHeight; // trigger reflow
         rayEffect.style.animation = null;
 
-        // بازنشانی transform
+        // Reset transform
         const beforeEl =
           rayEffect.querySelector(":before") ||
           window.getComputedStyle(rayEffect, ":before");
@@ -110,10 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
     item.addEventListener("mouseleave", function () {
       const rayEffect = this.querySelector(".counter-ray-effect");
       if (rayEffect) {
-        // پاک کردن transform برای آماده‌سازی برای hover بعدی
+        // Clear transform for next hover
         setTimeout(() => {
           rayEffect.style.transform = "none";
-        }, 600); // بعد از اتمام انیمیشن
+        }, 600); // after animation completes
       }
     });
   });

@@ -1,28 +1,28 @@
 <?php
 
 /**
- * نوار ابزار محصولات (جستجو، مرتب‌سازی، تغییر حالت نمایش، فیلتر دسته‌بندی)
- * در بالای لیست محصولات قرار می‌گیرد.
+ * Products toolbar (search, sorting, view mode change, category filter)
+ * Placed above the products list.
  */
 ?>
 <div id="products-toolbar" class="products-toolbar">
     <div class="toolbar-left">
-        <input type="text" name="q" placeholder="جستجوی محصول..." />
+        <input type="text" name="q" placeholder="Search product..." />
         <select name="category" id="category-filter">
-            <option value="">همه دسته‌بندی‌ها</option>
-            <!-- دسته‌بندی‌ها با AJAX بارگذاری می‌شوند -->
+            <option value="">All categories</option>
+            <!-- Categories will be loaded via AJAX -->
         </select>
         <select name="sort">
-            <option value="newest">جدیدترین</option>
-            <option value="price_asc">ارزان‌ترین</option>
-            <option value="price_desc">گران‌ترین</option>
-            <option value="name_asc">نام (الف-ی)</option>
-            <option value="name_desc">نام (ی-الف)</option>
+            <option value="newest">Newest</option>
+            <option value="price_asc">Cheapest</option>
+            <option value="price_desc">Most expensive</option>
+            <option value="name_asc">Name (A-Z)</option>
+            <option value="name_desc">Name (Z-A)</option>
         </select>
     </div>
     <div class="toolbar-right view-switch">
-        <button type="button" data-view="card" title="نمایش کارتی">🗂️</button>
-        <button type="button" data-view="list" title="نمایش لیستی">📋</button>
+        <button type="button" data-view="card" title="Card view">🗂️</button>
+        <button type="button" data-view="list" title="List view">📋</button>
     </div>
 </div>
 

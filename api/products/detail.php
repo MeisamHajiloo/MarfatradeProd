@@ -2,9 +2,9 @@
 
 /**
  * GET /api/products/detail.php?slug=...
- * دریافت جزئیات یک محصول بر اساس slug یا id
+ * Get product details by slug or id
  *
- * خروجی نمونه:
+ * Example output:
  * {
  *   id: 123,
  *   slug: "iphone-14",
@@ -16,7 +16,6 @@
  *   category: { id: 5, name: "Mobiles" },
  *   created_at: "2024-01-01 12:00:00",
  *   views: 150
- * }
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -24,7 +23,7 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
 require_once __DIR__ . '/../../classes/Database.php';
 
-// بارگذاری ثابت‌ها (سازگار با ساختار فعلی پروژه)
+// Load constants (compatible with current project structure)
 $constCandidates = [
     __DIR__ . '/../../includes/config/constants.php',
     __DIR__ . '/../../constants.php',
@@ -80,7 +79,7 @@ try {
         $response(['error' => true, 'message' => 'Product not found'], 404);
     }
 
-    // نرمال‌سازی خروجی
+    // Normalize output
     $product = [
         'id'          => (int)$row['id'],
         'slug'        => $row['slug'],
@@ -97,13 +96,13 @@ try {
         'views'       => isset($row['views']) ? (int)$row['views'] : null,
     ];
 
-    // افزایش شمارنده بازدید (اختیاری)
+    // Increment view counter (optional)
     try {
         $update = $pdo->prepare("UPDATE products SET views = COALESCE(views,0) + 1 WHERE id = :id");
         $update->bindValue(':id', $product['id'], PDO::PARAM_INT);
         $update->execute();
     } catch (Throwable $e) {
-        // در صورت خطا نادیده گرفته شود
+        // Ignore if error occurs
     }
 
     $response($product);

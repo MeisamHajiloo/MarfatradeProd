@@ -2,14 +2,13 @@
 
 /**
  * GET /api/products/categories.php
- * درخت دسته‌بندی‌های لایه‌ای (بازگشتی)
- * خروجی JSON برای مصرف در منوی فیلتر/ناوبری محصولات
+ * Hierarchical category tree (recursive)
+ * JSON output for use in product filter/navigation menu
  *
- * خروجی نمونه:
+ * Example output:
  * [
  *   { id: 1, name: "Mobiles", slug: "mobiles", parent_id: null, children: [...] },
  *   ...
- * ]
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -17,7 +16,7 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
 require_once __DIR__ . '/../../classes/Database.php';
 
-// بارگذاری ثابت‌ها (سازگار با ساختار فعلی پروژه)
+// Load constants (compatible with current project structure)
 $constCandidates = [
     __DIR__ . '/../../includes/config/constants.php',
     __DIR__ . '/../../constants.php',
@@ -43,7 +42,7 @@ try {
     $stmt = $pdo->query("SELECT id, name, slug, parent_id FROM categories ORDER BY parent_id ASC, name ASC");
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ساخت نقشه براساس parent_id
+    // Create map based on parent_id
     $map = [];
     foreach ($rows as $row) {
         $row['id']        = (int)$row['id'];
@@ -52,7 +51,7 @@ try {
         $map[$row['id']]  = $row;
     }
 
-    // درخت‌سازی
+    // Build tree structure
     $tree = [];
     foreach ($map as $id => &$node) {
         if ($node['parent_id'] === null) {
@@ -61,7 +60,7 @@ try {
             if (isset($map[$node['parent_id']])) {
                 $map[$node['parent_id']]['children'][] = &$node;
             } else {
-                // اگر دسته‌ی پدر پیدا نشد، به ریشه اضافه شود
+                // If parent category not found, add to root
                 $tree[] = &$node;
             }
         }

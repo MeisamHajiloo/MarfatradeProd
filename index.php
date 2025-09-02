@@ -2,18 +2,18 @@
 require_once __DIR__ . '/includes/config/constants.php';
 require_once __DIR__ . '/classes/Database.php';
 
-// اتصال به دیتابیس
+// Connect to database
 $db = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
 $pdo = $db->getConnection();
 
-// دریافت اسلایدها
+// Get slides
 $slides = [];
 try {
     $stmt = $pdo->query("SELECT * FROM slides ORDER BY sort_order ASC");
     $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     error_log("Database error: " . $e->getMessage());
-    // اسلایدهای پیش‌فرض
+    // Default slides
     $slides = [
         [
             'title' => 'Welcome to Marfa Trade',
@@ -39,7 +39,7 @@ try {
     ];
 }
 
-// تعیین متغیرهای بارگذاری شرطی
+// Set conditional loading variables
 $loadSlider = true;
 $loadCounter = true;
 ?>

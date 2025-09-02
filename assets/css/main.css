@@ -17,6 +17,18 @@ body {
   overflow-x: hidden;
 }
 
+main {
+  margin-top: 80px;
+  min-height: calc(100vh - 80px);
+  padding-top: 20px;
+}
+
+.header-scrolled ~ main {
+  margin-top: 50px;
+  min-height: calc(100vh - 50px);
+  padding-top: 15px;
+}
+
 /* Counter Section Styles */
 .counter-section {
   background-color: var(--secondary-color1);
@@ -97,7 +109,7 @@ body {
     font-size: 2.5rem;
   }
 }
-/* بهبود افکت hover برای آیتم‌های شمارنده */
+/* Improved hover effect for counter items */
 .counter-item {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -107,7 +119,7 @@ body {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
 }
 
-/* بهبود ظاهر آیкон‌ها در حالت hover */
+/* Improved the appearance of icons in hover mode */
 .counter-item:hover .counter-icon {
   transform: scale(1.1);
   transition: transform 0.3s ease;
@@ -164,7 +176,7 @@ body {
   color: var(--primary-color);
 }
 
-/* افکت Ray (پرتو) */
+/* Ray Effect */
 .counter-ray-effect {
   position: absolute;
   width: 100%;
@@ -205,7 +217,7 @@ body {
   transform: rotate(45deg) translateY(100%);
 }
 
-/* بهبود ظاهر آیتم‌ها */
+/* Improve the appearance of items */
 .counter-icon,
 .counter-title {
   transition: all 0.3s ease;
@@ -223,7 +235,7 @@ body {
   z-index: 3;
 }
 
-/* انیمیشن برای افکت Ray */
+/* Animation for Ray effect */
 @keyframes raySweep {
   0% {
     transform: rotate(45deg) translateY(-100%);
@@ -235,17 +247,4 @@ body {
 
 .counter-item:hover .counter-ray-effect::before {
   animation: raySweep 1.5s ease-out forwards;
-}
-
-/* در فایل main.css */
-main {
-  margin-top: 80px;
-  min-height: calc(100vh - 80px);
-  padding-top: 20px; /* اضافه کردن این خط */
-}
-
-.header-scrolled ~ main {
-  margin-top: 50px;
-  min-height: calc(100vh - 50px);
-  padding-top: 15px; /* اضافه کردن این خط */
 }

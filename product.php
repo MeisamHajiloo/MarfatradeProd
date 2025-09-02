@@ -1,22 +1,22 @@
 <?php
 require_once __DIR__ . '/includes/header.php';
 
-// گرفتن slug از URL
+// Get slug from URL
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : null;
 
-// عدم بارگذاری اسکریپت‌های slider و counter
+// Don't load slider and counter scripts
 $loadSlider = false;
 $loadCounter = false;
 ?>
 
 <main class="product-page">
-    <a href="products.php" class="back-link">← بازگشت به لیست محصولات</a>
+    <a href="products.php" class="back-link">← Back to products list</a>
     <div id="product-detail" class="product-detail">
-        <!-- جزئیات محصول با AJAX بارگذاری می‌شود -->
+        <!-- Product details will be loaded via AJAX -->
     </div>
 
     <section id="related-products" class="related-products">
-        <h2>محصولات مرتبط</h2>
+        <h2>Related products</h2>
         <div class="products-grid"></div>
     </section>
 </main>
@@ -25,21 +25,21 @@ $loadCounter = false;
 require_once __DIR__ . '/includes/footer.php';
 ?>
 
-<!-- اسکریپت بارگذاری محصول -->
+<!-- Product loading script -->
 <script>
     (async function() {
         const container = document.getElementById("product-detail");
         const relatedContainer = document.querySelector("#related-products .products-grid");
         const slug = "<?php echo $slug ?: ''; ?>";
         if (!slug) {
-            container.innerHTML = '<div class="error">شناسه محصول یافت نشد.</div>';
+            container.innerHTML = '<div class="error">Product ID not found.</div>';
             return;
         }
 
         container.classList.add("loading");
         try {
             const res = await fetch(`api/products/detail.php?slug=${slug}`);
-            if (!res.ok) throw new Error("خطا در دریافت محصول");
+            if (!res.ok) throw new Error("Error getting product");
             const product = await res.json();
 
             if (product.error) {
@@ -54,7 +54,7 @@ require_once __DIR__ . '/includes/footer.php';
         </div>
         <div class="info">
           <h1 class="name">${product.name}</h1>
-          <div class="price">${product.price ? product.price + ' تومان' : ''}</div>
+          <div class="price">${product.price ? product.price + ' $' : ''}</div>
           <p class="desc">${product.description || ''}</p>
           ${product.gallery && product.gallery.length ? `
             <div class="gallery">
@@ -64,7 +64,7 @@ require_once __DIR__ . '/includes/footer.php';
       </div>
     `;
 
-            // بارگذاری محصولات مرتبط
+            // Load related products
             if (product.category && product.category.id) {
                 try {
                     const resRelated = await fetch(`api/products/list.php?per_page=4&category=${product.category.id}`);
@@ -81,21 +81,21 @@ require_once __DIR__ . '/includes/footer.php';
                   <div class="thumb"><img src="${p.thumbnail || '/assets/img/no-image.png'}" alt="${p.name}"></div>
                   <div class="info">
                     <h3 class="name">${p.name}</h3>
-                    <div class="price">${p.price ? p.price + ' تومان' : ''}</div>
+                    <div class="price">${p.price ? p.price + ' $' : ''}</div>
                   </div>
                 </a>
               </div>
             `).join("");
                         } else {
-                            relatedContainer.innerHTML = '<div class="no-related">محصول مرتبطی یافت نشد</div>';
+                            relatedContainer.innerHTML = '<div class="no-related">No related products found</div>';
                         }
                     }
                 } catch (err) {
-                    console.error("خطا در بارگذاری محصولات مرتبط", err);
+                    console.error("Error loading related products", err);
                 }
             }
         } catch (err) {
-            container.innerHTML = '<div class="error">خطا در بارگذاری محصول</div>';
+            container.innerHTML = '<div class="error">Error loading product</div>';
             console.error(err);
         } finally {
             container.classList.remove("loading");
@@ -107,7 +107,7 @@ require_once __DIR__ . '/includes/footer.php';
     .product-page {
         max-width: 1200px;
         margin: 80px auto 0;
-        /* فاصله از ناوبری ثابت */
+        /* Space from fixed navigation */
         padding: 1rem;
     }
 
@@ -123,7 +123,7 @@ require_once __DIR__ . '/includes/footer.php';
     }
 
     .product-detail.loading::after {
-        content: "در حال بارگذاری...";
+        content: "Loading...";
         display: block;
         padding: 2rem;
         text-align: center;

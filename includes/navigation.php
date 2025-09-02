@@ -46,7 +46,7 @@
 
     <!-- Regular navigation items -->
     <li><a href="index.php">Home</a></li>
-    <li><a href="products.php">Products</a></li> <!-- لینک جدید -->
+    <li><a href="products.php">Products</a></li>
     <li><a href="#">About Us</a></li>
     <li><a href="#">Contact Us</a></li>
     <li><a href="#">FAQ</a></li>

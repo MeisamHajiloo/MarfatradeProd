@@ -5,7 +5,7 @@ function toggleMenu() {
   hamburger.classList.toggle("active");
   navLinks.classList.toggle("active");
 
-  // تغییر برای پشتیبانی از راست‌چین
+  // Change for RTL support
   if (window.innerWidth <= 768) {
     navLinks.style.right = navLinks.classList.contains("active")
       ? "0"

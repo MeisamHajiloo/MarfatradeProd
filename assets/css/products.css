@@ -1,6 +1,6 @@
 /* assets/css/products.css */
 
-/* کانتینر اصلی محصولات */
+/* Original container of products */
 #products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -8,7 +8,7 @@
   margin: 1rem 0;
 }
 
-/* حالت لیست */
+/* List mode */
 .product-list-item {
   display: flex;
   align-items: flex-start;
@@ -39,7 +39,7 @@
   flex: 1;
 }
 
-/* حالت کارت */
+/* Card mode */
 .product-card {
   border: 1px solid #eee;
   border-radius: 12px;
@@ -119,7 +119,7 @@
   cursor: not-allowed;
 }
 
-/* حالت لودینگ */
+/* Loading mode */
 #products-grid.loading::after {
   content: "در حال بارگذاری...";
   grid-column: 1/-1;
@@ -160,7 +160,7 @@
   }
 }
 
-/* نمایش toolbar در دسکتاپ */
+/* Show toolbar on desktop */
 .products-toolbar {
   display: flex;
   justify-content: space-between;
@@ -172,7 +172,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* برای اطمینان از نمایش در همه دستگاه‌ها */
+/* To ensure display on all devices */
 @media (min-width: 769px) {
   .products-toolbar {
     display: flex !important;
@@ -181,11 +181,11 @@
   }
 }
 
-/* فاصله از هدر برای صفحه محصولات */
+/* Distance from header for product page */
 .products-page {
-  padding-top: 30px; /* فاصله از بالای main */
+  padding-top: 30px;
 }
 
 .products-toolbar {
-  margin-top: 60px; /* فاصله اضافی برای toolbar */
+  margin-top: 60px;
 }

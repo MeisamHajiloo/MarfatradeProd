@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/includes/header.php';
 
-// دریافت شناسه دسته‌بندی از URL (اگر وجود دارد)
+// Get category ID from URL (if exists)
 $category_id = isset($_GET['category']) ? (int)$_GET['category'] : null;
 
-// عدم بارگذاری اسکریپت‌های slider و counter
+// Don't load slider and counter scripts
 $loadSlider = false;
 $loadCounter = false;
 ?>
@@ -14,10 +14,10 @@ $loadCounter = false;
     <?php include __DIR__ . '/includes/components/products-grid.php'; ?>
 </main>
 
-<!-- اسکریپت محصولات -->
+<!-- Products script -->
 <script src="assets/js/products.js"></script>
 
-<!-- استایل اختصاصی محصولات -->
+<!-- Products specific style -->
 <link rel="stylesheet" href="assets/css/products.css" />
 
 <?php
@@ -33,14 +33,14 @@ require_once __DIR__ . '/includes/footer.php';
 </style>
 
 <script>
-    // مقداردهی اولیه state.category بر اساس پارامتر URL
+    // Initialize state.category based on URL parameter
     document.addEventListener('DOMContentLoaded', function() {
         <?php if ($category_id): ?>
-            // اگر شناسه دسته‌بندی از URL دریافت شده، آن را در state قرار دهید
+            // If category ID is received from URL, set it in state
             if (typeof state !== 'undefined') {
                 state.category = <?php echo $category_id; ?>;
 
-                // همچنین مقدار select را نیز تنظیم کنید
+                // Also set the select value
                 const categorySelect = document.querySelector('select[name=category]');
                 if (categorySelect) {
                     categorySelect.value = <?php echo $category_id; ?>;

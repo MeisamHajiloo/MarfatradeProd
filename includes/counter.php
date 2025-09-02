@@ -1,12 +1,12 @@
 <?php
-// دریافت داده‌های شمارنده از دیتابیس
+// Get counter data from the database
 $counters = [];
 try {
     $stmt = $pdo->query("SELECT * FROM counters ORDER BY sort_order ASC");
     $counters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     error_log("Database error in counters: " . $e->getMessage());
-    // مقادیر پیش‌فرض در صورت خطا
+    // Default values ​​in case of error
     $counters = [
         [
             'title' => 'Our Customers',

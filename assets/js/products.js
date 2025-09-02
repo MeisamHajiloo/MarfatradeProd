@@ -1,5 +1,5 @@
 // assets/js/products.js
-// مدیریت AJAX برای بارگذاری محصولات با صفحه‌بندی، فیلتر، مرتب‌سازی و تغییر حالت نمایش
+// AJAX management for loading products with pagination, filtering, sorting and view mode changes
 
 (function () {
   const apiBase = "api/products";
@@ -17,14 +17,14 @@
     view: window.innerWidth < 768 ? "list" : "card",
   };
 
-  // بارگذاری دسته‌بندی‌ها
+  // Load categories
   async function loadCategories() {
     try {
       const res = await fetch("api/products/categories.php");
       if (!res.ok) throw new Error("Failed to load categories");
       const categories = await res.json();
 
-      // پر کردن dropdown دسته‌بندی‌ها
+      // Fill category dropdown
       categories.forEach((cat) => {
         addCategoryOption(cat);
       });
@@ -33,14 +33,14 @@
     }
   }
 
-  // اضافه کردن دسته‌بندی به dropdown (بازگشتی برای زیردسته‌ها)
+  // Add category to dropdown (recursive for subcategories)
   function addCategoryOption(category, level = 0) {
     const option = document.createElement("option");
     option.value = category.id;
     option.textContent = " ".repeat(level) + category.name;
     categorySelect.appendChild(option);
 
-    // اضافه کردن زیردسته‌ها
+    // Add subcategories
     if (category.children && category.children.length > 0) {
       category.children.forEach((child) => {
         addCategoryOption(child, level + 1);
@@ -48,7 +48,7 @@
     }
   }
 
-  // کمکی برای فراخوانی API محصولات
+  // Helper for calling products API
   async function fetchProducts() {
     const params = new URLSearchParams({
       page: state.page,
@@ -67,7 +67,7 @@
   function renderProducts(data) {
     gridEl.innerHTML = "";
     if (!data || !data.length) {
-      gridEl.innerHTML = `<div class="no-results">هیچ محصولی یافت نشد</div>`;
+      gridEl.innerHTML = `<div class="no-results">No products found</div>`;
       return;
     }
     data.forEach((p) => {
@@ -81,7 +81,7 @@
           }" alt="${p.name}"></div>
           <div class="info">
             <h3 class="name">${p.name}</h3>
-            <div class="price">${p.price ? p.price + " تومان" : ""}</div>
+            <div class="price">${p.price ? p.price + " $" : ""}</div>
             ${
               state.view === "list"
                 ? `<p class="desc">${p.short_desc || ""}</p>`
@@ -99,10 +99,10 @@
     if (!meta || meta.total <= meta.per_page) return;
     const totalPages = Math.ceil(meta.total / meta.per_page);
 
-    // دکمه قبلی
+    // Previous button
     if (state.page > 1) {
       const prevBtn = document.createElement("button");
-      prevBtn.textContent = "قبلی";
+      prevBtn.textContent = "Previous";
       prevBtn.addEventListener("click", () => {
         state.page--;
         load();
@@ -110,7 +110,7 @@
       paginationEl.appendChild(prevBtn);
     }
 
-    // شماره صفحات
+    // Page numbers
     for (let i = 1; i <= totalPages; i++) {
       if (
         i === 1 ||
@@ -133,10 +133,10 @@
       }
     }
 
-    // دکمه بعدی
+    // Next button
     if (state.page < totalPages) {
       const nextBtn = document.createElement("button");
-      nextBtn.textContent = "بعدی";
+      nextBtn.textContent = "Next";
       nextBtn.addEventListener("click", () => {
         state.page++;
         load();
@@ -152,18 +152,18 @@
       renderProducts(data);
       renderPagination(meta);
     } catch (err) {
-      gridEl.innerHTML = `<div class="error">خطا در بارگذاری محصولات</div>`;
+      gridEl.innerHTML = `<div class="error">Error loading products</div>`;
       console.error(err);
     } finally {
       gridEl.classList.remove("loading");
     }
   }
 
-  // تغییر حالت نمایش (card/list)
+  // Change view mode (card/list)
   function bindToolbar() {
     if (!toolbarEl) return;
 
-    // تغییر حالت نمایش
+    // Change view mode
     const viewSwitch = toolbarEl.querySelector(".view-switch");
     if (viewSwitch) {
       viewSwitch.addEventListener("click", (e) => {
@@ -175,7 +175,7 @@
       });
     }
 
-    // جستجو
+    // Search
     const searchInput = toolbarEl.querySelector("input[name=q]");
     if (searchInput) {
       let debounceTimer;
@@ -189,7 +189,7 @@
       });
     }
 
-    // مرتب‌سازی
+    // Sorting
     const sortSelect = toolbarEl.querySelector("select[name=sort]");
     if (sortSelect) {
       sortSelect.addEventListener("change", (e) => {
@@ -199,7 +199,7 @@
       });
     }
 
-    // فیلتر دسته‌بندی
+    // Category filter
     if (categorySelect) {
       categorySelect.addEventListener("change", (e) => {
         state.category = e.target.value ? parseInt(e.target.value) : null;
@@ -209,7 +209,7 @@
     }
   }
 
-  // شروع
+  // Initialize
   document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM loaded - checking toolbar element");
     const toolbarEl = document.getElementById("products-toolbar");
@@ -220,9 +220,9 @@
       return;
     }
 
-    // بارگذاری دسته‌بندی‌ها
+    // Load categories
     loadCategories().then(() => {
-      // تنظیم دسته‌بندی انتخابی از URL
+      // Set selected category from URL
       const urlParams = new URLSearchParams(window.location.search);
       const categoryFromUrl = urlParams.get("category");
 

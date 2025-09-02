@@ -1,12 +1,12 @@
 <?php
 
 /**
- * کانتینر اصلی برای نمایش محصولات (grid/list)
- * همراه با pagination
+ * Main container for displaying products (grid/list)
+ * Includes pagination
  */
 ?>
 <div id="products-grid" class="products-grid">
-    <!-- محصولات با AJAX بارگذاری می‌شوند -->
+    <!-- Products will be loaded via AJAX -->
 </div>
 <div id="pagination" class="pagination"></div>
 
