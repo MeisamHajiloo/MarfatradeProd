@@ -14,7 +14,6 @@
   const viewSwitchMobile = document.getElementById("view-switch-mobile");
   const closeDrawer = document.getElementById("close-drawer");
   const resetFilters = document.getElementById("reset-filters");
-  const applyFilters = document.getElementById("apply-filters");
   const filterBadge = document.getElementById("filter-badge");
 
   let state = {
@@ -27,6 +26,13 @@
   };
 
   let activeFilters = 0;
+
+  // Toggle view mode between card and list
+  function toggleViewMode(viewType) {
+    state.view = viewType;
+    updateViewMode();
+    load();
+  }
 
   // Initialize toolbar
   function initToolbar() {
@@ -78,36 +84,13 @@
       });
     }
 
-    // Apply filters button (mobile)
-    if (applyFilters) {
-      applyFilters.addEventListener("click", function () {
-        // Update state from form values
-        state.q = document.querySelector("input[name=q]").value;
-        state.category = document.getElementById("category-filter").value
-          ? parseInt(document.getElementById("category-filter").value)
-          : null;
-        state.sort = document.getElementById("sort-filter").value;
-        state.page = 1;
-
-        // Close drawer on mobile after applying
-        if (window.innerWidth < 993) {
-          closeToolbar();
-        }
-
-        load();
-      });
-    }
-
     // View mode toggle for desktop
     if (viewSwitchDesktop) {
       const viewBtns = viewSwitchDesktop.querySelectorAll(".view-btn");
       viewBtns.forEach((btn) => {
         btn.addEventListener("click", function () {
-          viewBtns.forEach((b) => b.classList.remove("active"));
-          this.classList.add("active");
-          state.view = this.dataset.view;
-          updateViewMode();
-          load();
+          const viewType = this.dataset.view;
+          toggleViewMode(viewType);
         });
       });
     }
@@ -117,11 +100,13 @@
       const viewBtns = viewSwitchMobile.querySelectorAll(".view-btn");
       viewBtns.forEach((btn) => {
         btn.addEventListener("click", function () {
-          viewBtns.forEach((b) => b.classList.remove("active"));
-          this.classList.add("active");
-          state.view = this.dataset.view;
-          updateViewMode();
-          load();
+          const viewType = this.dataset.view;
+          toggleViewMode(viewType);
+
+          // Close drawer on mobile after changing view
+          if (window.innerWidth < 993) {
+            closeToolbar();
+          }
         });
       });
     }
