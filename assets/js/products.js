@@ -11,6 +11,11 @@
   const toolbarContent = document.querySelector(".toolbar-content");
   const toolbarOverlay = document.getElementById("toolbar-overlay");
   const viewSwitchDesktop = document.getElementById("view-switch-desktop");
+  const viewSwitchMobile = document.getElementById("view-switch-mobile");
+  const closeDrawer = document.getElementById("close-drawer");
+  const resetFilters = document.getElementById("reset-filters");
+  const applyFilters = document.getElementById("apply-filters");
+  const filterBadge = document.getElementById("filter-badge");
 
   let state = {
     page: 1,
@@ -21,6 +26,8 @@
     view: window.innerWidth < 768 ? "list" : "card",
   };
 
+  let activeFilters = 0;
+
   // Initialize toolbar
   function initToolbar() {
     // Set initial view mode
@@ -29,69 +36,170 @@
     // Mobile toolbar toggle
     if (toolbarToggle && toolbarContent) {
       toolbarToggle.addEventListener("click", function () {
-        toolbarContent.classList.toggle("active");
-        if (toolbarContent.classList.contains("active")) {
-          if (toolbarOverlay) {
-            toolbarOverlay.style.display = "block";
-          }
-          document.body.style.overflow = "hidden";
-        } else {
-          if (toolbarOverlay) {
-            toolbarOverlay.style.display = "none";
-          }
-          document.body.style.overflow = "";
+        toolbarContent.classList.add("active");
+        if (toolbarOverlay) {
+          toolbarOverlay.style.display = "block";
         }
+        document.body.style.overflow = "hidden";
       });
+    }
 
-      if (toolbarOverlay) {
-        toolbarOverlay.addEventListener("click", function () {
-          toolbarContent.classList.remove("active");
-          toolbarOverlay.style.display = "none";
-          document.body.style.overflow = "";
-        });
-      }
+    // Close drawer button
+    if (closeDrawer) {
+      closeDrawer.addEventListener("click", closeToolbar);
+    }
+
+    // Overlay click to close
+    if (toolbarOverlay) {
+      toolbarOverlay.addEventListener("click", closeToolbar);
+    }
+
+    // Reset filters button
+    if (resetFilters) {
+      resetFilters.addEventListener("click", function () {
+        document.querySelector("input[name=q]").value = "";
+        document.getElementById("category-filter").value = "";
+        document.getElementById("sort-filter").value = "newest";
+
+        state.q = "";
+        state.category = null;
+        state.sort = "newest";
+        state.page = 1;
+
+        activeFilters = 0;
+        updateFilterBadge();
+
+        // Close drawer on mobile after reset
+        if (window.innerWidth < 993) {
+          closeToolbar();
+        }
+
+        load();
+      });
+    }
+
+    // Apply filters button (mobile)
+    if (applyFilters) {
+      applyFilters.addEventListener("click", function () {
+        // Update state from form values
+        state.q = document.querySelector("input[name=q]").value;
+        state.category = document.getElementById("category-filter").value
+          ? parseInt(document.getElementById("category-filter").value)
+          : null;
+        state.sort = document.getElementById("sort-filter").value;
+        state.page = 1;
+
+        // Close drawer on mobile after applying
+        if (window.innerWidth < 993) {
+          closeToolbar();
+        }
+
+        load();
+      });
     }
 
     // View mode toggle for desktop
     if (viewSwitchDesktop) {
-      const viewBtn = viewSwitchDesktop.querySelector(".view-btn");
-      if (viewBtn) {
-        viewBtn.addEventListener("click", function () {
-          // Toggle between card and list view
-          state.view = state.view === "card" ? "list" : "card";
+      const viewBtns = viewSwitchDesktop.querySelectorAll(".view-btn");
+      viewBtns.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          viewBtns.forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+          state.view = this.dataset.view;
           updateViewMode();
           load();
         });
-      }
+      });
+    }
+
+    // View mode toggle for mobile
+    if (viewSwitchMobile) {
+      const viewBtns = viewSwitchMobile.querySelectorAll(".view-btn");
+      viewBtns.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          viewBtns.forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+          state.view = this.dataset.view;
+          updateViewMode();
+          load();
+        });
+      });
+    }
+
+    // Monitor filter changes for badge counter
+    const categoryFilter = document.getElementById("category-filter");
+    const sortFilter = document.getElementById("sort-filter");
+    const searchInput = document.querySelector("input[name=q]");
+
+    if (categoryFilter) {
+      categoryFilter.addEventListener("change", function () {
+        updateFilterCounter();
+      });
+    }
+
+    if (sortFilter) {
+      sortFilter.addEventListener("change", function () {
+        updateFilterCounter();
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        updateFilterCounter();
+      });
+    }
+  }
+
+  // Close toolbar function
+  function closeToolbar() {
+    toolbarContent.classList.remove("active");
+    if (toolbarOverlay) {
+      toolbarOverlay.style.display = "none";
+    }
+    document.body.style.overflow = "";
+  }
+
+  // Update filter badge count
+  function updateFilterCounter() {
+    activeFilters = 0;
+
+    if (document.querySelector("input[name=q]").value) activeFilters++;
+    if (document.getElementById("category-filter").value) activeFilters++;
+    if (document.getElementById("sort-filter").value !== "newest")
+      activeFilters++;
+
+    updateFilterBadge();
+  }
+
+  function updateFilterBadge() {
+    if (filterBadge) {
+      filterBadge.textContent = activeFilters;
+      filterBadge.style.display = activeFilters > 0 ? "flex" : "none";
     }
   }
 
   // Update view mode UI
   function updateViewMode() {
-    if (!viewSwitchDesktop) return;
+    // Update desktop view switch
+    if (viewSwitchDesktop) {
+      const viewBtns = viewSwitchDesktop.querySelectorAll(".view-btn");
+      viewBtns.forEach((btn) => {
+        btn.classList.remove("active");
+        if (btn.dataset.view === state.view) {
+          btn.classList.add("active");
+        }
+      });
+    }
 
-    const viewBtn = viewSwitchDesktop.querySelector(".view-btn");
-    if (!viewBtn) return;
-
-    if (state.view === "card") {
-      viewBtn.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      `;
-      viewBtn.title = "Change to list";
-    } else {
-      viewBtn.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="4" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="3" y="10" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="3" y="16" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      `;
-      viewBtn.title = "Change to card";
+    // Update mobile view switch
+    if (viewSwitchMobile) {
+      const viewBtns = viewSwitchMobile.querySelectorAll(".view-btn");
+      viewBtns.forEach((btn) => {
+        btn.classList.remove("active");
+        if (btn.dataset.view === state.view) {
+          btn.classList.add("active");
+        }
+      });
     }
   }
 
@@ -305,6 +413,7 @@
         debounceTimer = setTimeout(() => {
           state.q = e.target.value;
           state.page = 1;
+          updateFilterCounter();
           load();
         }, 400);
       });
@@ -316,6 +425,7 @@
       sortSelect.addEventListener("change", (e) => {
         state.sort = e.target.value;
         state.page = 1;
+        updateFilterCounter();
         load();
       });
     }
@@ -325,6 +435,7 @@
       categorySelect.addEventListener("change", (e) => {
         state.category = e.target.value ? parseInt(e.target.value) : null;
         state.page = 1;
+        updateFilterCounter();
         load();
       });
     }
@@ -353,6 +464,7 @@
       if (categoryFromUrl && categorySelect) {
         categorySelect.value = categoryFromUrl;
         state.category = parseInt(categoryFromUrl);
+        updateFilterCounter();
       }
 
       bindToolbar();

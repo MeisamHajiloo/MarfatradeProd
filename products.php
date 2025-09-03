@@ -27,7 +27,7 @@ require_once __DIR__ . '/includes/footer.php';
 <style>
     .products-page {
         max-width: 1200px;
-        margin: 0 auto;
+        margin: 30px auto;
         padding: 1rem;
     }
 </style>
