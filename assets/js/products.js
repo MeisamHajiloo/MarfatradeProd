@@ -443,7 +443,7 @@
           <a href="product.php?slug=${
             p.slug
           }" class="btn btn-primary">View Details</a>
-          <button class="btn btn-outline">Add to Cart</button>
+          <button class="btn btn-primary">Add to Cart</button>
         </div>
       </div>
     `;
@@ -471,7 +471,7 @@
           <a href="product.php?slug=${
             p.slug
           }" class="btn btn-primary">View Details</a>
-          <button class="btn btn-outline">Add to Cart</button>
+          <button class="btn btn-primary">Add to Cart</button>
         </div>
       </div>
     `;

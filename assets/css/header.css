@@ -1,7 +1,7 @@
 /* Header Styles */
 header {
   background-color: var(--secondary-color1);
-  color: white;
+  color: var(--white);
   position: fixed;
   width: 100%;
   top: 0;
@@ -46,7 +46,7 @@ header {
   height: 40px;
   border-radius: 50%;
   background-color: var(--primary-color);
-  color: white;
+  color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,9 +66,9 @@ header {
   top: 50px;
   right: 0;
   width: 250px;
-  background-color: white;
+  background-color: var(--white);
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px var(--shadow-color);
   z-index: 1001;
   opacity: 0;
   visibility: hidden;
@@ -84,21 +84,21 @@ header {
 
 .user-info {
   padding: 15px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--gray-light);
 }
 
 .user-name {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 5px;
-  color: #333;
+  color: var(--gray-dark);
 }
 
 .user-wallet {
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: #666;
+  color: var(--gray);
 }
 
 .user-wallet i {
@@ -108,7 +108,7 @@ header {
 
 .dropdown-divider {
   height: 1px;
-  background-color: #f0f0f0;
+  background-color: var(--gray-light);
   margin: 5px 0;
 }
 
@@ -116,19 +116,19 @@ header {
   display: flex;
   align-items: center;
   padding: 12px 15px;
-  color: #333;
+  color: var(--gray-dark);
   text-decoration: none;
   transition: background-color 0.2s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #f8f9fa;
+  background-color: var(--surface-color);
 }
 
 .dropdown-item i {
   margin-right: 10px;
   width: 20px;
-  color: #6c757d;
+  color: var(--gray);
 }
 
 /* Navigation */
@@ -145,18 +145,18 @@ header {
 }
 
 .nav-links a {
-  color: white;
+  color: var(--white);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .nav-links a:hover {
-  color: var(--primary-color);
+  color: var(--secondary-color2);
 }
 
 /* Auth link styles */
 #auth-link {
-  color: white;
+  color: var(--white);
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -182,7 +182,7 @@ header {
   position: absolute;
   height: 3px;
   width: 100%;
-  background: white;
+  background: var(--white);
   border-radius: 3px;
   left: 0;
   transition: 0.25s ease-in-out;
@@ -236,7 +236,7 @@ header {
   height: 50px;
   border-radius: 50%;
   background-color: var(--primary-color);
-  color: white;
+  color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,7 +252,7 @@ header {
 .mobile-user-name {
   font-weight: bold;
   font-size: 18px;
-  color: white;
+  color: var(--white);
   margin-bottom: 5px;
 }
 
@@ -294,7 +294,7 @@ header {
   display: flex;
   align-items: center;
   padding: 12px 15px;
-  color: white;
+  color: var(--white);
   text-decoration: none;
   transition: background-color 0.2s ease;
 }
@@ -423,7 +423,7 @@ header {
 .user-avatar.has-initials,
 .mobile-user-avatar.has-initials {
   background-color: var(--primary-color) !important;
-  color: white !important;
+  color: var(--white) !important;
   font-weight: bold;
 }
 

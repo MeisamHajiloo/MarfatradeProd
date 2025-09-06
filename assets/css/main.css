@@ -1,7 +1,30 @@
 :root {
-  --primary-color: #aca39a;
-  --secondary-color1: #221c35;
-  --secondary-color2: #f1f0d8;
+  --primary-color: #400128;
+  --secondary-color1: #262626;
+  --secondary-color2: #daab2d;
+  --secondary-color3: #a57a03;
+  --white: #f2f2f2;
+  --black: #000000;
+  --gray-light: #f0f0f0;
+  --gray: #6c757d;
+  --gray-dark: #333333;
+  --success: #23d160;
+  --error: #ff3860;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --surface-color: #f8fafc;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --shadow-sm: 0 1px 2px 0 var(--shadow-color);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --primary-hover: #9c9188;
 }
 
 * {
@@ -32,7 +55,7 @@ main {
 /* Counter Section Styles */
 .counter-section {
   background-color: var(--secondary-color1);
-  color: white;
+  color: var(--white);
   padding: 80px 5%;
   text-align: center;
 }
@@ -63,7 +86,7 @@ main {
 .counter-icon {
   font-size: 3rem;
   margin-bottom: 15px;
-  color: var(--primary-color);
+  color: var(--secondary-color2);
 }
 
 .counter-number {
@@ -126,7 +149,7 @@ main {
 }
 
 .counter-item:hover .counter-title {
-  color: var(--primary-color);
+  color: var(--secondary-color2);
   transition: color 0.3s ease;
 }
 
@@ -173,7 +196,7 @@ main {
 }
 
 .counter-item:hover .counter-title {
-  color: var(--primary-color);
+  color: var(--secondary-color2);
 }
 
 /* Ray Effect */
