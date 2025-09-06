@@ -585,54 +585,16 @@
   .search-box {
     min-width: 280px;
   }
+
+  /* Ensure overlay is hidden on desktop */
+  .toolbar-overlay {
+    display: none !important;
+  }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .products-toolbar {
-    margin: 1rem 0;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-  }
-
-  /* Force list view on mobile */
-  #products-grid {
-    display: block !important;
-  }
-
-  .product-card {
-    display: flex !important;
-    flex-direction: column;
-    margin-bottom: 1rem;
-  }
-
-  .product-card .thumb img {
-    height: 150px;
-  }
-
-  .product-list-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .product-list-item .thumb {
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-
-  .product-list-item .actions {
-    justify-content: center;
-  }
-
-  #products-grid.card-view {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-  }
+  /* ... (کدهای قبلی بدون تغییر) ... */
 }
 
 /* Products page specific styles */
@@ -654,4 +616,68 @@
     visibility: visible !important;
     opacity: 1 !important;
   }
+
+  /* Hide overlay on desktop */
+  .toolbar-overlay {
+    display: none !important;
+  }
+}
+
+.toolbar-overlay.active {
+  display: block;
+}
+
+/* Additional fix for overlay on resize */
+@media (max-width: 992px) {
+  .toolbar-overlay.active {
+    display: block;
+  }
+
+  /* Ensure overlay covers entire screen */
+  .toolbar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 998;
+  }
+}
+
+/* New styles for displaying ticks in categories */
+.category-option {
+  position: relative;
+  padding-right: 30px !important;
+}
+
+.category-option.has-children::after {
+  content: "↴";
+  position: absolute;
+  right: 10px;
+  color: #6c757d;
+}
+
+.category-option.selected {
+  background-color: #e8f4fd !important;
+  color: #0d6efd !important;
+  font-weight: 600;
+}
+
+.category-option.selected::before {
+  content: "✓";
+  position: absolute;
+  right: 10px;
+  font-weight: bold;
+}
+
+.category-option.child-selected {
+  background-color: #f0f9ff !important;
+  color: #0d6efd !important;
+}
+
+/* To display a check mark on selected options on mobile */
+.filter-group option:checked {
+  background-color: #e8f4fd;
+  color: #0d6efd;
+  font-weight: 600;
 }

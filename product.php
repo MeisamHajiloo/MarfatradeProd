@@ -76,15 +76,15 @@ require_once __DIR__ . '/includes/footer.php';
 
                         if (related.length) {
                             relatedContainer.innerHTML = related.map(p => `
-              <div class="product-card">
-                <a href="product.php?slug=${p.slug}" class="inner">
-                  <div class="thumb"><img src="${p.thumbnail || '/assets/img/no-image.png'}" alt="${p.name}"></div>
-                  <div class="info">
-                    <h3 class="name">${p.name}</h3>
-                    <div class="price">${p.price ? p.price + ' $' : ''}</div>
-                  </div>
-                </a>
-              </div>
+                             <div class="product-card">
+                                <a href="product.php?slug=${p.slug}" class="inner">
+                                <div class="thumb"><img src="${p.thumbnail || '/assets/img/no-image.png'}" alt="${p.name}"></div>
+                                <div class="info">
+                                    <h3 class="name">${p.name}</h3>
+                                <div class="price">${p.price ? p.price + ' $' : ''}</div>
+                            </div>
+                            </a>
+                            </div>
             `).join("");
                         } else {
                             relatedContainer.innerHTML = '<div class="no-related">No related products found</div>';

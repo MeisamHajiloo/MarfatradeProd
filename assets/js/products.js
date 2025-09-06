@@ -7,6 +7,8 @@
   const toolbarEl = document.getElementById("products-toolbar");
   const paginationEl = document.getElementById("pagination");
   const categorySelect = document.getElementById("category-filter");
+  const sortSelect = document.getElementById("sort-filter");
+  const searchInput = document.querySelector("input[name=q]");
   const toolbarToggle = document.getElementById("toolbar-toggle");
   const toolbarContent = document.querySelector(".toolbar-content");
   const toolbarOverlay = document.getElementById("toolbar-overlay");
@@ -26,11 +28,120 @@
   };
 
   let activeFilters = 0;
+  let allCategories = [];
+
+  // Save state to sessionStorage
+  function saveState() {
+    sessionStorage.setItem("productsState", JSON.stringify(state));
+  }
+
+  // Load state from sessionStorage
+  function loadState() {
+    const savedState = sessionStorage.getItem("productsState");
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      state = { ...state, ...parsedState };
+
+      // Update UI elements with saved state
+      if (searchInput) searchInput.value = state.q || "";
+      if (sortSelect) sortSelect.value = state.sort;
+      if (categorySelect) categorySelect.value = state.category || "";
+
+      updateViewMode();
+      updateFilterCounter();
+      updateCategorySelectionUI();
+    }
+  }
+
+  // Update UI to show checkmarks for selected categories
+  function updateCategorySelectionUI() {
+    if (!categorySelect || allCategories.length === 0) return;
+
+    // Reset all options first
+    const options = categorySelect.options;
+    for (let i = 0; i < options.length; i++) {
+      options[i].classList.remove("selected", "child-selected");
+    }
+
+    // If no category is selected, return
+    if (!state.category) return;
+
+    // Find the selected category
+    const selectedCategoryId = parseInt(state.category);
+
+    // Mark the selected option
+    const selectedOption = categorySelect.querySelector(
+      `option[value="${selectedCategoryId}"]`
+    );
+    if (selectedOption) {
+      selectedOption.classList.add("selected");
+
+      // If it's a parent category, mark all children as selected too
+      const category = findCategoryById(selectedCategoryId);
+      if (category && category.children && category.children.length > 0) {
+        markAllChildrenAsSelected(category);
+      }
+
+      // Mark all parent categories as having a selected child
+      markParentCategoriesAsChildSelected(selectedCategoryId);
+    }
+  }
+
+  // Find a category by ID in the category tree
+  function findCategoryById(id, categories = allCategories) {
+    for (const category of categories) {
+      if (category.id === id) return category;
+      if (category.children && category.children.length > 0) {
+        const found = findCategoryById(id, category.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  // Mark all children of a category as selected
+  function markAllChildrenAsSelected(category) {
+    if (!category.children || category.children.length === 0) return;
+
+    for (const child of category.children) {
+      const childOption = categorySelect.querySelector(
+        `option[value="${child.id}"]`
+      );
+      if (childOption) {
+        childOption.classList.add("child-selected");
+      }
+
+      // Recursively mark grandchildren
+      if (child.children && child.children.length > 0) {
+        markAllChildrenAsSelected(child);
+      }
+    }
+  }
+
+  // Mark all parent categories as having a selected child
+  function markParentCategoriesAsChildSelected(categoryId) {
+    const category = findCategoryById(categoryId);
+    if (!category || !category.parent_id) return;
+
+    let currentParentId = category.parent_id;
+    while (currentParentId) {
+      const parentOption = categorySelect.querySelector(
+        `option[value="${currentParentId}"]`
+      );
+      if (parentOption) {
+        parentOption.classList.add("child-selected");
+      }
+
+      const parentCategory = findCategoryById(currentParentId);
+      currentParentId = parentCategory ? parentCategory.parent_id : null;
+    }
+  }
 
   // Toggle view mode between card and list
   function toggleViewMode(viewType) {
     state.view = viewType;
     updateViewMode();
+    saveState();
     load();
   }
 
@@ -44,7 +155,7 @@
       toolbarToggle.addEventListener("click", function () {
         toolbarContent.classList.add("active");
         if (toolbarOverlay) {
-          toolbarOverlay.style.display = "block";
+          toolbarOverlay.classList.add("active");
         }
         document.body.style.overflow = "hidden";
       });
@@ -60,6 +171,21 @@
       toolbarOverlay.addEventListener("click", closeToolbar);
     }
 
+    // Close toolbar when clicking outside on mobile
+    document.addEventListener("click", function (event) {
+      const isClickInsideToolbar = toolbarContent.contains(event.target);
+      const isClickOnToggle = toolbarToggle.contains(event.target);
+
+      if (
+        window.innerWidth < 993 &&
+        toolbarContent.classList.contains("active") &&
+        !isClickInsideToolbar &&
+        !isClickOnToggle
+      ) {
+        closeToolbar();
+      }
+    });
+
     // Reset filters button
     if (resetFilters) {
       resetFilters.addEventListener("click", function () {
@@ -74,6 +200,8 @@
 
         activeFilters = 0;
         updateFilterBadge();
+        updateCategorySelectionUI();
+        saveState();
 
         // Close drawer on mobile after reset
         if (window.innerWidth < 993) {
@@ -112,18 +240,15 @@
     }
 
     // Monitor filter changes for badge counter
-    const categoryFilter = document.getElementById("category-filter");
-    const sortFilter = document.getElementById("sort-filter");
-    const searchInput = document.querySelector("input[name=q]");
-
-    if (categoryFilter) {
-      categoryFilter.addEventListener("change", function () {
+    if (categorySelect) {
+      categorySelect.addEventListener("change", function () {
         updateFilterCounter();
+        updateCategorySelectionUI();
       });
     }
 
-    if (sortFilter) {
-      sortFilter.addEventListener("change", function () {
+    if (sortSelect) {
+      sortSelect.addEventListener("change", function () {
         updateFilterCounter();
       });
     }
@@ -133,13 +258,24 @@
         updateFilterCounter();
       });
     }
+
+    // Handle window resize to close mobile toolbar when switching to desktop
+    window.addEventListener("resize", handleResize);
+  }
+
+  // Handle window resize
+  function handleResize() {
+    if (window.innerWidth >= 993) {
+      // Close mobile drawer when switching to desktop view
+      closeToolbar();
+    }
   }
 
   // Close toolbar function
   function closeToolbar() {
     toolbarContent.classList.remove("active");
     if (toolbarOverlay) {
-      toolbarOverlay.style.display = "none";
+      toolbarOverlay.classList.remove("active");
     }
     document.body.style.overflow = "";
   }
@@ -148,10 +284,9 @@
   function updateFilterCounter() {
     activeFilters = 0;
 
-    if (document.querySelector("input[name=q]").value) activeFilters++;
-    if (document.getElementById("category-filter").value) activeFilters++;
-    if (document.getElementById("sort-filter").value !== "newest")
-      activeFilters++;
+    if (searchInput && searchInput.value) activeFilters++;
+    if (categorySelect && categorySelect.value) activeFilters++;
+    if (sortSelect && sortSelect.value !== "newest") activeFilters++;
 
     updateFilterBadge();
   }
@@ -195,11 +330,22 @@
       if (!res.ok) throw new Error("Failed to load categories");
       const categories = await res.json();
 
+      // Store all categories for later use
+      allCategories = categories;
+
       // Fill category dropdown
       if (categorySelect) {
+        // Clear existing options except the first one
+        while (categorySelect.options.length > 1) {
+          categorySelect.remove(1);
+        }
+
         categories.forEach((cat) => {
           addCategoryOption(cat);
         });
+
+        // Update UI to show selected category if any
+        updateCategorySelectionUI();
       }
     } catch (err) {
       console.error("Error loading categories:", err);
@@ -213,6 +359,12 @@
     const option = document.createElement("option");
     option.value = category.id;
     option.textContent = " ".repeat(level) + category.name;
+    option.className = "category-option";
+
+    if (category.children && category.children.length > 0) {
+      option.classList.add("has-children");
+    }
+
     categorySelect.appendChild(option);
 
     // Add subcategories
@@ -230,6 +382,7 @@
       per_page: state.per_page,
       sort: state.sort,
       q: state.q,
+      include_descendants: 1, // Always include subcategories
     });
     if (state.category) params.append("category", state.category);
 
@@ -329,6 +482,7 @@
       prevBtn.textContent = "Previous";
       prevBtn.addEventListener("click", () => {
         state.page--;
+        saveState();
         load();
       });
       paginationEl.appendChild(prevBtn);
@@ -346,6 +500,7 @@
         btn.className = i === state.page ? "active" : "";
         btn.addEventListener("click", () => {
           state.page = i;
+          saveState();
           load();
         });
         paginationEl.appendChild(btn);
@@ -363,6 +518,7 @@
       nextBtn.textContent = "Next";
       nextBtn.addEventListener("click", () => {
         state.page++;
+        saveState();
         load();
       });
       paginationEl.appendChild(nextBtn);
@@ -390,7 +546,6 @@
     if (!toolbarEl) return;
 
     // Search
-    const searchInput = toolbarEl.querySelector("input[name=q]");
     if (searchInput) {
       let debounceTimer;
       searchInput.addEventListener("input", (e) => {
@@ -399,18 +554,19 @@
           state.q = e.target.value;
           state.page = 1;
           updateFilterCounter();
+          saveState();
           load();
         }, 400);
       });
     }
 
     // Sorting
-    const sortSelect = toolbarEl.querySelector("select[name=sort]");
     if (sortSelect) {
       sortSelect.addEventListener("change", (e) => {
         state.sort = e.target.value;
         state.page = 1;
         updateFilterCounter();
+        saveState();
         load();
       });
     }
@@ -421,6 +577,8 @@
         state.category = e.target.value ? parseInt(e.target.value) : null;
         state.page = 1;
         updateFilterCounter();
+        updateCategorySelectionUI();
+        saveState();
         load();
       });
     }
@@ -437,12 +595,15 @@
       return;
     }
 
+    // Load saved state first
+    loadState();
+
     // Initialize toolbar functionality
     initToolbar();
 
     // Load categories
     loadCategories().then(() => {
-      // Set selected category from URL
+      // Set selected category from URL (overrides saved state)
       const urlParams = new URLSearchParams(window.location.search);
       const categoryFromUrl = urlParams.get("category");
 
@@ -450,6 +611,8 @@
         categorySelect.value = categoryFromUrl;
         state.category = parseInt(categoryFromUrl);
         updateFilterCounter();
+        updateCategorySelectionUI();
+        saveState();
       }
 
       bindToolbar();

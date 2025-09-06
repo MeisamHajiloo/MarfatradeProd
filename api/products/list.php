@@ -3,12 +3,13 @@
 /**
  * GET /api/products/list.php
  * JSON API for product listing with pagination, search, category filter, and sorting
+ * Now includes subcategories by default when filtering by category
  *
  * Parameters (GET):
  * - page: Page number (1+)
  * - per_page: Items per page (suggested: 12/24/48)
  * - category: Category ID (int)
- * - include_descendants: If 1 and DB supports CTE, subcategories will be included
+ * - include_descendants: Always 1 to include subcategories
  * - q: Search in name/slug/short description
  * - sort: One of: price_asc | price_desc | newest | popular | name_asc | name_desc
  * - status: Default 'published'
@@ -55,7 +56,7 @@ $perPage     = in_array($perPageRaw, [12, 24, 48], true) ? $perPageRaw : 12;
 $offset      = ($page - 1) * $perPage;
 
 $categoryId  = isset($_GET['category']) ? (int)$_GET['category'] : null;
-$withDesc    = isset($_GET['include_descendants']) && (int)$_GET['include_descendants'] === 1;
+$withDesc    = isset($_GET['include_descendants']) ? (int)$_GET['include_descendants'] === 1 : true;
 $q           = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 $status      = isset($_GET['status']) ? trim((string)$_GET['status']) : 'published';
 
@@ -63,7 +64,7 @@ $allowedSort = [
     'price_asc'  => 'p.price ASC',
     'price_desc' => 'p.price DESC',
     'newest'     => 'p.created_at DESC',
-    'popular'    => 'p.views DESC', // If views column doesn't exist, map to sold_count or similar
+    'popular'    => 'p.views DESC',
     'name_asc'   => 'p.name ASC',
     'name_desc'  => 'p.name DESC',
 ];
@@ -72,7 +73,7 @@ $orderBy     = $allowedSort[$sortKey] ?? $allowedSort['newest'];
 
 try {
     $db = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-    $pdo = $db->getConnection(); // Expected to return PDO
+    $pdo = $db->getConnection();
 
     // Check CTE support (MySQL 8+)
     $cteSupported = true;
@@ -100,16 +101,15 @@ try {
     $categoryFilterSql = '';
     if ($categoryId) {
         if ($withDesc && $cteSupported) {
-            // Use CTE to fetch all subcategories
+            // Use CTE to fetch all subcategories (including the selected category itself)
             $categoryFilterSql = "WITH RECURSIVE cat_tree AS (
                 SELECT id FROM categories WHERE id = :cat_id
                 UNION ALL
                 SELECT c.id FROM categories c
                 INNER JOIN cat_tree ct ON c.parent_id = ct.id
-            ) SELECT p.* FROM products p
-            INNER JOIN cat_tree ct2 ON p.category_id = ct2.id";
+            ) ";
         } else {
-            // Filter on same category only (no subcategories)
+            // Filter on same category only (fallback if CTE not supported)
             $where[] = 'p.category_id = :cat_id';
             $params[':cat_id'] = $categoryId;
         }
@@ -119,17 +119,9 @@ try {
     $baseSelect = 'SELECT p.id, p.slug, p.name, p.price, p.thumbnail, p.short_desc, p.category_id, p.created_at, p.views';
     $baseFrom   = ' FROM products p ';
 
-    // If category CTE is active, use it in main query
-    $useCteQuery = ($categoryFilterSql !== '');
-
     // Count query
-    if ($useCteQuery) {
-        $countSql = "WITH RECURSIVE cat_tree AS (
-                SELECT id FROM categories WHERE id = :cat_id
-                UNION ALL
-                SELECT c.id FROM categories c
-                INNER JOIN cat_tree ct ON c.parent_id = ct.id
-            ) SELECT COUNT(*) AS cnt FROM products p
+    if ($categoryId && $withDesc && $cteSupported) {
+        $countSql = $categoryFilterSql . "SELECT COUNT(*) AS cnt FROM products p
             INNER JOIN cat_tree ct2 ON p.category_id = ct2.id";
         if (!empty($where)) {
             $countSql .= ' WHERE ' . implode(' AND ', $where);
@@ -145,12 +137,16 @@ try {
     foreach ($params as $k => $v) {
         $stmtCount->bindValue($k, $v);
     }
+    if ($categoryId && $withDesc && $cteSupported) {
+        $stmtCount->bindValue(':cat_id', $categoryId, PDO::PARAM_INT);
+    }
     $stmtCount->execute();
     $total = (int)$stmtCount->fetchColumn();
 
     // Data query
-    if ($useCteQuery) {
-        $dataSql = $categoryFilterSql; // Includes JOIN with cat_tree
+    if ($categoryId && $withDesc && $cteSupported) {
+        $dataSql = $categoryFilterSql . $baseSelect . " FROM products p
+            INNER JOIN cat_tree ct2 ON p.category_id = ct2.id";
         if (!empty($where)) {
             $dataSql .= ' WHERE ' . implode(' AND ', $where);
         }
@@ -166,6 +162,9 @@ try {
     $stmt = $pdo->prepare($dataSql);
     foreach ($params as $k => $v) {
         $stmt->bindValue($k, $v);
+    }
+    if ($categoryId && $withDesc && $cteSupported) {
+        $stmt->bindValue(':cat_id', $categoryId, PDO::PARAM_INT);
     }
     $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -200,7 +199,7 @@ try {
             'sort'      => $sortKey,
             'q'         => $q,
             'category'  => $categoryId,
-            'descendants_included' => ($withDesc && $cteSupported),
+            'descendants_included' => ($categoryId && $withDesc && $cteSupported),
         ],
     ]);
 } catch (Throwable $e) {
