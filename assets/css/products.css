@@ -227,13 +227,19 @@
   cursor: not-allowed;
 }
 
-/* Loading state */
+/* Loading state - Updated with new loading component */
+#products-grid.loading {
+  position: relative;
+  min-height: 300px;
+}
+
 #products-grid.loading::after {
-  content: "Loading please wait...";
-  grid-column: 1/-1;
-  text-align: center;
-  padding: 2rem;
-  color: #555;
+  content: "";
+  display: none;
+}
+
+#products-grid.loading .loading-overlay {
+  display: flex;
 }
 
 /* No results and error states */

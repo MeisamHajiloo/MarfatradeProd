@@ -538,6 +538,8 @@
     if (!gridEl) return;
 
     gridEl.classList.add("loading");
+    renderLoadingState();
+
     try {
       const { data, meta } = await fetchProducts();
       renderProducts(data);
@@ -548,6 +550,22 @@
     } finally {
       gridEl.classList.remove("loading");
     }
+  }
+
+  function renderLoadingState() {
+    if (!gridEl) return;
+
+    gridEl.innerHTML = `
+    <div class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="loading-spinner-dot"></div>
+        <div class="loading-spinner-dot"></div>
+        <div class="loading-spinner-dot"></div>
+        <div class="loading-spinner-dot"></div>
+      </div>
+      <div class="loading-text">Loading products...</div>
+    </div>
+  `;
   }
 
   // Change view mode (card/list)

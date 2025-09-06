@@ -1,0 +1,125 @@
+/* assets/css/loading.css */
+/* Modern loading spinner with site color scheme */
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  border-radius: inherit;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+
+.loading-spinner-dot {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: loading-spinner-rotate 2s infinite linear;
+}
+
+.loading-spinner-dot:before {
+  content: "";
+  display: block;
+  width: 25%;
+  height: 25%;
+  background-color: var(--primary-color, #aca39a);
+  border-radius: 100%;
+  animation: loading-spinner-bounce 2s infinite ease-in-out;
+}
+
+.loading-spinner-dot:nth-child(2) {
+  animation-delay: -1s;
+}
+
+.loading-spinner-dot:nth-child(2):before {
+  animation-delay: -0.5s;
+  background-color: var(--secondary-color1, #4a3f35);
+}
+
+.loading-spinner-dot:nth-child(3) {
+  animation-delay: -0.5s;
+}
+
+.loading-spinner-dot:nth-child(3):before {
+  animation-delay: -1s;
+  background-color: var(--secondary-color2, #8a7866);
+}
+
+.loading-spinner-dot:nth-child(4) {
+  animation-delay: -1.5s;
+}
+
+.loading-spinner-dot:nth-child(4):before {
+  animation-delay: -1.5s;
+  background-color: var(--secondary-color3, #c0b2a3);
+}
+
+@keyframes loading-spinner-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-spinner-bounce {
+  0%,
+  100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+/* Text below spinner */
+.loading-text {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--text-secondary, #64748b);
+  font-size: 0.9rem;
+}
+
+/* Full page loading */
+.loading-fullpage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+/* Small size variant */
+.loading-sm .loading-spinner {
+  width: 30px;
+  height: 30px;
+}
+
+.loading-sm .loading-text {
+  font-size: 0.8rem;
+}
+
+/* Large size variant */
+.loading-lg .loading-spinner {
+  width: 70px;
+  height: 70px;
+}
+
+.loading-lg .loading-text {
+  font-size: 1.1rem;
+}

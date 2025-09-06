@@ -19,6 +19,7 @@ $loadCounter = false;
 
 <!-- Products specific style -->
 <link rel="stylesheet" href="assets/css/products.css" />
+<link rel="stylesheet" href="assets/css/loading.css" />
 
 <?php
 require_once __DIR__ . '/includes/footer.php';
