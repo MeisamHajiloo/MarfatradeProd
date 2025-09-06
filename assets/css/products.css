@@ -292,7 +292,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: var(--primary-color);
+  background: var(--secondary-color);
   color: white;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -302,6 +302,12 @@
   position: relative;
 }
 
+.mobile-toggle.active-filter {
+  background: #e8f4fd;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
 .mobile-toggle:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
@@ -309,7 +315,8 @@
 }
 
 .filter-badge {
-  display: flex;
+  display: none;
+  /* display: flex;
   align-items: center;
   justify-content: center;
   width: 20px;
@@ -321,7 +328,7 @@
   font-weight: 600;
   position: absolute;
   top: -5px;
-  right: -5px;
+  right: -5px; */
 }
 
 .toolbar-content {

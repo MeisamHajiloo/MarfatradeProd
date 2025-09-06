@@ -16,7 +16,6 @@
   const viewSwitchMobile = document.getElementById("view-switch-mobile");
   const closeDrawer = document.getElementById("close-drawer");
   const resetFilters = document.getElementById("reset-filters");
-  const filterBadge = document.getElementById("filter-badge");
 
   let state = {
     page: 1,
@@ -27,7 +26,6 @@
     view: window.innerWidth < 768 ? "list" : "card",
   };
 
-  let activeFilters = 0;
   let allCategories = [];
 
   // Save state to sessionStorage
@@ -48,8 +46,24 @@
       if (categorySelect) categorySelect.value = state.category || "";
 
       updateViewMode();
-      updateFilterCounter();
+      updateFilterButtonState();
       updateCategorySelectionUI();
+    }
+  }
+
+  // Update filter button state based on active filters
+  function updateFilterButtonState() {
+    if (!toolbarToggle) return;
+
+    const hasActiveFilters =
+      (searchInput && searchInput.value) ||
+      (categorySelect && categorySelect.value) ||
+      (sortSelect && sortSelect.value !== "newest");
+
+    if (hasActiveFilters) {
+      toolbarToggle.classList.add("active-filter");
+    } else {
+      toolbarToggle.classList.remove("active-filter");
     }
   }
 
@@ -149,6 +163,7 @@
   function initToolbar() {
     // Set initial view mode
     updateViewMode();
+    updateFilterButtonState();
 
     // Mobile toolbar toggle
     if (toolbarToggle && toolbarContent) {
@@ -198,8 +213,7 @@
         state.sort = "newest";
         state.page = 1;
 
-        activeFilters = 0;
-        updateFilterBadge();
+        updateFilterButtonState();
         updateCategorySelectionUI();
         saveState();
 
@@ -239,23 +253,31 @@
       });
     }
 
-    // Monitor filter changes for badge counter
+    // Monitor filter changes
     if (categorySelect) {
       categorySelect.addEventListener("change", function () {
-        updateFilterCounter();
+        state.category = this.value ? parseInt(this.value) : null;
+        state.page = 1;
+        updateFilterButtonState();
         updateCategorySelectionUI();
+        saveState();
+        load();
       });
     }
 
     if (sortSelect) {
       sortSelect.addEventListener("change", function () {
-        updateFilterCounter();
+        state.sort = this.value;
+        state.page = 1;
+        updateFilterButtonState();
+        saveState();
+        load();
       });
     }
 
     if (searchInput) {
       searchInput.addEventListener("input", function () {
-        updateFilterCounter();
+        updateFilterButtonState();
       });
     }
 
@@ -278,24 +300,6 @@
       toolbarOverlay.classList.remove("active");
     }
     document.body.style.overflow = "";
-  }
-
-  // Update filter badge count
-  function updateFilterCounter() {
-    activeFilters = 0;
-
-    if (searchInput && searchInput.value) activeFilters++;
-    if (categorySelect && categorySelect.value) activeFilters++;
-    if (sortSelect && sortSelect.value !== "newest") activeFilters++;
-
-    updateFilterBadge();
-  }
-
-  function updateFilterBadge() {
-    if (filterBadge) {
-      filterBadge.textContent = activeFilters;
-      filterBadge.style.display = activeFilters > 0 ? "flex" : "none";
-    }
   }
 
   // Update view mode UI
@@ -346,6 +350,11 @@
 
         // Update UI to show selected category if any
         updateCategorySelectionUI();
+
+        // Ensure the select value matches state.category
+        if (state.category) {
+          categorySelect.value = state.category;
+        }
       }
     } catch (err) {
       console.error("Error loading categories:", err);
@@ -553,33 +562,10 @@
         debounceTimer = setTimeout(() => {
           state.q = e.target.value;
           state.page = 1;
-          updateFilterCounter();
+          updateFilterButtonState();
           saveState();
           load();
         }, 400);
-      });
-    }
-
-    // Sorting
-    if (sortSelect) {
-      sortSelect.addEventListener("change", (e) => {
-        state.sort = e.target.value;
-        state.page = 1;
-        updateFilterCounter();
-        saveState();
-        load();
-      });
-    }
-
-    // Category filter
-    if (categorySelect) {
-      categorySelect.addEventListener("change", (e) => {
-        state.category = e.target.value ? parseInt(e.target.value) : null;
-        state.page = 1;
-        updateFilterCounter();
-        updateCategorySelectionUI();
-        saveState();
-        load();
       });
     }
   }
@@ -610,7 +596,7 @@
       if (categoryFromUrl && categorySelect) {
         categorySelect.value = categoryFromUrl;
         state.category = parseInt(categoryFromUrl);
-        updateFilterCounter();
+        updateFilterButtonState();
         updateCategorySelectionUI();
         saveState();
       }
