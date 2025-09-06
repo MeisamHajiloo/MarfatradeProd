@@ -13,6 +13,7 @@ project/
 │   ├── css/
 │   │   ├── footer.css
 │   │   ├── header.css
+│   │   ├── loading.css
 │   │   ├── main.css
 │   │   ├── modal.css
 │   │   ├── products.css
