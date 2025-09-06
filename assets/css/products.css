@@ -217,9 +217,9 @@
 
 #pagination button.active,
 #pagination button:hover {
-  background: #007bff;
+  background: var(--primary-color);
   color: var(--white);
-  border-color: #007bff;
+  border-color: var(--primary-color);
 }
 
 #pagination button:disabled {

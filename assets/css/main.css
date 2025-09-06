@@ -24,7 +24,7 @@
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px var(--shadow-color),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --primary-hover: #9c9188;
+  --primary-hover: #daab2d;
 }
 
 * {
