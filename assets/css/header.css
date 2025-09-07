@@ -28,17 +28,35 @@ header {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.logo-text {
   font-size: 24px;
   font-weight: bold;
-  flex-shrink: 0;
+}
+
+.header-scrolled .logo-img {
+  height: 30px;
+}
+
+.header-scrolled .logo-text {
+  font-size: 20px;
 }
 
 /* Desktop User Menu Styles */
 .desktop-user-menu {
   display: none;
-  position: absolute;
-  right: 5%;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .user-avatar {
@@ -131,6 +149,14 @@ header {
   color: var(--gray);
 }
 
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  justify-content: center;
+}
+
 /* Navigation */
 .nav-links {
   display: flex;
@@ -138,20 +164,50 @@ header {
   margin: 0;
   padding: 0;
   align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-links::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-links li {
-  margin-left: 30px;
+  margin-left: 15px;
+  flex-shrink: 0;
+  transition: background-color 0.05s ease;
+  border-radius: 6px;
+}
+
+.nav-links li:first-child {
+  margin-left: 0;
+}
+
+.nav-links li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-links li.active {
+  background-color: var(--secondary-color3);
+}
+
+.nav-links li.mobile-user-info-item:hover {
+  background-color: transparent;
 }
 
 .nav-links a {
   color: var(--white);
   text-decoration: none;
   transition: color 0.3s ease;
+  display: block;
+  padding: 8px 12px;
 }
 
 .nav-links a:hover {
-  color: var(--secondary-color2);
+  color: var(--white);
 }
 
 /* Auth link styles */
@@ -318,6 +374,15 @@ header {
   .topbar {
     padding: 15px 5%;
     justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-text {
+    display: none;
+  }
+
+  .nav-container {
+    display: block;
   }
 
   .header-scrolled .topbar {
@@ -362,12 +427,10 @@ header {
 
   .hamburger {
     display: block;
-    order: 3;
   }
 
   .logo {
-    order: 1;
-    flex: 1;
+    flex: 0;
   }
 
   .header-scrolled .nav-links {
@@ -432,14 +495,41 @@ header {
   display: none;
 }
 
-/* For midrange screen */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* For small desktop screens */
+@media (min-width: 951px) and (max-width: 1200px) {
   .nav-links li {
-    margin-left: 15px;
+    margin-left: 10px;
   }
 
   .nav-links a {
     font-size: 14px;
+  }
+
+  .nav-container {
+    gap: 10px;
+  }
+}
+
+/* For very small desktop screens */
+@media (min-width: 769px) and (max-width: 950px) {
+  .nav-links li {
+    margin-left: 8px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+  }
+
+  .nav-container {
+    gap: 8px;
+  }
+
+  .topbar {
+    padding: 20px 3%;
+  }
+  
+  .logo-text {
+    display: none;
   }
 }
 
@@ -450,9 +540,30 @@ header {
   }
 }
 
-/* Ensuring correct display in different modes*/
-@media (max-width: 968px) {
-  .nav-links {
-    flex-wrap: wrap;
+/* For very small screens before mobile breakpoint */
+@media (min-width: 769px) and (max-width: 850px) {
+  .logo-text {
+    display: none;
+  }
+  
+  .logo-img {
+    height: 35px;
+  }
+
+  .nav-links li {
+    margin-left: 5px;
+  }
+
+  .nav-links a {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .nav-container {
+    gap: 5px;
+  }
+
+  .topbar {
+    padding: 15px 2%;
   }
 }

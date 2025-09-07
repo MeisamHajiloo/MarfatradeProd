@@ -237,74 +237,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Show success message function
   function showSuccess(message, duration = 3000) {
-    // Remove any existing success messages
-    const existingSuccess = document.getElementById("global-success-message");
-    if (existingSuccess) {
-      existingSuccess.remove();
-    }
-
-    // Create and display new success message
-    const successElement = document.createElement("div");
-    successElement.id = "global-success-message";
-    successElement.className = "success-message global-message";
-    successElement.textContent = message;
-    successElement.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 9999;
-            padding: 15px 20px;
-            background-color: #23d160;
-            color: white;
-            border-radius: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-width: 300px;
-        `;
-
-    document.body.appendChild(successElement);
-
-    // Remove success after specified duration
-    setTimeout(() => {
-      if (successElement.parentNode) {
-        successElement.remove();
-      }
-    }, duration);
+    showNotification(message, "success");
   }
 
   // Show error message function
   function showError(message, duration = 5000) {
-    // Remove any existing error messages
-    const existingError = document.getElementById("global-error-message");
-    if (existingError) {
-      existingError.remove();
-    }
-
-    // Create and display new error message
-    const errorElement = document.createElement("div");
-    errorElement.id = "global-error-message";
-    errorElement.className = "error-message global-message";
-    errorElement.textContent = message;
-    errorElement.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 9999;
-            padding: 15px 20px;
-            background-color: #ff3860;
-            color: white;
-            border-radius: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-width: 300px;
-        `;
-
-    document.body.appendChild(errorElement);
-
-    // Remove error after specified duration
-    setTimeout(() => {
-      if (errorElement.parentNode) {
-        errorElement.remove();
-      }
-    }, duration);
+    showNotification(message, "warning");
   }
 
   // Check if user is logged in and update menu

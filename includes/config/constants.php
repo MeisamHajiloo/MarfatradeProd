@@ -6,3 +6,6 @@ define('DB_PASS', '123');
 
 // Company WhatsApp number (with country code, no zeros, no spaces)
 define('WHATSAPP_NUMBER', '989193120515');
+
+// Telegram ID for product inquiries
+define('TELEGRAM_USERNAME', 'Meisam_Hajiloo');

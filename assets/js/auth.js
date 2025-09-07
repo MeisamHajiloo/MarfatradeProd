@@ -1,3 +1,29 @@
+// Global showNotification function
+function showNotification(message, type = "info") {
+  const notification = document.createElement("div");
+  notification.className = `notification notification-${type}`;
+  notification.innerHTML = `
+    <div class="notification-content">
+      <div class="notification-icon">
+        ${type === "success" ? "✓" : type === "warning" ? "⚠" : "ℹ"}
+      </div>
+      <div class="notification-message">${message}</div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    notification.classList.add('notification-exit');
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
+
 // Authentication Modal Functionality
 document.addEventListener("DOMContentLoaded", function () {
   // Get modal elements
@@ -148,38 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to show success message
   function showSuccess(message, duration = 5000) {
-    // Remove any existing success messages
-    const existingSuccess = document.getElementById("global-success-message");
-    if (existingSuccess) {
-      existingSuccess.remove();
-    }
-
-    // Create and display new success message
-    const successElement = document.createElement("div");
-    successElement.id = "global-success-message";
-    successElement.className = "success-message global-message";
-    successElement.textContent = message;
-    successElement.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 9999;
-            padding: 15px 20px;
-            background-color: #23d160;
-            color: white;
-            border-radius: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-width: 300px;
-        `;
-
-    document.body.appendChild(successElement);
-
-    // Remove success after specified duration
-    setTimeout(() => {
-      if (successElement.parentNode) {
-        successElement.remove();
-      }
-    }, duration);
+    showNotification(message, "success");
   }
 
   // Function to parse JSON response safely
@@ -312,11 +307,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000);
       } else {
         console.error("Logout failed:", data.message);
-        showError("Logout failed. Please try again.");
+        showNotification("Logout failed. Please try again.", "warning");
       }
     } catch (error) {
       console.error("Logout error:", error);
-      showError("An error occurred during logout. Please try again.");
+      showNotification("An error occurred during logout. Please try again.", "warning");
     }
   }
 

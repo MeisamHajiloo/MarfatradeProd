@@ -5,17 +5,6 @@ function toggleMenu() {
   hamburger.classList.toggle("active");
   navLinks.classList.toggle("active");
 
-  // Change for RTL support
-  if (window.innerWidth <= 768) {
-    navLinks.style.right = navLinks.classList.contains("active")
-      ? "0"
-      : "-100%";
-    navLinks.style.left = "auto";
-  } else {
-    navLinks.style.right = "auto";
-    navLinks.style.left = "auto";
-  }
-
   const menuItems = document.querySelectorAll(".nav-links li");
   if (navLinks.classList.contains("active")) {
     menuItems.forEach((item, index) => {
@@ -61,13 +50,7 @@ document.addEventListener(
     ) {
       if (Math.abs(distance) > 10) e.preventDefault();
 
-      if (navLinks.classList.contains("active") && distance < 0) {
-        const newRight = Math.min(-distance, 100);
-        navLinks.style.right = `${-newRight}%`;
-      } else if (!navLinks.classList.contains("active") && distance > 0) {
-        const newRight = Math.min(-100 + distance, 0);
-        navLinks.style.right = `${newRight}%`;
-      }
+
     }
   },
   { passive: false }
@@ -94,21 +77,14 @@ function handleSwipe() {
     ) {
       hamburger.classList.add("active");
       navLinks.classList.add("active");
-      navLinks.style.right = "0";
-      navLinks.style.left = "auto";
     } else if (
       navLinks.classList.contains("active") &&
       difference < -swipeThreshold
     ) {
       hamburger.classList.remove("active");
       navLinks.classList.remove("active");
-      navLinks.style.right = "-100%";
-      navLinks.style.left = "auto";
     } else {
-      navLinks.style.right = navLinks.classList.contains("active")
-        ? "0"
-        : "-100%";
-      navLinks.style.left = "auto";
+
     }
   }
 }

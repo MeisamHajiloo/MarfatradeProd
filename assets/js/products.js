@@ -367,7 +367,7 @@
 
     const option = document.createElement("option");
     option.value = category.id;
-    option.textContent = " ".repeat(level) + category.name;
+    option.textContent = " ".repeat(level) + category.name;
     option.className = "category-option";
 
     if (category.children && category.children.length > 0) {
@@ -503,7 +503,7 @@
       if (typeof openAuthModal === "function") {
         openAuthModal();
       } else {
-        alert("Please login first to inquire about products.");
+        showNotification("Please login first to inquire about products.", "info");
       }
       return;
     }
@@ -583,6 +583,10 @@ Hello, I'm interested in your product: *${productName}*
 Please provide more information and pricing details.`;
 
       // Ensure the correct number format
+      if (!whatsappNumber) {
+        showNotification("WhatsApp number not available. Please try again later.", "warning");
+        return;
+      }
       const cleanNumber = whatsappNumber.replace(/\D/g, "");
       const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
         message
@@ -596,7 +600,32 @@ Please provide more information and pricing details.`;
     const telegramOption = modal.querySelector(".inquiry-option.telegram");
     telegramOption.addEventListener("click", function (e) {
       e.preventDefault();
-      alert("Telegram integration will be added in the next phase.");
+
+      const telegramUsername = "Meisam_Hajiloo";
+      const productUrl = `${window.location.origin}/product.php?slug=${productSlug}`;
+      const message = `Hello, I have a question about the product ${productName}.\nProduct Link: ${productUrl}`;
+      const telegramUrl = `https://t.me/${telegramUsername}`;
+
+      // Auto copy text to clipboard (help user)
+      navigator.clipboard
+        .writeText(message)
+        .then(() => {
+          showNotification(
+            "Product information copied to clipboard. Redirecting to Telegram now.",
+            "success"
+          );
+
+          setTimeout(() => {
+            window.open(telegramUrl, "_blank");
+          }, 3000);
+        })
+        .catch(() => {
+          showNotification(
+            "Error copying to clipboard. Redirecting to Telegram.",
+            "warning"
+          );
+          window.open(telegramUrl, "_blank");
+        });
     });
 
     // Show modal
@@ -759,6 +788,32 @@ Please provide more information and pricing details.`;
     });
   });
 })();
+
+// Function to show notification
+function showNotification(message, type = "info") {
+  const notification = document.createElement("div");
+  notification.className = `notification notification-${type}`;
+  notification.innerHTML = `
+    <div class="notification-content">
+      <div class="notification-icon">
+        ${type === "success" ? "✓" : type === "warning" ? "⚠" : "ℹ"}
+      </div>
+      <div class="notification-message">${message}</div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    notification.classList.add('notification-exit');
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
 
 // Function to check if user is logged in
 async function checkLoginStatus() {
