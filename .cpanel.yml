@@ -1,6 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home2/marfatr2/public_html
-    - /bin/cp -R * $DEPLOYPATH
-    - /bin/cp -R .* $DEPLOYPATH
+    - export DEPLOYPATH=/home2/marfatr2/public_html/
+    - /bin/cp -R . $DEPLOYPATH
+    - find $DEPLOYPATH -name ".git*" -exec rm -rf {} + 2>/dev/null || true
+    - find $DEPLOYPATH -name ".cpanel.yml" -delete 2>/dev/null || true
