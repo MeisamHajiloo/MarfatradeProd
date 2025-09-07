@@ -5,10 +5,11 @@ project/
 │   │   ├── login.php
 │   │   ├── logout.php
 │   │   └── register.php
-│   └── products/
-│       ├── categories.php
-│       ├── detail.php
-│       └── list.php
+│   ├── products/
+│   │   ├── categories.php
+│   │   ├── detail.php
+│   │   └── list.php
+│   └── get-phone-number.php
 ├── assets/
 │   ├── css/
 │   │   ├── footer.css
