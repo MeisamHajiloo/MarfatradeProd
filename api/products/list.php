@@ -3,37 +3,33 @@
 /**
  * GET /api/products/list.php
  * JSON API for product listing with pagination, search, category filter, and sorting
- * Now includes subcategories by default when filtering by category
+ * Includes subcategories when filtering by category (works with/without CTE support)
  *
  * Parameters (GET):
  * - page: Page number (1+)
- * - per_page: Items per page (suggested: 12/24/48)
+ * - per_page: Items per page (12/24/48)
  * - category: Category ID (int)
- * - include_descendants: Always 1 to include subcategories
+ * - include_descendants: 1 to include subcategories (default: 1)
  * - q: Search in name/slug/short description
- * - sort: One of: price_asc | price_desc | newest | popular | name_asc | name_desc
+ * - sort: price_asc | price_desc | newest | popular | name_asc | name_desc
  * - status: Default 'published'
  *
  * Output:
  * {
- *   "data": [ { product... }, ... ],
- *   "meta": { page, per_page, total, has_next }
+ *   "data": [ { product... } ],
+ *   "meta": { page, per_page, total, has_next, sort, q, category, descendants_included }
+ * }
  */
 
-// JSON headers
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
-// Add CORS if needed (if frontend is on different domain)
-// header('Access-Control-Allow-Origin: *');
-
+// require classes / constants (همان منطق نسخه‌ی فعلی شما)
 require_once __DIR__ . '/../../classes/Database.php';
-// If you have path/configuration constants:
-// Load constants (compatible with current project structure)
 $constCandidates = [
     __DIR__ . '/../../includes/config/constants.php',
     __DIR__ . '/../../constants.php',
-    __DIR__ . '/../../includes/config/constant.php', // If single version exists
+    __DIR__ . '/../../includes/config/constant.php',
 ];
 foreach ($constCandidates as $cp) {
     if (file_exists($cp)) {
@@ -48,7 +44,7 @@ $response = function ($payload, int $code = 200) {
     exit;
 };
 
-// Input parameters
+// ---- Input parameters ----
 $page        = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $perPageRaw  = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 12;
 // Limit to prevent server overload
@@ -56,7 +52,9 @@ $perPage     = in_array($perPageRaw, [12, 24, 48], true) ? $perPageRaw : 12;
 $offset      = ($page - 1) * $perPage;
 
 $categoryId  = isset($_GET['category']) ? (int)$_GET['category'] : null;
+// پیش‌فرض مثل قبل: اگر پارامتر نیامد، true باشد
 $withDesc    = isset($_GET['include_descendants']) ? (int)$_GET['include_descendants'] === 1 : true;
+
 $q           = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 $status      = isset($_GET['status']) ? trim((string)$_GET['status']) : 'published';
 
@@ -72,10 +70,10 @@ $sortKey     = isset($_GET['sort']) ? strtolower((string)$_GET['sort']) : 'newes
 $orderBy     = $allowedSort[$sortKey] ?? $allowedSort['newest'];
 
 try {
-    $db = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
+    $db  = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
     $pdo = $db->getConnection();
 
-    // Check CTE support (MySQL 8+)
+    // ---- Detect CTE support (مثل نسخه‌ی شما) ----
     $cteSupported = true;
     try {
         $pdo->query('WITH _x AS (SELECT 1 AS id) SELECT * FROM _x LIMIT 1');
@@ -84,42 +82,90 @@ try {
     }
 
     $params = [];
+    $where  = [];
 
-    // Build WHERE clause
-    $where = [];
+    // Status filter
     if ($status !== '') {
         $where[] = 'p.status = :status';
         $params[':status'] = $status;
     }
 
-    // Search in multiple columns
+    // Search filter
     if ($q !== '') {
         $where[] = '(p.name LIKE :q OR p.slug LIKE :q OR p.short_desc LIKE :q)';
         $params[':q'] = '%' . $q . '%';
     }
 
+    // Helper: get all descendant category IDs without CTE (fallback)
+    $getAllDescendantIds = function (PDO $pdo, int $rootId): array {
+        $ids     = [];
+        $seen    = [];
+        $queue   = [$rootId];
+
+        // یک کوئری آماده برای سرعت بهتر
+        $stmt = $pdo->prepare('SELECT id FROM categories WHERE parent_id = :pid');
+
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+            if (isset($seen[$current])) {
+                continue;
+            }
+            $seen[$current] = true;
+            $ids[] = $current;
+
+            $stmt->execute([':pid' => $current]);
+            $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            foreach ($children as $childId) {
+                if (!isset($seen[$childId])) {
+                    $queue[] = (int)$childId;
+                }
+            }
+        }
+        return $ids;
+    };
+
     $categoryFilterSql = '';
+    $descendantIdsForFallback = [];
+
     if ($categoryId) {
-        if ($withDesc && $cteSupported) {
-            // Use CTE to fetch all subcategories (including the selected category itself)
-            $categoryFilterSql = "WITH RECURSIVE cat_tree AS (
-                SELECT id FROM categories WHERE id = :cat_id
-                UNION ALL
-                SELECT c.id FROM categories c
-                INNER JOIN cat_tree ct ON c.parent_id = ct.id
-            ) ";
+        if ($withDesc) {
+            if ($cteSupported) {
+                // مسیر CTE (بدون تغییر نسبت به نسخه‌ی قبل شما)
+                $categoryFilterSql = "WITH RECURSIVE cat_tree AS (
+                    SELECT id FROM categories WHERE id = :cat_id
+                    UNION ALL
+                    SELECT c.id FROM categories c
+                    INNER JOIN cat_tree ct ON c.parent_id = ct.id
+                ) ";
+            } else {
+                // ----- مسیر FALLBACK: بدون CTE هم زیرمجموعه‌ها را لحاظ کن -----
+                $descendantIdsForFallback = $getAllDescendantIds($pdo, $categoryId);
+                if (!empty($descendantIdsForFallback)) {
+                    $placeholders = [];
+                    foreach ($descendantIdsForFallback as $i => $cid) {
+                        $ph = ":cat_$i";
+                        $placeholders[] = $ph;
+                        $params[$ph] = (int)$cid;
+                    }
+                    $where[] = 'p.category_id IN (' . implode(',', $placeholders) . ')';
+                } else {
+                    // اگر به هر دلیل هیچ idی برنگشت، حداقل خود category را اعمال کن
+                    $where[] = 'p.category_id = :cat_id';
+                    $params[':cat_id'] = $categoryId;
+                }
+            }
         } else {
-            // Filter on same category only (fallback if CTE not supported)
+            // فقط خود دسته
             $where[] = 'p.category_id = :cat_id';
             $params[':cat_id'] = $categoryId;
         }
     }
 
-    // Base SELECT
+    // Base SELECT (مثل نسخه‌ی شما)
     $baseSelect = 'SELECT p.id, p.slug, p.name, p.price, p.thumbnail, p.short_desc, p.category_id, p.created_at, p.views';
     $baseFrom   = ' FROM products p ';
 
-    // Count query
+    // ---- Count query ----
     if ($categoryId && $withDesc && $cteSupported) {
         $countSql = $categoryFilterSql . "SELECT COUNT(*) AS cnt FROM products p
             INNER JOIN cat_tree ct2 ON p.category_id = ct2.id";
@@ -143,7 +189,7 @@ try {
     $stmtCount->execute();
     $total = (int)$stmtCount->fetchColumn();
 
-    // Data query
+    // ---- Data query ----
     if ($categoryId && $withDesc && $cteSupported) {
         $dataSql = $categoryFilterSql . $baseSelect . " FROM products p
             INNER JOIN cat_tree ct2 ON p.category_id = ct2.id";
@@ -161,18 +207,19 @@ try {
 
     $stmt = $pdo->prepare($dataSql);
     foreach ($params as $k => $v) {
+        // bindValue اتوماتیک type را برمی‌دارد؛ category ها int هستند
         $stmt->bindValue($k, $v);
     }
     if ($categoryId && $withDesc && $cteSupported) {
         $stmt->bindValue(':cat_id', $categoryId, PDO::PARAM_INT);
     }
-    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
     $stmt->execute();
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-    // Normalize output
+    // ---- Normalize output (مثل نسخه‌ی شما) ----
     $data = array_map(function ($r) {
         return [
             'id'          => (int)$r['id'],
@@ -189,6 +236,9 @@ try {
 
     $hasNext = ($offset + $perPage) < $total;
 
+    // اگر include_descendants درخواست شده بود، حالا واقعاً اعمال شده — چه با CTE چه با fallback
+    $descendantsIncluded = (bool)($categoryId && $withDesc);
+
     $response([
         'data' => $data,
         'meta' => [
@@ -199,7 +249,7 @@ try {
             'sort'      => $sortKey,
             'q'         => $q,
             'category'  => $categoryId,
-            'descendants_included' => ($categoryId && $withDesc && $cteSupported),
+            'descendants_included' => $descendantsIncluded,
         ],
     ]);
 } catch (Throwable $e) {
