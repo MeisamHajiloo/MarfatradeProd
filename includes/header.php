@@ -44,13 +44,9 @@
                             <i class="fas fa-user"></i>
                             <span>Profile</span>
                         </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-wallet"></i>
-                            <span>Wallet</span>
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
+                        <a href="tickets.php" class="dropdown-item">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Support</span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item" id="logout-button">
@@ -66,7 +62,7 @@
             </button>
         </div>
     </header>
-    <?php include 'modal.php'; ?>
+    <?php include 'auth-modal.php'; ?>
 
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/auth.js"></script>

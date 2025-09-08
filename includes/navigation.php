@@ -24,15 +24,9 @@
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <i class="fas fa-wallet"></i>
-                    <span>Wallet</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                <a href="tickets.php">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Support</span>
                 </a>
             </li>
             <li class="mobile-logout-item">

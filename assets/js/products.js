@@ -299,7 +299,7 @@
     if (toolbarOverlay) {
       toolbarOverlay.classList.remove("active");
     }
-    document.body.style.overflow = "";
+    document.body.style.overflow = "auto";
   }
 
   // Update view mode UI
@@ -644,7 +644,7 @@ Please provide more information and pricing details.`;
     const modal = document.getElementById("inquiry-modal");
     if (modal) {
       modal.classList.remove("active");
-      document.body.style.overflow = "";
+      document.body.style.overflow = "auto";
     }
   }
 

@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function openAuthModal() {
     if (authModal) {
       authModal.style.display = "block";
-      document.body.style.overflow = "hidden"; // Prevent scrolling
+      document.body.style.overflow = "hidden";
     }
   }
 
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function closeAuthModal() {
     if (authModal) {
       authModal.style.display = "none";
-      document.body.style.overflow = "auto"; // Enable scrolling
+      document.body.style.overflow = "auto";
 
       // Reset forms
       if (loginForm) loginForm.reset();
