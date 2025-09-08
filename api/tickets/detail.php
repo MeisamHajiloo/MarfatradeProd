@@ -1,15 +1,19 @@
 <?php
-session_start();
 ob_clean();
 header('Content-Type: application/json');
 
 require_once '../../includes/config/constants.php';
+require_once '../../includes/config/session.php';
 require_once '../../classes/Database.php';
 
-if (!isset($_SESSION['user_id'])) {
+initializeSession();
+
+if (!isUserLoggedIn()) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
+
+$user_id = getCurrentUserId();
 
 $ticketId = $_GET['id'] ?? '';
 
@@ -23,7 +27,7 @@ try {
     $conn = $database->getConnection();
     
     $stmt = $conn->prepare("SELECT * FROM tickets WHERE id = ? AND user_id = ?");
-    $stmt->execute([$ticketId, $_SESSION['user_id']]);
+    $stmt->execute([$ticketId, $user_id]);
     $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$ticket) {

@@ -1,10 +1,13 @@
 <?php
-session_start();
 require_once 'includes/config/constants.php';
+require_once 'includes/config/session.php';
 require_once 'classes/Database.php';
 
+// Initialize session
+initializeSession();
+
 // Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isUserLoggedIn()) {
     header('Location: index.php');
     exit();
 }

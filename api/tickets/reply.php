@@ -1,15 +1,19 @@
 <?php
-session_start();
 ob_clean();
 header('Content-Type: application/json');
 
 require_once '../../includes/config/constants.php';
+require_once '../../includes/config/session.php';
 require_once '../../classes/Database.php';
 
-if (!isset($_SESSION['user_id'])) {
+initializeSession();
+
+if (!isUserLoggedIn()) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
+
+$user_id = getCurrentUserId();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -29,7 +33,7 @@ try {
     $conn = $database->getConnection();
     
     $stmt = $conn->prepare("SELECT id FROM tickets WHERE id = ? AND user_id = ?");
-    $stmt->execute([$ticketId, $_SESSION['user_id']]);
+    $stmt->execute([$ticketId, $user_id]);
     $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$ticket) {
@@ -38,7 +42,7 @@ try {
     }
     
     $stmt = $conn->prepare("INSERT INTO ticket_replies (ticket_id, user_id, message, is_admin) VALUES (?, ?, ?, 0)");
-    $result = $stmt->execute([$ticketId, $_SESSION['user_id'], $message]);
+    $result = $stmt->execute([$ticketId, $user_id, $message]);
     
     if ($result) {
         $stmt = $conn->prepare("UPDATE tickets SET status = 'open', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'closed'");

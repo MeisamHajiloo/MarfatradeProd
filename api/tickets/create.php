@@ -1,15 +1,19 @@
 <?php
-session_start();
 ob_clean();
 header('Content-Type: application/json');
 
 require_once '../../includes/config/constants.php';
+require_once '../../includes/config/session.php';
 require_once '../../classes/Database.php';
 
-if (!isset($_SESSION['user_id'])) {
+initializeSession();
+
+if (!isUserLoggedIn()) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
+
+$user_id = getCurrentUserId();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -34,7 +38,7 @@ try {
     $conn = $database->getConnection();
     
     $stmt = $conn->prepare("INSERT INTO tickets (user_id, subject, message, priority) VALUES (?, ?, ?, ?)");
-    $result = $stmt->execute([$_SESSION['user_id'], $subject, $message, $priority]);
+    $result = $stmt->execute([$user_id, $subject, $message, $priority]);
     
     if ($result) {
         $ticketId = $conn->lastInsertId();

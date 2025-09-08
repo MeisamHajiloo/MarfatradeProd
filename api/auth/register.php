@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 ob_start();
 
 require_once __DIR__ . '/../../includes/config/constants.php';
+require_once __DIR__ . '/../../includes/config/session.php';
 require_once __DIR__ . '/../../classes/Database.php';
 
 try {
@@ -93,8 +94,8 @@ try {
         $stmt->execute([$userId]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Start session and log user in automatically after registration
-        session_start();
+        // Initialize session and log user in automatically after registration
+        initializeSession();
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
