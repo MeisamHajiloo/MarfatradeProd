@@ -18,10 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // Prevent any output before JSON
 ob_start();
 
-session_start();
-
 require_once __DIR__ . '/../../includes/config/constants.php';
+require_once __DIR__ . '/../../includes/config/session.php';
 require_once __DIR__ . '/../../classes/Database.php';
+
+// Initialize session
+initializeSession();
 
 try {
     $db = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);

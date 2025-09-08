@@ -19,13 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 ob_start();
 
 require_once __DIR__ . '/../../includes/config/constants.php';
+require_once __DIR__ . '/../../includes/config/session.php';
 
-session_start();
+// Initialize session
+initializeSession();
 
 // Clean any output before sending JSON
 ob_end_clean();
 
-if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+if (isUserLoggedIn()) {
     echo json_encode([
         'loggedIn' => true,
         'user' => [

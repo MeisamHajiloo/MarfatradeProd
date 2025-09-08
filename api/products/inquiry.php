@@ -1,6 +1,7 @@
 <?php
 ob_start();
 require_once __DIR__ . '/../../includes/config/constants.php';
+require_once __DIR__ . '/../../includes/config/session.php';
 require_once __DIR__ . '/../../classes/Database.php';
 ob_end_clean();
 
@@ -11,12 +12,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-session_start();
+// Initialize session
+initializeSession();
 
-if (!isset($_SESSION['user_id'])) {
+// Check if user is logged in
+if (!isUserLoggedIn()) {
+    error_log('User not logged in - Session data: ' . print_r($_SESSION, true));
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
+
+$user_id = getCurrentUserId();
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -44,7 +50,7 @@ try {
     }
     
     $stmt = $pdo->prepare("INSERT INTO product_inquiries (product_id, user_id, inquiry_via) VALUES (?, ?, ?)");
-    $stmt->execute([$product['id'], $_SESSION['user_id'], $input['inquiry_via']]);
+    $stmt->execute([$product['id'], $user_id, $input['inquiry_via']]);
     
     echo json_encode(['success' => true, 'message' => 'Inquiry recorded']);
     

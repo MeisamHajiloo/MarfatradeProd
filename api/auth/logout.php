@@ -18,8 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // Prevent any output before JSON
 ob_start();
 
-// Start session and destroy it
-session_start();
+require_once __DIR__ . '/../../includes/config/session.php';
+
+// Initialize session
+initializeSession();
 
 // Unset all session variables
 $_SESSION = array();
