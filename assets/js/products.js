@@ -569,8 +569,11 @@
 
     // Add WhatsApp link handler
     const whatsappOption = modal.querySelector(".inquiry-option.whatsapp");
-    whatsappOption.addEventListener("click", function (e) {
+    whatsappOption.addEventListener("click", async function (e) {
       e.preventDefault();
+
+      // Record inquiry in database
+      await recordInquiry(productSlug, 'whatsapp');
 
       // Creating a complete product link
       const productUrl = `${window.location.origin}/product.php?slug=${productSlug}`;
@@ -598,8 +601,11 @@ Please provide more information and pricing details.`;
 
     // Add Telegram link handler
     const telegramOption = modal.querySelector(".inquiry-option.telegram");
-    telegramOption.addEventListener("click", function (e) {
+    telegramOption.addEventListener("click", async function (e) {
       e.preventDefault();
+
+      // Record inquiry in database
+      await recordInquiry(productSlug, 'telegram');
 
       const telegramUsername = "Meisam_Hajiloo";
       const productUrl = `${window.location.origin}/product.php?slug=${productSlug}`;
@@ -854,5 +860,50 @@ async function getWhatsAppNumber() {
   } catch (error) {
     console.error("Error fetching WhatsApp number:", error);
     return "+989193120515"; // Fallback number
+  }
+}
+
+// Function to record inquiry in database
+async function recordInquiry(productSlug, inquiryVia) {
+  try {
+    console.log('Sending inquiry request:', { productSlug, inquiryVia });
+    
+    const response = await fetch("api/products/inquiry.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        product_slug: productSlug,
+        inquiry_via: inquiryVia
+      })
+    });
+    
+    console.log('Response status:', response.status);
+    const responseText = await response.text();
+    console.log('Response text:', responseText);
+    
+    // Extract JSON from response (remove any extra content)
+    const jsonMatch = responseText.match(/\{[^}]*\}/s);
+    if (jsonMatch) {
+      try {
+        const data = JSON.parse(jsonMatch[0]);
+        console.log('Parsed response:', data);
+        
+        if (data.success) {
+          console.log('Inquiry recorded successfully!');
+        } else {
+          console.error("Failed to record inquiry:", data.message);
+        }
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Matched JSON:', jsonMatch[0]);
+      }
+    } else {
+      console.error('No valid JSON found in response');
+      console.error('Full response:', responseText);
+    }
+  } catch (error) {
+    console.error("Error recording inquiry:", error);
   }
 }

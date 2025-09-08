@@ -2,6 +2,8 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home2/marfatr2/public_html/
+    - git reset --hard HEAD
+    - git clean -fd
     - /bin/cp -R . $DEPLOYPATH
     - find $DEPLOYPATH -name ".git*" -exec rm -rf {} + 2>/dev/null || true
     - find $DEPLOYPATH -name ".cpanel.yml" -delete 2>/dev/null || true

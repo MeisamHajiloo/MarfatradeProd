@@ -186,3 +186,14 @@ INSERT INTO `products` (id, name, slug, description, short_description, price, s
 (51, 'Diamond Engagement Ring', 'diamond-engagement-ring', '1 carat solitaire diamond', 'Timeless proposal ring', 2999.99, 2799.99, 'J-R-001', 8, 69, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 11:12:04', '2025-09-02 09:59:27', 'assets/images/products/s.jpg', NULL, 0),
 (52, 'Gold Wedding Band', 'gold-wedding-band', 'Classic 14k gold band', 'Traditional wedding ring', 899.99, 849.99, 'J-R-002', 15, 69, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 11:12:04', '2025-09-02 09:59:27', 'assets/images/products/s.jpg', NULL, 0),
 (53, 'Silver Statement Ring', 'silver-statement-ring', 'Bold sterling silver ring', 'Fashion accessory', 129.99, 119.99, 'J-R-003', 25, 69, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 11:12:04', '2025-09-02 09:59:27', 'assets/images/products/s.jpg', NULL, 0);
+
+-- ایجاد جدول استعلامات محصولات
+CREATE TABLE IF NOT EXISTS product_inquiries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    user_id INT NOT NULL,
+    inquiry_via ENUM('whatsapp', 'telegram') NOT NULL,
+    inquiry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
