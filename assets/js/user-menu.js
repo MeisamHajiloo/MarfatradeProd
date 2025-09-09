@@ -103,11 +103,30 @@ document.addEventListener("DOMContentLoaded", function () {
       // Update desktop menu
       userDisplayName.textContent = userData.name;
       desktopUserMenu.style.display = "flex";
+      
+      // Update user-info avatar
+      const userInfoAvatar = document.getElementById("user-info-avatar");
+      if (userInfoAvatar) {
+        if (userData.profile_image && userData.profile_image.trim() !== '') {
+          userInfoAvatar.innerHTML = `<img src="${userData.profile_image}" alt="Profile">`;
+          userInfoAvatar.classList.remove("has-initials");
+        } else {
+          const firstLetter = userData.name.charAt(0).toUpperCase();
+          userInfoAvatar.innerHTML = firstLetter;
+          userInfoAvatar.classList.add("has-initials");
+        }
+      }
 
-      // Update avatar with user's first letter
-      const firstLetter = userData.name.charAt(0).toUpperCase();
-      userAvatar.innerHTML = firstLetter;
-      userAvatar.classList.add("has-initials");
+      // Update avatar with user's profile image or first letter
+      console.log('Profile image:', userData.profile_image);
+      if (userData.profile_image && userData.profile_image.trim() !== '') {
+        userAvatar.innerHTML = `<img src="${userData.profile_image}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        userAvatar.classList.remove("has-initials");
+      } else {
+        const firstLetter = userData.name.charAt(0).toUpperCase();
+        userAvatar.innerHTML = firstLetter;
+        userAvatar.classList.add("has-initials");
+      }
 
       // Hide auth link
       if (authLink) {
@@ -156,12 +175,17 @@ document.addEventListener("DOMContentLoaded", function () {
         mobileUserWallet.textContent = "100.00";
       }
 
-      // Update mobile avatar with user's first letter
+      // Update mobile avatar with user's profile image or first letter
       const mobileAvatar = document.querySelector(".mobile-user-avatar");
       if (mobileAvatar) {
-        const firstLetter = userData.name.charAt(0).toUpperCase();
-        mobileAvatar.innerHTML = firstLetter;
-        mobileAvatar.classList.add("has-initials");
+        if (userData.profile_image && userData.profile_image.trim() !== '') {
+          mobileAvatar.innerHTML = `<img src="${userData.profile_image}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+          mobileAvatar.classList.remove("has-initials");
+        } else {
+          const firstLetter = userData.name.charAt(0).toUpperCase();
+          mobileAvatar.innerHTML = firstLetter;
+          mobileAvatar.classList.add("has-initials");
+        }
       }
 
       // Hide auth link in mobile nav

@@ -20,6 +20,7 @@ ob_start();
 
 require_once __DIR__ . '/../../includes/config/constants.php';
 require_once __DIR__ . '/../../includes/config/session.php';
+require_once __DIR__ . '/../../classes/Database.php';
 
 // Initialize session
 initializeSession();
@@ -28,14 +29,34 @@ initializeSession();
 ob_end_clean();
 
 if (isUserLoggedIn()) {
-    echo json_encode([
-        'loggedIn' => true,
-        'user' => [
-            'id' => $_SESSION['user_id'],
-            'name' => $_SESSION['user_name'],
-            'email' => $_SESSION['user_email']
-        ]
-    ]);
+    try {
+        $db = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
+        $pdo = $db->getConnection();
+
+        $stmt = $pdo->prepare("SELECT profile_picture FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'loggedIn' => true,
+            'user' => [
+                'id' => $_SESSION['user_id'],
+                'name' => $_SESSION['user_name'],
+                'email' => $_SESSION['user_email'],
+                'profile_image' => $user['profile_picture'] ?? null
+            ]
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'loggedIn' => true,
+            'user' => [
+                'id' => $_SESSION['user_id'],
+                'name' => $_SESSION['user_name'],
+                'email' => $_SESSION['user_email'],
+                'profile_image' => null
+            ]
+        ]);
+    }
     exit;
 } else {
     echo json_encode(['loggedIn' => false]);

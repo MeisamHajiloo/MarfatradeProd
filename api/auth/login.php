@@ -65,7 +65,7 @@ if (empty($email) || empty($password)) {
 
 try {
     // Check if user exists
-    $stmt = $pdo->prepare("SELECT id, name, email, password FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT id, name, email, password, profile_picture FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -93,7 +93,8 @@ try {
             'user' => [
                 'id' => $user['id'],
                 'name' => $user['name'],
-                'email' => $user['email']
+                'email' => $user['email'],
+                'profile_image' => $user['profile_picture'] ?? null
             ]
         ]);
         exit;

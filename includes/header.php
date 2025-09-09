@@ -33,6 +33,9 @@
                     </div>
                     <div class="user-dropdown" id="user-dropdown">
                         <div class="user-info">
+                            <div class="user-info-avatar" id="user-info-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
                             <div class="user-name" id="user-display-name">Guest</div>
                         </div>
                         <div class="dropdown-divider"></div>

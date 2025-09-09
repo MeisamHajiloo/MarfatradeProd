@@ -320,14 +320,14 @@
 
 .search-box svg {
   position: absolute;
-  right: 36px;
+  right: 12px;
   color: var(--text-secondary);
   z-index: 2;
 }
 
 .products-toolbar input[name="q"] {
   padding: 0.75rem 1rem;
-  padding-right: 3rem;
+  padding-right: 2.5rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   width: 100%;
@@ -758,11 +758,27 @@
   color: var(--secondary-color3) !important;
 }
 
+/* Consistent hover styles for select options */
+.products-toolbar select option:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--white) !important;
+}
+
+.category-option:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--white) !important;
+}
+
 /* To display a check mark on selected options on mobile */
 .filter-group option:checked {
   background-color: #e8f4fd;
   color: var(--secondary-color3);
   font-weight: 600;
+}
+
+.filter-group option:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--white) !important;
 }
 
 /* Modal styles for inquiry options */
