@@ -35,7 +35,7 @@ try {
         exit;
     }
     
-    $stmt = $conn->prepare("SELECT tr.*, u.name as user_name FROM ticket_replies tr LEFT JOIN users u ON tr.user_id = u.id WHERE tr.ticket_id = ? ORDER BY tr.created_at ASC");
+    $stmt = $conn->prepare("SELECT tr.*, u.name as user_name, tr.is_admin FROM ticket_replies tr LEFT JOIN users u ON tr.user_id = u.id WHERE tr.ticket_id = ? ORDER BY tr.created_at ASC");
     $stmt->execute([$ticketId]);
     $replies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     

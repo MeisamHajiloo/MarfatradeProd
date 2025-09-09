@@ -167,9 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
             content += `<div class="date-separator">${formattedDate}</div>`;
 
             dateMessages.forEach((message) => {
-              const isCurrentUser = parseInt(message.user_id) === parseInt(currentUserId);
-              const alignClass = isCurrentUser ? "reply-left" : "reply-right";
-              const timeAlignClass = isCurrentUser ? "time-right" : "time-left";
+              const isUserMessage = message.is_original || message.is_admin !== 1;
               const messageTime = new Date(
                 message.created_at
               ).toLocaleTimeString("en-US", {
@@ -177,21 +175,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 minute: "2-digit",
               });
 
-              const backgroundColor = !isCurrentUser ? "#e3f2fd" : "#f5f5f5";
+              const backgroundColor = isUserMessage ? "#f5f5f5" : "#e3f2fd";
               const senderLabel = message.is_original
                 ? "You (Original)"
-                : isCurrentUser
-                ? "You"
-                : "Support";
+                : message.is_admin === 1
+                ? "Support"
+                : "You";
 
               content += `
                                 <div class="message-container" style="display: flex; align-items: flex-end; margin-bottom: 1rem; ${
-                                  isCurrentUser
+                                  isUserMessage
                                     ? "justify-content: flex-start;"
                                     : "justify-content: flex-end;"
                                 }">
                                     <div style="display: flex; align-items: flex-end; max-width: 85%; ${
-                                      isCurrentUser
+                                      isUserMessage
                                         ? "flex-direction: row;"
                                         : "flex-direction: row-reverse;"
                                     }">
@@ -205,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                             )}</div>
                                         </div>
                                         <div class="message-time" style="font-size: 0.75rem; color: #999; ${
-                                          isCurrentUser
+                                          isUserMessage
                                             ? "margin-left: 4px;"
                                             : "margin-right: 4px;"
                                         } align-self: center;">${messageTime}</div>
