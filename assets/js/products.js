@@ -226,32 +226,19 @@
       });
     }
 
-    // View mode toggle for desktop
-    if (viewSwitchDesktop) {
-      const viewBtns = viewSwitchDesktop.querySelectorAll(".view-btn");
-      viewBtns.forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const viewType = this.dataset.view;
-          toggleViewMode(viewType);
-        });
-      });
-    }
+    // View mode toggle for all view buttons
+    const allViewBtns = document.querySelectorAll(".view-btn");
+    allViewBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const viewType = this.dataset.view;
+        toggleViewMode(viewType);
 
-    // View mode toggle for mobile
-    if (viewSwitchMobile) {
-      const viewBtns = viewSwitchMobile.querySelectorAll(".view-btn");
-      viewBtns.forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const viewType = this.dataset.view;
-          toggleViewMode(viewType);
-
-          // Close drawer on mobile after changing view
-          if (window.innerWidth < 993) {
-            closeToolbar();
-          }
-        });
+        // Close drawer on mobile after changing view
+        if (window.innerWidth < 993) {
+          closeToolbar();
+        }
       });
-    }
+    });
 
     // Monitor filter changes
     if (categorySelect) {
@@ -304,27 +291,14 @@
 
   // Update view mode UI
   function updateViewMode() {
-    // Update desktop view switch
-    if (viewSwitchDesktop) {
-      const viewBtns = viewSwitchDesktop.querySelectorAll(".view-btn");
-      viewBtns.forEach((btn) => {
-        btn.classList.remove("active");
-        if (btn.dataset.view === state.view) {
-          btn.classList.add("active");
-        }
-      });
-    }
-
-    // Update mobile view switch
-    if (viewSwitchMobile) {
-      const viewBtns = viewSwitchMobile.querySelectorAll(".view-btn");
-      viewBtns.forEach((btn) => {
-        btn.classList.remove("active");
-        if (btn.dataset.view === state.view) {
-          btn.classList.add("active");
-        }
-      });
-    }
+    // Update all view buttons
+    const allViewBtns = document.querySelectorAll(".view-btn");
+    allViewBtns.forEach((btn) => {
+      btn.classList.remove("active");
+      if (btn.dataset.view === state.view) {
+        btn.classList.add("active");
+      }
+    });
   }
 
   // Load categories
@@ -367,8 +341,15 @@
 
     const option = document.createElement("option");
     option.value = category.id;
-    option.textContent = " ".repeat(level) + category.name;
+    
+    // Create simple indentation for tree structure
+    const indent = "   ".repeat(level);
+    option.textContent = indent + category.name;
     option.className = "category-option";
+    
+    // Add data attributes for tree structure
+    option.setAttribute('data-level', level);
+    option.setAttribute('data-parent-id', category.parent_id || '');
 
     if (category.children && category.children.length > 0) {
       option.classList.add("has-children");
@@ -376,7 +357,7 @@
 
     categorySelect.appendChild(option);
 
-    // Add subcategories
+    // Add subcategories recursively
     if (category.children && category.children.length > 0) {
       category.children.forEach((child) => {
         addCategoryOption(child, level + 1);

@@ -258,11 +258,11 @@
   margin: 1.5rem 0;
   flex-wrap: wrap;
   position: relative;
-  background-color: var(--white);
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  background-color: var(--secondary-color1);
+  border-radius: var(--radius-lg);
+  padding: 20px 25px;
+  box-shadow: var(--shadow-lg);
+  border: none;
 }
 
 .toolbar-left {
@@ -347,7 +347,7 @@
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  min-width: 180px;
+  min-width: 140px;
   background: var(--surface-color);
   font-family: inherit;
   cursor: pointer;
@@ -386,11 +386,12 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  color: var(--white);
 }
 
 .products-toolbar .view-btn.active,
 .products-toolbar .view-btn:hover {
-  background: var(--primary-color);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--white);
 }
 
@@ -423,8 +424,8 @@
   }
 
   .toolbar-content {
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: 100%;
     left: 0;
     right: 0;
     background: var(--white);
@@ -438,7 +439,7 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-radius: var(--radius-lg);
   }
 
   .toolbar-content.active {
@@ -448,12 +449,7 @@
   }
 
   .mobile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--surface-color);
+    display: none;
   }
 
   .mobile-header h3 {
@@ -513,36 +509,47 @@
     margin-bottom: 0;
   }
 
-  .action-buttons {
+  .toolbar-right {
     display: flex;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: var(--surface-color);
-    position: sticky;
-    bottom: 0;
-    border-top: 1px solid var(--border-color);
+    align-items: center;
+    gap: 1rem;
   }
 
-  .action-buttons .btn {
-    flex: 1;
+  .toolbar-right .btn {
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-md);
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
-    font-size: 1rem;
-  }
-
-  .action-buttons .btn-outline {
+    font-size: 0.9rem;
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
   }
 
-  .action-buttons .btn-outline:hover {
-    background: var(--surface-color);
-    border-color: var(--text-secondary);
+  .toolbar-right .btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .toolbar-right .view-btn {
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--white);
+  }
+
+  .toolbar-right .view-btn.active,
+  .toolbar-right .view-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
   }
 
   #view-switch-desktop {
@@ -563,6 +570,48 @@
 
   .search-box {
     min-width: 280px;
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .toolbar-right .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+  }
+
+  .toolbar-right .btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .toolbar-left .view-btn {
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--white);
+  }
+
+  .toolbar-left .view-btn.active,
+  .toolbar-left .view-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 
   /* Ensure overlay is hidden on desktop */
@@ -666,21 +715,33 @@
   }
 }
 
-/* New styles for displaying ticks in categories */
+/* Hierarchical category tree styles */
 .category-option {
   position: relative;
   padding-right: 30px !important;
 }
 
-.category-option.has-children::after {
-  content: "↴";
-  position: absolute;
-  right: 10px;
+.category-option[data-level="0"] {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.category-option[data-level="1"] {
+  color: var(--text-secondary);
+  font-size: 0.95em;
+}
+
+.category-option[data-level="2"] {
   color: var(--gray);
+  font-size: 0.9em;
+}
+
+.category-option.has-children {
+  font-weight: 500;
 }
 
 .category-option.selected {
-  background-color: --secondary-color1 !important;
+  background-color: var(--secondary-color1) !important;
   color: var(--secondary-color3) !important;
   font-weight: 600;
 }

@@ -34,22 +34,18 @@
                     <div class="user-dropdown" id="user-dropdown">
                         <div class="user-info">
                             <div class="user-name" id="user-display-name">Guest</div>
-                            <div class="user-wallet">
-                                <i class="fas fa-wallet"></i>
-                                <span id="user-wallet-amount">0.00</span>
-                            </div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
+                        <a href="#" class="dropdown-item auth-required">
                             <i class="fas fa-user"></i>
                             <span>Profile</span>
                         </a>
-                        <a href="tickets.php" class="dropdown-item">
+                        <a href="tickets.php" class="dropdown-item auth-required">
                             <i class="fas fa-ticket-alt"></i>
                             <span>Support</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item" id="logout-button">
+                        <a href="#" class="dropdown-item auth-required" id="logout-button">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
                         </a>

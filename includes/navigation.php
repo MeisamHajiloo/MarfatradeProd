@@ -7,29 +7,25 @@
             </div>
             <div class="mobile-user-details">
                 <div class="mobile-user-name" id="mobile-nav-user-name">Guest</div>
-                <div class="mobile-user-wallet">
-                    <i class="fas fa-wallet"></i>
-                    <span id="mobile-nav-wallet-amount">0.00</span>
-                </div>
             </div>
             <div class="mobile-user-arrow">
                 <i class="fas fa-chevron-down"></i>
             </div>
         </div>
         <ul class="mobile-user-submenu" id="mobile-user-submenu" style="display: none;">
-            <li>
+            <li class="auth-required">
                 <a href="#">
                     <i class="fas fa-user"></i>
                     <span>Profile</span>
                 </a>
             </li>
-            <li>
+            <li class="auth-required">
                 <a href="tickets.php">
                     <i class="fas fa-ticket-alt"></i>
                     <span>Support</span>
                 </a>
             </li>
-            <li class="mobile-logout-item">
+            <li class="mobile-logout-item auth-required">
                 <a href="#" id="mobile-nav-logout">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

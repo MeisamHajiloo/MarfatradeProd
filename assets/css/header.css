@@ -112,17 +112,7 @@ header {
   color: var(--gray-dark);
 }
 
-.user-wallet {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: var(--gray);
-}
 
-.user-wallet i {
-  margin-right: 8px;
-  color: var(--primary-color);
-}
 
 .dropdown-divider {
   height: 1px;
@@ -312,17 +302,7 @@ header {
   margin-bottom: 5px;
 }
 
-.mobile-user-wallet {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-}
 
-.mobile-user-wallet i {
-  margin-right: 8px;
-  color: var(--primary-color);
-}
 
 .mobile-user-arrow {
   color: rgba(255, 255, 255, 0.8);
@@ -538,6 +518,11 @@ header {
   .topbar {
     padding: 20px 10%;
   }
+}
+
+/* Hide auth-required elements when not logged in */
+body:not(.user-logged-in) .auth-required {
+  display: none !important;
 }
 
 /* For very small screens before mobile breakpoint */

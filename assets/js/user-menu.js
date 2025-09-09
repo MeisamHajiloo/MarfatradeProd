@@ -97,12 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Update user menu with user data
   function updateUserMenu(userData) {
     if (userData && userData.name) {
+      // Add logged in class to body
+      document.body.classList.add("user-logged-in");
+      
       // Update desktop menu
       userDisplayName.textContent = userData.name;
       desktopUserMenu.style.display = "flex";
-
-      // Set default wallet amount
-      userWalletAmount.textContent = "100.00";
 
       // Update avatar with user's first letter
       const firstLetter = userData.name.charAt(0).toUpperCase();
@@ -117,6 +117,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Update mobile nav user info
       updateMobileNavUserInfo(userData);
     } else {
+      // Remove logged in class from body
+      document.body.classList.remove("user-logged-in");
+      
       // Hide desktop menu for non-logged in users
       desktopUserMenu.style.display = "none";
 

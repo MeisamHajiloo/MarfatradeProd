@@ -53,31 +53,14 @@
                 </select>
             </div>
 
-            <div class="action-buttons">
-                <button type="button" class="btn btn-outline" id="reset-filters">Reset Filters</button>
-            </div>
 
-            <div class="view-switch" id="view-switch-mobile">
-                <button type="button" data-view="card" title="Card view" class="view-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
-                        <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
-                        <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
-                        <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
-                    </svg>
-                </button>
-                <button type="button" data-view="list" title="List view" class="view-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="3" y="4" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2" />
-                        <rect x="3" y="10" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2" />
-                        <rect x="3" y="16" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2" />
-                    </svg>
-                </button>
-            </div>
+
+
         </div>
     </div>
 
-    <div class="view-switch" id="view-switch-desktop">
+    <div class="toolbar-right">
+        <button type="button" class="btn btn-outline" id="reset-filters">Reset Filters</button>
         <button type="button" data-view="card" title="Card view" class="view-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
