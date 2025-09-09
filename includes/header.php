@@ -39,7 +39,7 @@
                             <div class="user-name" id="user-display-name">Guest</div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item auth-required">
+                        <a href="profile.php" class="dropdown-item auth-required">
                             <i class="fas fa-user"></i>
                             <span>Profile</span>
                         </a>
