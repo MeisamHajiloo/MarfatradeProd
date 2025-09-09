@@ -42,7 +42,8 @@ try {
     echo json_encode([
         'success' => true,
         'ticket' => $ticket,
-        'replies' => $replies
+        'replies' => $replies,
+        'current_user_id' => $user_id
     ]);
     
 } catch (Exception $e) {

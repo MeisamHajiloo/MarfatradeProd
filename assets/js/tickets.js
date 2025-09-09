@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.success) {
         const ticket = data.ticket;
         const replies = data.replies || [];
+        const currentUserId = data.current_user_id;
 
         document.getElementById("ticket-detail-subject").textContent =
           "Ticket Details";
@@ -132,6 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
             created_at: ticket.created_at,
             is_admin: false,
             is_original: true,
+            user_id: ticket.user_id,
           },
           ...replies,
         ];
@@ -165,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
             content += `<div class="date-separator">${formattedDate}</div>`;
 
             dateMessages.forEach((message) => {
-              const isCurrentUser = !message.is_admin;
+              const isCurrentUser = parseInt(message.user_id) === parseInt(currentUserId);
               const alignClass = isCurrentUser ? "reply-left" : "reply-right";
               const timeAlignClass = isCurrentUser ? "time-right" : "time-left";
               const messageTime = new Date(
@@ -175,12 +177,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 minute: "2-digit",
               });
 
-              const backgroundColor = message.is_admin ? "#e3f2fd" : "#f5f5f5";
+              const backgroundColor = !isCurrentUser ? "#e3f2fd" : "#f5f5f5";
               const senderLabel = message.is_original
                 ? "You (Original)"
-                : message.is_admin
-                ? "Support"
-                : "You";
+                : isCurrentUser
+                ? "You"
+                : "Support";
 
               content += `
                                 <div class="message-container" style="display: flex; align-items: flex-end; margin-bottom: 1rem; ${
