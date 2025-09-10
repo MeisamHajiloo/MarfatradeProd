@@ -14,7 +14,7 @@
         </div>
         <ul class="mobile-user-submenu" id="mobile-user-submenu" style="display: none;">
             <li class="auth-required">
-                <a href="#">
+                <a href="profile.php">
                     <i class="fas fa-user"></i>
                     <span>Profile</span>
                 </a>

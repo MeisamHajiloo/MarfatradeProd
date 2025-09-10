@@ -489,14 +489,17 @@
       return;
     }
 
-    // Get WhatsApp number first
-    let whatsappNumber;
+    // Get contact info first
+    let whatsappNumber, telegramUsername;
     try {
-      whatsappNumber = await getWhatsAppNumber();
-      console.log("WhatsApp number:", whatsappNumber); // Debug log
+      const contactInfo = await getContactInfo();
+      whatsappNumber = contactInfo.whatsappNumber;
+      telegramUsername = contactInfo.telegramUsername;
+      console.log("Contact info:", contactInfo); // Debug log
     } catch (error) {
-      console.error("Failed to get WhatsApp number:", error);
+      console.error("Failed to get contact info:", error);
       whatsappNumber = "+989193120515"; // Fallback
+      telegramUsername = "Meisam_Hajiloo"; // Fallback
     }
 
     // Remove existing modal if any
@@ -588,7 +591,7 @@ Please provide more information and pricing details.`;
       // Record inquiry in database
       await recordInquiry(productSlug, 'telegram');
 
-      const telegramUsername = "Meisam_Hajiloo";
+      // Use telegramUsername from API
       const productUrl = `${window.location.origin}/product.php?slug=${productSlug}`;
       const message = `Hello, I have a question about the product ${productName}.\nProduct Link: ${productUrl}`;
       const telegramUrl = `https://t.me/${telegramUsername}`;
@@ -826,21 +829,30 @@ function openAuthModal() {
   }
 }
 
-// Function to get WhatsApp number from server
-async function getWhatsAppNumber() {
+// Function to get contact info from server
+async function getContactInfo() {
   try {
-    const response = await fetch("api/get-phone-number.php");
+    const response = await fetch("api/products/get-phone-number.php");
     const data = await response.json();
 
-    if (data.success && data.whatsappNumber) {
-      return data.whatsappNumber;
+    if (data.success) {
+      return {
+        whatsappNumber: data.whatsappNumber || "+989193120515",
+        telegramUsername: data.telegramUsername || "Meisam_Hajiloo"
+      };
     } else {
       console.error("Invalid response format:", data);
-      return "+989193120515"; // Fallback number
+      return {
+        whatsappNumber: "+989193120515",
+        telegramUsername: "Meisam_Hajiloo"
+      };
     }
   } catch (error) {
-    console.error("Error fetching WhatsApp number:", error);
-    return "+989193120515"; // Fallback number
+    console.error("Error fetching contact info:", error);
+    return {
+      whatsappNumber: "+989193120515",
+      telegramUsername: "Meisam_Hajiloo"
+    };
   }
 }
 
