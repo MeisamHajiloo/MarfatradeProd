@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS counters (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    count INT NOT NULL,
-    icon VARCHAR(50) NOT NULL,
-    sort_order INT DEFAULT 0
-);
