@@ -1,0 +1,30 @@
+RewriteEngine On
+
+# Handle API requests - don't rewrite these
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^(.*)$ - [L]
+
+# Handle asset requests - don't rewrite these
+RewriteCond %{REQUEST_URI} ^/assets/
+RewriteRule ^(.*)$ - [L]
+
+# Handle existing files and directories - don't rewrite these
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.*)$ - [L]
+
+# Handle legacy PHP files - redirect to SPA routes
+RewriteRule ^products\.php$ /products? [R=301,L]
+RewriteRule ^product\.php$ /product? [R=301,L]
+RewriteRule ^profile\.php$ /profile? [R=301,L]
+RewriteRule ^tickets\.php$ /tickets? [R=301,L]
+RewriteRule ^about-us\.php$ /about-us? [R=301,L]
+RewriteRule ^contact-us\.php$ /contact-us? [R=301,L]
+RewriteRule ^faq\.php$ /faq? [R=301,L]
+
+# Handle root and index.php - redirect to spa.php
+RewriteRule ^index\.php$ spa.php [QSA,L]
+RewriteRule ^$ spa.php [QSA,L]
+
+# SPA routing - all other requests go to spa.php
+RewriteRule ^(.*)$ spa.php [QSA,L]

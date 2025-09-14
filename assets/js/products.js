@@ -3,19 +3,26 @@
 
 (function () {
   const apiBase = "api/products";
-  const gridEl = document.getElementById("products-grid");
-  const toolbarEl = document.getElementById("products-toolbar");
-  const paginationEl = document.getElementById("pagination");
-  const categorySelect = document.getElementById("category-filter");
-  const sortSelect = document.getElementById("sort-filter");
-  const searchInput = document.querySelector("input[name=q]");
-  const toolbarToggle = document.getElementById("toolbar-toggle");
-  const toolbarContent = document.querySelector(".toolbar-content");
-  const toolbarOverlay = document.getElementById("toolbar-overlay");
-  const viewSwitchDesktop = document.getElementById("view-switch-desktop");
-  const viewSwitchMobile = document.getElementById("view-switch-mobile");
-  const closeDrawer = document.getElementById("close-drawer");
-  const resetFilters = document.getElementById("reset-filters");
+  let gridEl, toolbarEl, paginationEl, categorySelect, sortSelect, searchInput;
+  let mobileToggle, mobileDrawer, toolbarOverlay, closeDrawer, resetFilters;
+  let mobileSearchInput, mobileCategorySelect, mobileSortSelect;
+  
+  function initElements() {
+    gridEl = document.getElementById("products-grid");
+    toolbarEl = document.getElementById("products-toolbar");
+    paginationEl = document.getElementById("pagination");
+    categorySelect = document.getElementById("category-filter");
+    sortSelect = document.getElementById("sort-filter");
+    searchInput = document.querySelector("input[name=q]");
+    mobileToggle = document.getElementById("toolbar-toggle");
+    mobileDrawer = document.getElementById("mobile-filter-drawer");
+    toolbarOverlay = document.getElementById("toolbar-overlay");
+    closeDrawer = document.getElementById("close-drawer");
+    resetFilters = document.getElementById("reset-filters");
+    mobileSearchInput = document.querySelector("input[name='q-mobile']");
+    mobileCategorySelect = document.getElementById("category-filter-mobile");
+    mobileSortSelect = document.getElementById("sort-filter-mobile");
+  }
 
   let state = {
     page: 1,
@@ -53,7 +60,7 @@
 
   // Update filter button state based on active filters
   function updateFilterButtonState() {
-    if (!toolbarToggle) return;
+    if (!mobileToggle) return;
 
     const hasActiveFilters =
       (searchInput && searchInput.value) ||
@@ -61,9 +68,9 @@
       (sortSelect && sortSelect.value !== "newest");
 
     if (hasActiveFilters) {
-      toolbarToggle.classList.add("active-filter");
+      mobileToggle.classList.add("active-filter");
     } else {
-      toolbarToggle.classList.remove("active-filter");
+      mobileToggle.classList.remove("active-filter");
     }
   }
 
@@ -165,10 +172,10 @@
     updateViewMode();
     updateFilterButtonState();
 
-    // Mobile toolbar toggle
-    if (toolbarToggle && toolbarContent) {
-      toolbarToggle.addEventListener("click", function () {
-        toolbarContent.classList.add("active");
+    // Mobile drawer toggle
+    if (mobileToggle && mobileDrawer) {
+      mobileToggle.addEventListener("click", function () {
+        mobileDrawer.classList.add("active");
         if (toolbarOverlay) {
           toolbarOverlay.classList.add("active");
         }
@@ -178,35 +185,70 @@
 
     // Close drawer button
     if (closeDrawer) {
-      closeDrawer.addEventListener("click", closeToolbar);
+      closeDrawer.addEventListener("click", closeDrawerFunc);
     }
 
     // Overlay click to close
     if (toolbarOverlay) {
-      toolbarOverlay.addEventListener("click", closeToolbar);
+      toolbarOverlay.addEventListener("click", closeDrawerFunc);
     }
 
-    // Close toolbar when clicking outside on mobile
-    document.addEventListener("click", function (event) {
-      const isClickInsideToolbar = toolbarContent.contains(event.target);
-      const isClickOnToggle = toolbarToggle.contains(event.target);
+    // Click outside modal to close
+    if (mobileDrawer) {
+      mobileDrawer.addEventListener("click", function(e) {
+        if (e.target === mobileDrawer) {
+          closeDrawerFunc();
+        }
+      });
+    }
 
-      if (
-        window.innerWidth < 993 &&
-        toolbarContent.classList.contains("active") &&
-        !isClickInsideToolbar &&
-        !isClickOnToggle
-      ) {
-        closeToolbar();
-      }
-    });
+    // Sync mobile and desktop filters
+    if (mobileSearchInput && searchInput) {
+      mobileSearchInput.addEventListener("input", function() {
+        searchInput.value = this.value;
+        state.q = this.value;
+        state.page = 1;
+        updateFilterButtonState();
+        saveState();
+        load();
+      });
+    }
+    
+    if (mobileCategorySelect && categorySelect) {
+      mobileCategorySelect.addEventListener("change", function() {
+        categorySelect.value = this.value;
+        state.category = this.value ? parseInt(this.value) : null;
+        state.page = 1;
+        updateFilterButtonState();
+        updateCategorySelectionUI();
+        saveState();
+        load();
+      });
+    }
+    
+    if (mobileSortSelect && sortSelect) {
+      mobileSortSelect.addEventListener("change", function() {
+        sortSelect.value = this.value;
+        state.sort = this.value;
+        state.page = 1;
+        updateFilterButtonState();
+        saveState();
+        load();
+      });
+    }
 
     // Reset filters button
     if (resetFilters) {
       resetFilters.addEventListener("click", function () {
-        document.querySelector("input[name=q]").value = "";
-        document.getElementById("category-filter").value = "";
-        document.getElementById("sort-filter").value = "newest";
+        // Reset desktop filters
+        if (searchInput) searchInput.value = "";
+        if (categorySelect) categorySelect.value = "";
+        if (sortSelect) sortSelect.value = "newest";
+        
+        // Reset mobile filters
+        if (mobileSearchInput) mobileSearchInput.value = "";
+        if (mobileCategorySelect) mobileCategorySelect.value = "";
+        if (mobileSortSelect) mobileSortSelect.value = "newest";
 
         state.q = "";
         state.category = null;
@@ -216,27 +258,18 @@
         updateFilterButtonState();
         updateCategorySelectionUI();
         saveState();
-
-        // Close drawer on mobile after reset
-        if (window.innerWidth < 993) {
-          closeToolbar();
-        }
-
+        closeDrawerFunc();
         load();
       });
     }
 
-    // View mode toggle for all view buttons
-    const allViewBtns = document.querySelectorAll(".view-btn");
+    // View mode toggle for desktop and mobile
+    const allViewBtns = document.querySelectorAll(".view-btn, .mobile-view-btn");
     allViewBtns.forEach((btn) => {
       btn.addEventListener("click", function () {
         const viewType = this.dataset.view;
         toggleViewMode(viewType);
-
-        // Close drawer on mobile after changing view
-        if (window.innerWidth < 993) {
-          closeToolbar();
-        }
+        closeDrawerFunc();
       });
     });
 
@@ -274,15 +307,17 @@
 
   // Handle window resize
   function handleResize() {
-    if (window.innerWidth >= 993) {
+    if (window.innerWidth >= 769) {
       // Close mobile drawer when switching to desktop view
-      closeToolbar();
+      closeDrawerFunc();
     }
   }
 
-  // Close toolbar function
-  function closeToolbar() {
-    toolbarContent.classList.remove("active");
+  // Close drawer function
+  function closeDrawerFunc() {
+    if (mobileDrawer) {
+      mobileDrawer.classList.remove("active");
+    }
     if (toolbarOverlay) {
       toolbarOverlay.classList.remove("active");
     }
@@ -291,8 +326,8 @@
 
   // Update view mode UI
   function updateViewMode() {
-    // Update all view buttons
-    const allViewBtns = document.querySelectorAll(".view-btn");
+    // Update all view buttons (desktop and mobile)
+    const allViewBtns = document.querySelectorAll(".view-btn, .mobile-view-btn");
     allViewBtns.forEach((btn) => {
       btn.classList.remove("active");
       if (btn.dataset.view === state.view) {
@@ -330,14 +365,32 @@
           categorySelect.value = state.category;
         }
       }
+
+      // Fill mobile category dropdown
+      if (mobileCategorySelect) {
+        // Clear existing options except the first one
+        while (mobileCategorySelect.options.length > 1) {
+          mobileCategorySelect.remove(1);
+        }
+
+        categories.forEach((cat) => {
+          addCategoryOption(cat, 0, mobileCategorySelect);
+        });
+
+        // Ensure mobile select value matches state.category
+        if (state.category) {
+          mobileCategorySelect.value = state.category;
+        }
+      }
     } catch (err) {
       console.error("Error loading categories:", err);
     }
   }
 
   // Add category to dropdown (recursive for subcategories)
-  function addCategoryOption(category, level = 0) {
-    if (!categorySelect) return;
+  function addCategoryOption(category, level = 0, selectElement = null) {
+    const targetSelect = selectElement || categorySelect;
+    if (!targetSelect) return;
 
     const option = document.createElement("option");
     option.value = category.id;
@@ -355,12 +408,12 @@
       option.classList.add("has-children");
     }
 
-    categorySelect.appendChild(option);
+    targetSelect.appendChild(option);
 
     // Add subcategories recursively
     if (category.children && category.children.length > 0) {
       category.children.forEach((child) => {
-        addCategoryOption(child, level + 1);
+        addCategoryOption(child, level + 1, selectElement);
       });
     }
   }
@@ -410,7 +463,7 @@
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
-    <a href="product.php?slug=${p.slug}" class="thumb">
+    <a href="/product?slug=${p.slug}" class="thumb">
       <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
       p.name
     }">
@@ -445,7 +498,7 @@
     const listItem = document.createElement("div");
     listItem.className = "product-list-item";
     listItem.innerHTML = `
-    <a href="product.php?slug=${p.slug}" class="thumb">
+    <a href="/product?slug=${p.slug}" class="thumb">
       <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
       p.name
     }">
@@ -481,10 +534,13 @@
     const isLoggedIn = await checkLoginStatus();
 
     if (!isLoggedIn) {
-      if (typeof openAuthModal === "function") {
-        openAuthModal();
+      // Show sign in/sign up modal for unauthorized access
+      const authModal = document.getElementById("auth-modal");
+      if (authModal) {
+        authModal.style.display = "block";
+        document.body.style.overflow = "hidden";
       } else {
-        showNotification("Please login first to inquire about products.", "info");
+        AppUtils.showNotification("Please login first to inquire about products.", "info");
       }
       return;
     }
@@ -560,7 +616,7 @@
       await recordInquiry(productSlug, 'whatsapp');
 
       // Creating a complete product link
-      const productUrl = `${window.location.origin}/product.php?slug=${productSlug}`;
+      const productUrl = `${window.location.origin}/product?slug=${productSlug}`;
 
       const message = `*Product Inquiry*
 Hello, I'm interested in your product: *${productName}*
@@ -571,7 +627,7 @@ Please provide more information and pricing details.`;
 
       // Ensure the correct number format
       if (!whatsappNumber) {
-        showNotification("WhatsApp number not available. Please try again later.", "warning");
+        AppUtils.showError("WhatsApp number not available. Please try again later.");
         return;
       }
       const cleanNumber = whatsappNumber.replace(/\D/g, "");
@@ -592,7 +648,7 @@ Please provide more information and pricing details.`;
       await recordInquiry(productSlug, 'telegram');
 
       // Use telegramUsername from API
-      const productUrl = `${window.location.origin}/product.php?slug=${productSlug}`;
+      const productUrl = `${window.location.origin}/product?slug=${productSlug}`;
       const message = `Hello, I have a question about the product ${productName}.\nProduct Link: ${productUrl}`;
       const telegramUrl = `https://t.me/${telegramUsername}`;
 
@@ -600,9 +656,8 @@ Please provide more information and pricing details.`;
       navigator.clipboard
         .writeText(message)
         .then(() => {
-          showNotification(
-            "Product information copied to clipboard. Redirecting to Telegram now.",
-            "success"
+          AppUtils.showSuccess(
+            "Product information copied to clipboard. Redirecting to Telegram now."
           );
 
           setTimeout(() => {
@@ -610,9 +665,8 @@ Please provide more information and pricing details.`;
           }, 3000);
         })
         .catch(() => {
-          showNotification(
-            "Error copying to clipboard. Redirecting to Telegram.",
-            "warning"
+          AppUtils.showError(
+            "Error copying to clipboard. Redirecting to Telegram."
           );
           window.open(telegramUrl, "_blank");
         });
@@ -689,18 +743,23 @@ Please provide more information and pricing details.`;
   }
 
   async function load() {
-    if (!gridEl) return;
+    if (!gridEl) {
+      console.error('Grid element not found');
+      return;
+    }
 
     gridEl.classList.add("loading");
     renderLoadingState();
 
     try {
+      console.log('Fetching products with state:', state);
       const { data, meta } = await fetchProducts();
+      console.log('Products loaded:', data.length, 'items');
       renderProducts(data);
       renderPagination(meta);
     } catch (err) {
-      gridEl.innerHTML = `<div class="error">Error loading products</div>`;
-      console.error(err);
+      console.error('Error loading products:', err);
+      gridEl.innerHTML = `<div class="error">Error loading products: ${err.message}</div>`;
     } finally {
       gridEl.classList.remove("loading");
     }
@@ -742,14 +801,15 @@ Please provide more information and pricing details.`;
     }
   }
 
-  // Initialize
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM loaded - checking toolbar element");
-    const toolbarEl = document.getElementById("products-toolbar");
-    console.log("Toolbar element:", toolbarEl);
-
-    if (!toolbarEl) {
-      console.error("Toolbar element not found!");
+  // Initialize when products page is loaded
+  function initializeProducts() {
+    console.log("Initializing products page");
+    
+    // Initialize elements
+    initElements();
+    
+    if (!gridEl || !toolbarEl) {
+      console.error("Required elements not found!");
       return;
     }
 
@@ -759,7 +819,7 @@ Please provide more information and pricing details.`;
     // Initialize toolbar functionality
     initToolbar();
 
-    // Load categories
+    // Load categories and products
     loadCategories().then(() => {
       // Set selected category from URL (overrides saved state)
       const urlParams = new URLSearchParams(window.location.search);
@@ -776,34 +836,24 @@ Please provide more information and pricing details.`;
       bindToolbar();
       load();
     });
-  });
+  }
+  
+  // Auto-initialize if DOM is already loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeProducts);
+  } else {
+    initializeProducts();
+  }
+  
+  // Export for manual initialization
+  window.initializeProducts = initializeProducts;
+  
+  // Export inquiry modal function globally
+  window.openInquiryModal = openInquiryModal;
 })();
 
 // Function to show notification
-function showNotification(message, type = "info") {
-  const notification = document.createElement("div");
-  notification.className = `notification notification-${type}`;
-  notification.innerHTML = `
-    <div class="notification-content">
-      <div class="notification-icon">
-        ${type === "success" ? "✓" : type === "warning" ? "⚠" : "ℹ"}
-      </div>
-      <div class="notification-message">${message}</div>
-    </div>
-  `;
-
-  document.body.appendChild(notification);
-
-  // Auto remove after 3 seconds
-  setTimeout(() => {
-    notification.classList.add('notification-exit');
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 300);
-  }, 3000);
-}
+// Using shared AppUtils.showNotification
 
 // Function to check if user is logged in
 async function checkLoginStatus() {
@@ -817,15 +867,21 @@ async function checkLoginStatus() {
   }
 }
 
-// Function to open auth modal
+// Function to open auth modal - synchronized with UnautorizedAccess.md
 function openAuthModal() {
   const authModal = document.getElementById("auth-modal");
   if (authModal) {
     authModal.style.display = "block";
     document.body.style.overflow = "hidden";
+    // Always show login form by default
+    const loginTab = document.getElementById("login");
+    const registerTab = document.getElementById("register");
+    if (loginTab && registerTab) {
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+    }
   } else {
-    // Fallback if auth modal doesn't exist
-    window.location.href = "index.php#auth";
+    AppUtils.showNotification("Please login to continue.", "info");
   }
 }
 

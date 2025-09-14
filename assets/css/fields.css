@@ -1,0 +1,88 @@
+/* Shared Field Styles */
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray);
+  font-size: 1rem;
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.5rem;
+  border: 2px solid rgba(218, 171, 45, 0.2);
+  border-radius: 12px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: rgba(248, 250, 252, 0.8);
+  color: var(--secondary-color1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--gray);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--secondary-color2);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(218, 171, 45, 0.1),
+    0 8px 25px rgba(218, 171, 45, 0.15);
+}
+
+.form-group input:focus::placeholder,
+.form-group textarea:focus::placeholder {
+  color: var(--gray);
+}
+
+.form-group input:focus ~ .input-icon,
+.form-group select:focus ~ .input-icon,
+.form-group textarea:focus ~ .input-icon {
+  color: var(--secondary-color2);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+/* Fields without icons */
+.form-group input:not([class*="icon"]),
+.form-group select:not([class*="icon"]),
+.form-group textarea:not([class*="icon"]) {
+  padding-left: 1rem !important;
+}
+
+/* Fix textarea icon positioning */
+.form-group textarea ~ .input-icon {
+  top: 1rem;
+  transform: translateY(0);
+}

@@ -1,112 +1,80 @@
-(function () {
-  const slides = document.getElementById("slides");
-  const dots = document.querySelectorAll(".slider-dot");
-  const prevBtn = document.getElementById("prev-slide");
-  const nextBtn = document.getElementById("next-slide");
-  const allSlides = document.querySelectorAll(".slide");
+function initializeSlider() {
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.slider-dot');
+  const prevBtn = document.getElementById('slider-prev');
+  const nextBtn = document.getElementById('slider-next');
   let currentSlide = 0;
-  const slideCount = allSlides.length;
   let slideInterval;
 
-  // Add clones for infinite slider
-  if (slideCount > 1) {
-    const firstClone = allSlides[0].cloneNode(true);
-    const lastClone = allSlides[slideCount - 1].cloneNode(true);
+  if (slides.length === 0) return;
 
-    firstClone.classList.add("clone");
-    lastClone.classList.add("clone");
-
-    slides.appendChild(firstClone);
-    slides.insertBefore(lastClone, allSlides[0]);
-
-    // Set initial position
-    slides.style.transform = `translateX(-100%)`;
-    currentSlide = 1;
-  }
-
-  function goToSlide(index, animate = true) {
-    if (slideCount <= 1) return;
-
-    if (animate) {
-      slides.style.transition = "transform 0.8s ease-in-out";
-    } else {
-      slides.style.transition = "none";
-    }
-
-    slides.style.transform = `translateX(-${index * 100}%)`;
-    currentSlide = index;
-
-    // Update dots
-    let realIndex = index - 1;
-    if (realIndex < 0) realIndex = slideCount - 1;
-    if (realIndex >= slideCount) realIndex = 0;
-
-    dots.forEach((dot, i) => {
-      dot.classList.toggle("active", i === realIndex);
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
     });
-
-    resetInterval();
-
-    // Check for jumping to appropriate position (infinite slider)
-    setTimeout(() => {
-      if (index === 0) {
-        slides.style.transition = "none";
-        slides.style.transform = `translateX(-${slideCount * 100}%)`;
-        currentSlide = slideCount;
-      } else if (index === slideCount + 1) {
-        slides.style.transition = "none";
-        slides.style.transform = `translateX(-100%)`;
-        currentSlide = 1;
-      }
-    }, 800);
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === index);
+    });
+    currentSlide = index;
   }
 
   function nextSlide() {
-    goToSlide(currentSlide + 1);
+    const next = (currentSlide + 1) % slides.length;
+    showSlide(next);
   }
 
   function prevSlide() {
-    goToSlide(currentSlide - 1);
+    const prev = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+    showSlide(prev);
   }
 
-  function resetInterval() {
-    clearInterval(slideInterval);
-    if (slideCount > 1) {
-      slideInterval = setInterval(nextSlide, 5000);
+  function startSlideshow() {
+    if (slides.length > 1) {
+      slideInterval = setInterval(nextSlide, 5500);
     }
   }
 
-  // Event listeners
+  function stopSlideshow() {
+    clearInterval(slideInterval);
+  }
+
+  // Arrow navigation
   if (nextBtn) {
-    nextBtn.addEventListener("click", nextSlide);
-  }
-
-  if (prevBtn) {
-    prevBtn.addEventListener("click", prevSlide);
-  }
-
-  if (dots.length > 0) {
-    dots.forEach((dot, i) => {
-      dot.addEventListener("click", () => goToSlide(i + 1));
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      nextSlide();
+      stopSlideshow();
+      startSlideshow();
     });
   }
 
-  // Handle resize
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      slides.style.transition = "none";
-      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      prevSlide();
+      stopSlideshow();
+      startSlideshow();
+    });
+  }
 
-      setTimeout(() => {
-        slides.style.transition = "transform 0.8s ease-in-out";
-      }, 50);
-    }, 100);
+  // Dot navigation
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', (e) => {
+      e.preventDefault();
+      showSlide(index);
+      stopSlideshow();
+      startSlideshow();
+    });
   });
 
-  // Initialize
-  if (slideCount > 1) {
-    resetInterval();
+  // Initialize and start
+  showSlide(0);
+  startSlideshow();
+
+  // Pause on hover
+  const slider = document.querySelector('.slider');
+  if (slider) {
+    slider.addEventListener('mouseenter', stopSlideshow);
+    slider.addEventListener('mouseleave', startSlideshow);
   }
-})();
+}

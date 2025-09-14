@@ -1,3 +1,4 @@
+if (!window.navigationLoaded) {
 const hamburger = document.getElementById("hamburger");
 const navLinks = document.getElementById("nav-links");
 
@@ -89,7 +90,7 @@ function handleSwipe() {
   }
 }
 
-// Close when clicking outside
+// Close when clicking outside or on nav links
 document.addEventListener("click", (e) => {
   if (
     navLinks.classList.contains("active") &&
@@ -99,3 +100,48 @@ document.addEventListener("click", (e) => {
     toggleMenu();
   }
 });
+
+// Close menu when clicking on navigation links
+navLinks.addEventListener("click", (e) => {
+  if (e.target.tagName === "A" && navLinks.classList.contains("active")) {
+    toggleMenu();
+  }
+});
+
+// Close menu when clicking on mobile user submenu links
+const mobileUserSubmenu = document.getElementById("mobile-user-submenu");
+if (mobileUserSubmenu) {
+  mobileUserSubmenu.addEventListener("click", (e) => {
+    if (e.target.closest("a") && navLinks.classList.contains("active")) {
+      toggleMenu();
+    }
+  });
+}
+
+// Desktop user menu dropdown
+const userAvatar = document.getElementById("user-avatar");
+const userDropdown = document.getElementById("user-dropdown");
+
+if (userAvatar && userDropdown) {
+  userAvatar.addEventListener("click", (e) => {
+    e.stopPropagation();
+    userDropdown.classList.toggle("show");
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".desktop-user-menu")) {
+      userDropdown.classList.remove("show");
+    }
+  });
+
+  // Close dropdown when clicking on dropdown items
+  userDropdown.addEventListener("click", (e) => {
+    if (e.target.closest(".dropdown-item")) {
+      userDropdown.classList.remove("show");
+    }
+  });
+}
+
+window.navigationLoaded = true;
+}

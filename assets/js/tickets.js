@@ -1,10 +1,11 @@
 // Tickets functionality
-document.addEventListener("DOMContentLoaded", function () {
+function initializeTickets() {
+  console.log('Initializing tickets page');
   const newTicketBtn = document.getElementById("new-ticket-btn");
   const newTicketModal = document.getElementById("new-ticket-modal");
   const ticketDetailModal = document.getElementById("ticket-detail-modal");
   const newTicketForm = document.getElementById("new-ticket-form");
-  const cancelTicketBtn = document.getElementById("cancel-ticket");
+
   const ticketCards = document.querySelectorAll(".ticket-card");
   const closeBtns = document.querySelectorAll(".close");
 
@@ -25,14 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Cancel new ticket
-  if (cancelTicketBtn) {
-    cancelTicketBtn.addEventListener("click", function () {
-      newTicketModal.style.display = "none";
-      newTicketForm.reset();
-      document.body.style.overflow = "auto";
-    });
-  }
+
 
   // Close modal when clicking outside
   window.addEventListener("click", function (event) {
@@ -80,10 +74,16 @@ document.addEventListener("DOMContentLoaded", function () {
           newTicketModal.style.display = "none";
           newTicketForm.reset();
 
-          // Reload page to show new ticket
+          // Reload tickets and show the new ticket
           setTimeout(() => {
-            window.location.reload();
-          }, 1500);
+            loadTickets().then(() => {
+              if (data.ticket && data.ticket.id) {
+                setTimeout(() => {
+                  loadTicketDetail(data.ticket.id);
+                }, 500);
+              }
+            });
+          }, 1000);
         } else {
           showError(data.message || "Error creating ticket");
         }
@@ -399,7 +399,20 @@ document.addEventListener("DOMContentLoaded", function () {
       loadTickets(this.value);
     });
   }
-});
+}
+
+// Auto-initialize if DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeTickets);
+} else {
+  // DOM already loaded, can initialize immediately if elements exist
+  if (document.getElementById('tickets-container')) {
+    initializeTickets();
+  }
+}
+
+// Export for manual initialization
+window.initializeTickets = initializeTickets;
 
 // Global function for changeGrouping (fallback)
 function changeGrouping(groupBy) {
@@ -413,6 +426,12 @@ async function loadTickets(groupBy = 'status') {
   
   if (loading) {
     loading.style.display = 'flex';
+  }
+  
+  // Position loading overlay over container
+  if (container && loading) {
+    container.style.position = 'relative';
+    container.style.minHeight = '200px';
   }
   
   const startTime = Date.now();

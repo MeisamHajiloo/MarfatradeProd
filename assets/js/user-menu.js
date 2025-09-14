@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateUserMenu(null);
 
         // Show success message
-        showSuccess("Logged out successfully");
+        AppUtils.showSuccess('Logged out successfully');
 
         // Close dropdown
         closeDropdown();

@@ -43,12 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Close modal when X is clicked
-  if (closeModal) {
-    closeModal.addEventListener("click", function () {
-      closeAuthModal();
-    });
-  }
+
 
   // Close modal when clicking outside
   window.addEventListener("click", function (e) {
@@ -57,20 +52,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Tab functionality
-  tabLinks.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      const tabName = this.getAttribute("data-tab");
+  // Switch between login and register forms
+  const switchToRegister = document.getElementById("switch-to-register");
+  const switchToLogin = document.getElementById("switch-to-login");
 
-      // Remove active class from all tabs and contents
-      tabLinks.forEach((t) => t.classList.remove("active"));
-      tabContents.forEach((c) => c.classList.remove("active"));
-
-      // Add active class to current tab and content
-      this.classList.add("active");
-      document.getElementById(tabName).classList.add("active");
+  if (switchToRegister) {
+    switchToRegister.addEventListener("click", function (e) {
+      e.preventDefault();
+      showRegisterForm();
     });
-  });
+  }
+
+  if (switchToLogin) {
+    switchToLogin.addEventListener("click", function (e) {
+      e.preventDefault();
+      showLoginForm();
+    });
+  }
+
+  function showRegisterForm() {
+    tabContents.forEach((c) => c.classList.remove("active"));
+    document.getElementById("register").classList.add("active");
+  }
+
+  function showLoginForm() {
+    tabContents.forEach((c) => c.classList.remove("active"));
+    document.getElementById("login").classList.add("active");
+  }
 
   // Login form submission
   if (loginForm) {
@@ -82,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Simple validation
       if (!email || !password) {
-        showError(loginForm, "Please fill in all fields");
+        AppUtils.showError("Please fill in all fields");
         return;
       }
 
@@ -102,20 +110,26 @@ document.addEventListener("DOMContentLoaded", function () {
       const confirmPassword = document.getElementById(
         "register-confirm-password"
       ).value;
+      const termsAccepted = document.getElementById("terms-acceptance").checked;
 
       // Validation
       if (!name || !email || !password || !confirmPassword) {
-        showError(registerForm, "Please fill in all fields");
+        AppUtils.showError("Please fill in all fields");
+        return;
+      }
+
+      if (!termsAccepted) {
+        AppUtils.showError("Please accept the Terms of Service and Privacy Policy");
         return;
       }
 
       if (password !== confirmPassword) {
-        showError(registerForm, "Passwords do not match");
+        AppUtils.showError("Passwords do not match");
         return;
       }
 
       if (password.length < 6) {
-        showError(registerForm, "Password must be at least 6 characters");
+        AppUtils.showError("Password must be at least 6 characters");
         return;
       }
 
@@ -129,6 +143,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (authModal) {
       authModal.style.display = "block";
       document.body.style.overflow = "hidden";
+      // Always show login form by default
+      showLoginForm();
     }
   }
 
@@ -174,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to show success message
   function showSuccess(message, duration = 5000) {
-    showNotification(message, "success");
+    AppUtils.showSuccess(message, duration);
   }
 
   // Function to parse JSON response safely
@@ -217,12 +233,11 @@ document.addEventListener("DOMContentLoaded", function () {
           closeAuthModal();
         }, 1500);
       } else {
-        showError(registerForm, data.message || "Registration failed");
+        AppUtils.showError(data.message || "Registration failed");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      showError(
-        registerForm,
+      AppUtils.showError(
         error.message || "An error occurred. Please try again."
       );
     }
@@ -255,12 +270,11 @@ document.addEventListener("DOMContentLoaded", function () {
           closeAuthModal();
         }, 1500);
       } else {
-        showError(loginForm, data.message || "Login failed");
+        AppUtils.showError(data.message || "Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
-      showError(
-        loginForm,
+      AppUtils.showError(
         error.message || "An error occurred. Please try again."
       );
     }
@@ -272,9 +286,21 @@ document.addEventListener("DOMContentLoaded", function () {
       if (typeof updateUserMenu === "function") {
         updateUserMenu(userData);
       }
+      // Update router auth state
+      if (window.router) {
+        window.router.isAuthenticated = true;
+        window.router.userData = userData;
+        window.router.updateAuthUI();
+      }
     } else {
       if (typeof updateUserMenu === "function") {
         updateUserMenu(null);
+      }
+      // Update router auth state
+      if (window.router) {
+        window.router.isAuthenticated = false;
+        window.router.userData = null;
+        window.router.updateAuthUI();
       }
     }
   }
@@ -299,11 +325,15 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAuthUI(false);
 
         // Show success message
-        showSuccess("Logged out successfully");
+        AppUtils.showSuccess('Logged out successfully');
 
-        // Reload page after a short delay to ensure complete logout
+        // Navigate to home page after logout
         setTimeout(() => {
-          window.location.reload();
+          if (window.router) {
+            window.router.navigate('/');
+          } else {
+            window.location.reload();
+          }
         }, 1000);
       } else {
         console.error("Logout failed:", data.message);
@@ -313,6 +343,24 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Logout error:", error);
       showNotification("An error occurred during logout. Please try again.", "warning");
     }
+  }
+
+  // Add logout button event listeners
+  const logoutButton = document.getElementById('logout-button');
+  const mobileLogoutButton = document.getElementById('mobile-nav-logout');
+  
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      logoutUser();
+    });
+  }
+  
+  if (mobileLogoutButton) {
+    mobileLogoutButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      logoutUser();
+    });
   }
 
   // Check if user is already logged in on page load

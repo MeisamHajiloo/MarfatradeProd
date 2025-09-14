@@ -8,24 +8,33 @@
         <form id="new-ticket-form">
             <div class="form-group">
                 <label for="ticket-subject">Subject</label>
-                <input type="text" id="ticket-subject" name="subject" maxlength="120" required>
+                <div class="input-wrapper">
+                    <i class="fas fa-tag input-icon"></i>
+                    <input type="text" id="ticket-subject" name="subject" maxlength="120" placeholder="Enter ticket subject" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="ticket-priority">Priority</label>
-                <select id="ticket-priority" name="priority">
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                </select>
+                <div class="input-wrapper">
+                    <i class="fas fa-exclamation-circle input-icon"></i>
+                    <select id="ticket-priority" name="priority" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label for="ticket-message">Message</label>
-                <textarea id="ticket-message" name="message" rows="5" maxlength="256" required></textarea>
+                <div class="input-wrapper">
+                    <i class="fas fa-comment input-icon"></i>
+                    <textarea id="ticket-message" name="message" rows="5" maxlength="2048" placeholder="Describe your issue" required></textarea>
+                </div>
             </div>
-            <div class="form-actions">
-                <button type="button" class="btn-secondary" id="cancel-ticket">Cancel</button>
-                <button type="submit" class="btn-primary">Submit Ticket</button>
-            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-paper-plane"></i>
+                Submit Ticket
+            </button>
         </form>
     </div>
 </div>
