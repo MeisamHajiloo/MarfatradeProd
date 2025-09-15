@@ -290,17 +290,17 @@ class ViewManager {
             <div class="product-container">
               <div class="product-gallery">
                 <div class="main-image">
-                  <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}" id="main-product-image">
+                  <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}" id="main-product-image" onerror="this.src='assets/images/no-image.png'">
                   <div class="image-counter" id="image-counter">1 / 1</div>
                 </div>
                 ${product.gallery && product.gallery.length > 0 ? `
                   <div class="gallery-grid">
                     <div class="gallery-item active" onclick="showImage('${product.thumbnail || 'assets/images/no-image.png'}', 0)">
-                      <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}">
+                      <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}" onerror="this.src='assets/images/no-image.png'">
                     </div>
                     ${product.gallery.map((img, index) => `
                       <div class="gallery-item" onclick="showImage('${img}', ${index + 1})">
-                        <img src="${img}" alt="${product.name}">
+                        <img src="${img}" alt="${product.name}" onerror="this.src='assets/images/no-image.png'">
                       </div>
                     `).join('')}
                   </div>
@@ -1024,14 +1024,10 @@ class ViewManager {
           
           if (relatedProducts.length > 0) {
             this.renderRelatedProducts(relatedProducts.slice(0, 8));
-            this.initRelatedProductsSlider();
           } else {
             console.log('No related products after filtering');
-            // Show a message instead of hiding
-            const container = document.getElementById('related-products-container');
-            if (container) {
-              container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No related products found</div>';
-            }
+            const relatedSection = document.querySelector('.related-products-section');
+            if (relatedSection) relatedSection.style.display = 'none';
           }
         } else {
           console.log('No products found in category');
@@ -1057,7 +1053,7 @@ class ViewManager {
           <div class="discount-badge">${Math.round(((product.price - product.sale_price) / product.price) * 100)}% OFF</div>
         ` : ''}
         <${product.status === 'out_of_stock' ? 'div' : 'a href="/product?slug=' + product.slug + '" onclick="window.scrollTo(0, 0);"'}>
-          <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}">
+          <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}" onerror="this.src='assets/images/no-image.png'">
           <h4>${product.name}</h4>
           <div class="price-container">
             ${product.sale_price && product.sale_price > 0 && product.sale_price < product.price && product.status !== 'out_of_stock' ? `
@@ -1070,6 +1066,11 @@ class ViewManager {
         </${product.status === 'out_of_stock' ? 'div' : 'a'}>
       </div>
     `).join('');
+    
+    // Trigger slider initialization after rendering
+    setTimeout(() => {
+      this.initRelatedProductsSlider();
+    }, 100);
   }
 
   initRelatedProductsSlider() {
@@ -1080,26 +1081,167 @@ class ViewManager {
     if (!container || !prevBtn || !nextBtn) return;
     
     let currentIndex = 0;
-    const itemWidth = 250;
-    const visibleItems = Math.floor(window.innerWidth / itemWidth);
-    const maxIndex = Math.max(0, container.children.length - visibleItems);
     
-    // Hide arrows if no scrolling is needed
-    if (maxIndex === 0) {
-      prevBtn.style.display = 'none';
-      nextBtn.style.display = 'none';
-      return;
-    }
+    const calculateSliderParams = () => {
+      const itemWidth = 250;
+      const sliderElement = container.parentElement;
+      const containerWidth = sliderElement.offsetWidth;
+      const availableWidth = containerWidth - (containerWidth > 768 ? 100 : 20); // Less padding on mobile
+      const visibleItems = Math.max(1, Math.floor(availableWidth / itemWidth));
+      const totalItems = container.children.length;
+      const maxIndex = Math.max(0, totalItems - visibleItems);
+      
+      return { itemWidth, visibleItems, totalItems, maxIndex };
+    };
+    
+    const updateArrowVisibility = () => {
+      const { totalItems, visibleItems, maxIndex } = calculateSliderParams();
+      const relatedSection = document.querySelector('.related-products-section');
+      
+      // Force hide arrows with important override
+      prevBtn.style.setProperty('display', 'none', 'important');
+      nextBtn.style.setProperty('display', 'none', 'important');
+      
+      // Hide entire section if no products
+      if (totalItems === 0) {
+        if (relatedSection) relatedSection.style.display = 'none';
+        return;
+      }
+      
+      // Show section
+      if (relatedSection) relatedSection.style.display = 'block';
+      
+      // Only show arrows if scrolling is needed
+      if (totalItems > visibleItems && maxIndex > 0) {
+        prevBtn.style.setProperty('display', 'block', 'important');
+        nextBtn.style.setProperty('display', 'block', 'important');
+      }
+    };
+    
+    // Update arrow states
+    const updateArrowStates = () => {
+      const { maxIndex, totalItems, visibleItems } = calculateSliderParams();
+      const isMobile = window.innerWidth <= 768;
+      
+      // Hide arrows completely if no sliding is needed
+      if (totalItems <= visibleItems || maxIndex === 0) {
+        prevBtn.style.setProperty('display', 'none', 'important');
+        nextBtn.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      
+      // Show arrows and update their states
+      prevBtn.style.setProperty('display', 'block', 'important');
+      nextBtn.style.setProperty('display', 'block', 'important');
+      
+      // Adjust arrow size for mobile
+      if (isMobile) {
+        prevBtn.style.width = '35px';
+        prevBtn.style.height = '35px';
+        nextBtn.style.width = '35px';
+        nextBtn.style.height = '35px';
+        prevBtn.style.left = '5px';
+        nextBtn.style.right = '5px';
+      } else {
+        prevBtn.style.width = '40px';
+        prevBtn.style.height = '40px';
+        nextBtn.style.width = '40px';
+        nextBtn.style.height = '40px';
+        prevBtn.style.left = '10px';
+        nextBtn.style.right = '10px';
+      }
+      
+      prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+      nextBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+      prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+      nextBtn.style.pointerEvents = currentIndex >= maxIndex ? 'none' : 'auto';
+    };
     
     prevBtn.addEventListener('click', () => {
-      currentIndex = Math.max(0, currentIndex - 1);
-      container.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+      if (currentIndex > 0) {
+        const { itemWidth } = calculateSliderParams();
+        currentIndex = Math.max(0, currentIndex - 1);
+        container.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        updateArrowStates();
+      }
     });
     
     nextBtn.addEventListener('click', () => {
-      currentIndex = Math.min(maxIndex, currentIndex + 1);
-      container.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+      const { itemWidth, maxIndex } = calculateSliderParams();
+      if (currentIndex < maxIndex) {
+        currentIndex = Math.min(maxIndex, currentIndex + 1);
+        container.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        updateArrowStates();
+      }
     });
+    
+    // Handle window resize
+    const handleResize = () => {
+      const { maxIndex } = calculateSliderParams();
+      // Reset position if current index is beyond new max
+      if (currentIndex > maxIndex) {
+        currentIndex = maxIndex;
+        const { itemWidth } = calculateSliderParams();
+        container.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+      }
+      updateArrowVisibility();
+      updateArrowStates();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Touch support for mobile
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+    let initialTransform = 0;
+    
+    container.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      currentX = startX;
+      isDragging = true;
+      const { itemWidth } = calculateSliderParams();
+      initialTransform = -currentIndex * itemWidth;
+      container.style.transition = 'none';
+    });
+    
+    container.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      currentX = e.touches[0].clientX;
+      const diff = currentX - startX;
+      const newTransform = initialTransform + diff;
+      container.style.transform = `translateX(${newTransform}px)`;
+    });
+    
+    container.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      container.style.transition = 'transform 0.3s ease';
+      const diff = startX - currentX;
+      const { itemWidth, maxIndex } = calculateSliderParams();
+      
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentIndex < maxIndex) {
+          currentIndex++;
+        } else if (diff < 0 && currentIndex > 0) {
+          currentIndex--;
+        }
+      }
+      
+      container.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+      updateArrowStates();
+    });
+    
+    // Force hide arrows by default
+    prevBtn.style.setProperty('display', 'none', 'important');
+    nextBtn.style.setProperty('display', 'none', 'important');
+    
+    // Initial setup
+    updateArrowVisibility();
+    updateArrowStates();
   }
 
   initProfile() {

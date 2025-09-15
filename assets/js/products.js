@@ -6,7 +6,7 @@
   let gridEl, toolbarEl, paginationEl, categorySelect, sortSelect, searchInput;
   let mobileToggle, mobileDrawer, toolbarOverlay, closeDrawer, resetFilters;
   let mobileSearchInput, mobileCategorySelect, mobileSortSelect;
-  
+
   function initElements() {
     gridEl = document.getElementById("products-grid");
     toolbarEl = document.getElementById("products-toolbar");
@@ -195,7 +195,7 @@
 
     // Click outside modal to close
     if (mobileDrawer) {
-      mobileDrawer.addEventListener("click", function(e) {
+      mobileDrawer.addEventListener("click", function (e) {
         if (e.target === mobileDrawer) {
           closeDrawerFunc();
         }
@@ -204,7 +204,7 @@
 
     // Sync mobile and desktop filters
     if (mobileSearchInput && searchInput) {
-      mobileSearchInput.addEventListener("input", function() {
+      mobileSearchInput.addEventListener("input", function () {
         searchInput.value = this.value;
         state.q = this.value;
         state.page = 1;
@@ -213,9 +213,9 @@
         load();
       });
     }
-    
+
     if (mobileCategorySelect && categorySelect) {
-      mobileCategorySelect.addEventListener("change", function() {
+      mobileCategorySelect.addEventListener("change", function () {
         categorySelect.value = this.value;
         state.category = this.value ? parseInt(this.value) : null;
         state.page = 1;
@@ -225,9 +225,9 @@
         load();
       });
     }
-    
+
     if (mobileSortSelect && sortSelect) {
-      mobileSortSelect.addEventListener("change", function() {
+      mobileSortSelect.addEventListener("change", function () {
         sortSelect.value = this.value;
         state.sort = this.value;
         state.page = 1;
@@ -244,7 +244,7 @@
         if (searchInput) searchInput.value = "";
         if (categorySelect) categorySelect.value = "";
         if (sortSelect) sortSelect.value = "newest";
-        
+
         // Reset mobile filters
         if (mobileSearchInput) mobileSearchInput.value = "";
         if (mobileCategorySelect) mobileCategorySelect.value = "";
@@ -264,7 +264,9 @@
     }
 
     // View mode toggle for desktop and mobile
-    const allViewBtns = document.querySelectorAll(".view-btn, .mobile-view-btn");
+    const allViewBtns = document.querySelectorAll(
+      ".view-btn, .mobile-view-btn"
+    );
     allViewBtns.forEach((btn) => {
       btn.addEventListener("click", function () {
         const viewType = this.dataset.view;
@@ -327,7 +329,9 @@
   // Update view mode UI
   function updateViewMode() {
     // Update all view buttons (desktop and mobile)
-    const allViewBtns = document.querySelectorAll(".view-btn, .mobile-view-btn");
+    const allViewBtns = document.querySelectorAll(
+      ".view-btn, .mobile-view-btn"
+    );
     allViewBtns.forEach((btn) => {
       btn.classList.remove("active");
       if (btn.dataset.view === state.view) {
@@ -394,15 +398,15 @@
 
     const option = document.createElement("option");
     option.value = category.id;
-    
+
     // Create simple indentation for tree structure
     const indent = "   ".repeat(level);
     option.textContent = indent + category.name;
     option.className = "category-option";
-    
+
     // Add data attributes for tree structure
-    option.setAttribute('data-level', level);
-    option.setAttribute('data-parent-id', category.parent_id || '');
+    option.setAttribute("data-level", level);
+    option.setAttribute("data-parent-id", category.parent_id || "");
 
     if (category.children && category.children.length > 0) {
       option.classList.add("has-children");
@@ -461,29 +465,55 @@
     if (!gridEl) return;
 
     const card = document.createElement("div");
-    card.className = `product-card${p.status === 'out_of_stock' ? ' out-of-stock' : ''}`;
+    card.className = `product-card${
+      p.status === "out_of_stock" ? " out-of-stock" : ""
+    }`;
     card.innerHTML = `
-    <${p.status === 'out_of_stock' ? 'div' : 'a href="/product?slug=' + p.slug + '"'} class="thumb">
-      <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
+    <${
+      p.status === "out_of_stock"
+        ? "div"
+        : 'a href="/product?slug=' + p.slug + '"'
+    } class="thumb">
+      <img src="${p.thumbnail || "assets/images/no-image.png"}" alt="${
       p.name
-    }">
-      ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `<div class="discount-badge">${Math.round(((p.price - p.sale_price) / p.price) * 100)}% OFF</div>` : ''}
-    </${p.status === 'out_of_stock' ? 'div' : 'a'}>
+    }" onerror="this.src='assets/images/no-image.png'">
+      ${
+        p.sale_price &&
+        p.sale_price > 0 &&
+        p.sale_price < p.price &&
+        p.status !== "out_of_stock"
+          ? `<div class="discount-badge">${Math.round(
+              ((p.price - p.sale_price) / p.price) * 100
+            )}% OFF</div>`
+          : ""
+      }
+    </${p.status === "out_of_stock" ? "div" : "a"}>
     <div class="info">
       <h3 class="name">${p.name}</h3>
       <div class="price-container">
-        ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `
+        ${
+          p.sale_price &&
+          p.sale_price > 0 &&
+          p.sale_price < p.price &&
+          p.status !== "out_of_stock"
+            ? `
           <div class="price-sale">$${p.sale_price}</div>
           <div class="price-original">$${p.price}</div>
-        ` : `
-          <div class="price">${p.price ? '$' + p.price : 'Price not available'}</div>
-        `}
+        `
+            : `
+          <div class="price">${
+            p.price ? "$" + p.price : "Price not available"
+          }</div>
+        `
+        }
       </div>
       <div class="actions">
         <button class="btn btn-primary inquiry-btn" data-product="${
           p.name
         }" data-slug="${p.slug}">Inquiry</button>
-        <button class="btn btn-primary"${p.status === 'out_of_stock' ? ' disabled' : ''}>Request for Sample</button>
+        <button class="btn btn-primary"${
+          p.status === "out_of_stock" ? " disabled" : ""
+        }>Request for Sample</button>
       </div>
     </div>
   `;
@@ -493,7 +523,12 @@
     const inquiryBtn = card.querySelector(".inquiry-btn");
     if (inquiryBtn) {
       inquiryBtn.addEventListener("click", function () {
-        openInquiryModal(this.dataset.product, this.dataset.slug, p.price, p.sale_price);
+        openInquiryModal(
+          this.dataset.product,
+          this.dataset.slug,
+          p.price,
+          p.sale_price
+        );
       });
     }
   }
@@ -502,30 +537,56 @@
     if (!gridEl) return;
 
     const listItem = document.createElement("div");
-    listItem.className = `product-list-item${p.status === 'out_of_stock' ? ' out-of-stock' : ''}`;
+    listItem.className = `product-list-item${
+      p.status === "out_of_stock" ? " out-of-stock" : ""
+    }`;
     listItem.innerHTML = `
-    <${p.status === 'out_of_stock' ? 'div' : 'a href="/product?slug=' + p.slug + '"'} class="thumb">
-      <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
+    <${
+      p.status === "out_of_stock"
+        ? "div"
+        : 'a href="/product?slug=' + p.slug + '"'
+    } class="thumb">
+      <img src="${p.thumbnail || "assets/images/no-image.png"}" alt="${
       p.name
-    }">
-      ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `<div class="discount-badge">${Math.round(((p.price - p.sale_price) / p.price) * 100)}% OFF</div>` : ''}
-    </${p.status === 'out_of_stock' ? 'div' : 'a'}>
+    }" onerror="this.src='assets/images/no-image.png'">
+      ${
+        p.sale_price &&
+        p.sale_price > 0 &&
+        p.sale_price < p.price &&
+        p.status !== "out_of_stock"
+          ? `<div class="discount-badge">${Math.round(
+              ((p.price - p.sale_price) / p.price) * 100
+            )}% OFF</div>`
+          : ""
+      }
+    </${p.status === "out_of_stock" ? "div" : "a"}>
     <div class="info">
       <h3 class="name">${p.name}</h3>
       <div class="price-container">
-        ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `
+        ${
+          p.sale_price &&
+          p.sale_price > 0 &&
+          p.sale_price < p.price &&
+          p.status !== "out_of_stock"
+            ? `
           <div class="price-sale">$${p.sale_price}</div>
           <div class="price-original">$${p.price}</div>
-        ` : `
-          <div class="price">${p.price ? '$' + p.price : 'Price not available'}</div>
-        `}
+        `
+            : `
+          <div class="price">${
+            p.price ? "$" + p.price : "Price not available"
+          }</div>
+        `
+        }
       </div>
       <p class="desc">${p.short_desc || "No description available."}</p>
       <div class="actions">
         <button class="btn btn-primary inquiry-btn" data-product="${
           p.name
         }" data-slug="${p.slug}">Inquiry</button>
-        <button class="btn btn-primary"${p.status === 'out_of_stock' ? ' disabled' : ''}>Request for Sample</button>
+        <button class="btn btn-primary"${
+          p.status === "out_of_stock" ? " disabled" : ""
+        }>Request for Sample</button>
       </div>
     </div>
   `;
@@ -535,7 +596,12 @@
     const inquiryBtn = listItem.querySelector(".inquiry-btn");
     if (inquiryBtn) {
       inquiryBtn.addEventListener("click", function () {
-        openInquiryModal(this.dataset.product, this.dataset.slug, p.price, p.sale_price);
+        openInquiryModal(
+          this.dataset.product,
+          this.dataset.slug,
+          p.price,
+          p.sale_price
+        );
       });
     }
   }
@@ -552,7 +618,10 @@
         authModal.style.display = "block";
         document.body.style.overflow = "hidden";
       } else {
-        AppUtils.showNotification("Please login first to inquire about products.", "info");
+        AppUtils.showNotification(
+          "Please login first to inquire about products.",
+          "info"
+        );
       }
       return;
     }
@@ -625,15 +694,16 @@
       e.preventDefault();
 
       // Record inquiry in database
-      await recordInquiry(productSlug, 'whatsapp');
+      await recordInquiry(productSlug, "whatsapp");
 
       // Creating a complete product link
       const productUrl = `${window.location.origin}/product?slug=${productSlug}`;
 
-      const priceText = salePrice && salePrice > 0 && salePrice < price ? 
-        `*Price*: $${salePrice} (was $${price})` : 
-        `*Price*: $${price || 'Contact for pricing'}`;
-      
+      const priceText =
+        salePrice && salePrice > 0 && salePrice < price
+          ? `*Price*: $${salePrice} (was $${price})`
+          : `*Price*: $${price}`;
+
       const message = `*Product Inquiry*
 Hello, I'm interested in your product: *${productName}*
 
@@ -644,7 +714,9 @@ Please provide more information and pricing details.`;
 
       // Ensure the correct number format
       if (!whatsappNumber) {
-        AppUtils.showError("WhatsApp number not available. Please try again later.");
+        AppUtils.showError(
+          "WhatsApp number not available. Please try again later."
+        );
         return;
       }
       const cleanNumber = whatsappNumber.replace(/\D/g, "");
@@ -662,14 +734,15 @@ Please provide more information and pricing details.`;
       e.preventDefault();
 
       // Record inquiry in database
-      await recordInquiry(productSlug, 'telegram');
+      await recordInquiry(productSlug, "telegram");
 
       // Use telegramUsername from API
       const productUrl = `${window.location.origin}/product?slug=${productSlug}`;
-      const priceText = salePrice && salePrice > 0 && salePrice < price ? 
-        `Price: $${salePrice} (was $${price})` : 
-        `Price: $${price || 'Contact for pricing'}`;
-      
+      const priceText =
+        salePrice && salePrice > 0 && salePrice < price
+          ? `Price: $${salePrice} (was $${price})`
+          : `Price: $${price}`;
+
       const message = `Hello, I have a question about the product ${productName}.\n${priceText}\nProduct Link: ${productUrl}`;
       const telegramUrl = `https://t.me/${telegramUsername}`;
 
@@ -765,7 +838,7 @@ Please provide more information and pricing details.`;
 
   async function load() {
     if (!gridEl) {
-      console.error('Grid element not found');
+      console.error("Grid element not found");
       return;
     }
 
@@ -773,13 +846,13 @@ Please provide more information and pricing details.`;
     renderLoadingState();
 
     try {
-      console.log('Fetching products with state:', state);
+      console.log("Fetching products with state:", state);
       const { data, meta } = await fetchProducts();
-      console.log('Products loaded:', data.length, 'items');
+      console.log("Products loaded:", data.length, "items");
       renderProducts(data);
       renderPagination(meta);
     } catch (err) {
-      console.error('Error loading products:', err);
+      console.error("Error loading products:", err);
       gridEl.innerHTML = `<div class="error">Error loading products: ${err.message}</div>`;
     } finally {
       gridEl.classList.remove("loading");
@@ -824,10 +897,10 @@ Please provide more information and pricing details.`;
   // Initialize when products page is loaded
   function initializeProducts() {
     console.log("Initializing products page");
-    
+
     // Initialize elements
     initElements();
-    
+
     if (!gridEl || !toolbarEl) {
       console.error("Required elements not found!");
       return;
@@ -857,17 +930,17 @@ Please provide more information and pricing details.`;
       load();
     });
   }
-  
+
   // Auto-initialize if DOM is already loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeProducts);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeProducts);
   } else {
     initializeProducts();
   }
-  
+
   // Export for manual initialization
   window.initializeProducts = initializeProducts;
-  
+
   // Export inquiry modal function globally
   window.openInquiryModal = openInquiryModal;
 })();
@@ -914,20 +987,20 @@ async function getContactInfo() {
     if (data.success) {
       return {
         whatsappNumber: data.whatsappNumber || "+989193120515",
-        telegramUsername: data.telegramUsername || "Meisam_Hajiloo"
+        telegramUsername: data.telegramUsername || "Meisam_Hajiloo",
       };
     } else {
       console.error("Invalid response format:", data);
       return {
         whatsappNumber: "+989193120515",
-        telegramUsername: "Meisam_Hajiloo"
+        telegramUsername: "Meisam_Hajiloo",
       };
     }
   } catch (error) {
     console.error("Error fetching contact info:", error);
     return {
       whatsappNumber: "+989193120515",
-      telegramUsername: "Meisam_Hajiloo"
+      telegramUsername: "Meisam_Hajiloo",
     };
   }
 }
@@ -935,42 +1008,42 @@ async function getContactInfo() {
 // Function to record inquiry in database
 async function recordInquiry(productSlug, inquiryVia) {
   try {
-    console.log('Sending inquiry request:', { productSlug, inquiryVia });
-    
+    console.log("Sending inquiry request:", { productSlug, inquiryVia });
+
     const response = await fetch("api/products/inquiry.php", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         product_slug: productSlug,
-        inquiry_via: inquiryVia
-      })
+        inquiry_via: inquiryVia,
+      }),
     });
-    
-    console.log('Response status:', response.status);
+
+    console.log("Response status:", response.status);
     const responseText = await response.text();
-    console.log('Response text:', responseText);
-    
+    console.log("Response text:", responseText);
+
     // Extract JSON from response (remove any extra content)
     const jsonMatch = responseText.match(/\{[^}]*\}/s);
     if (jsonMatch) {
       try {
         const data = JSON.parse(jsonMatch[0]);
-        console.log('Parsed response:', data);
-        
+        console.log("Parsed response:", data);
+
         if (data.success) {
-          console.log('Inquiry recorded successfully!');
+          console.log("Inquiry recorded successfully!");
         } else {
           console.error("Failed to record inquiry:", data.message);
         }
       } catch (parseError) {
-        console.error('JSON parse error:', parseError);
-        console.error('Matched JSON:', jsonMatch[0]);
+        console.error("JSON parse error:", parseError);
+        console.error("Matched JSON:", jsonMatch[0]);
       }
     } else {
-      console.error('No valid JSON found in response');
-      console.error('Full response:', responseText);
+      console.error("No valid JSON found in response");
+      console.error("Full response:", responseText);
     }
   } catch (error) {
     console.error("Error recording inquiry:", error);

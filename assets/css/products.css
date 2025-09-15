@@ -1304,6 +1304,8 @@
   display: flex;
   gap: 20px;
   transition: transform 0.3s ease;
+  touch-action: pan-x;
+  user-select: none;
 }
 
 .related-product-item {
@@ -1394,6 +1396,7 @@
   cursor: pointer;
   z-index: 2;
   transition: all 0.3s ease;
+  display: none;
 }
 
 .slider-arrow:hover {
@@ -1407,6 +1410,11 @@
 
 .slider-arrow.next {
   right: 10px;
+}
+
+/* Show arrows when they have display: block set by JavaScript */
+.slider-arrow[style*="display: block"] {
+  display: block !important;
 }
 
 /* Additional Product Responsive Styles */
