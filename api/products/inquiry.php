@@ -31,6 +31,8 @@ if (!isset($input['product_slug']) || !isset($input['inquiry_via'])) {
     exit;
 }
 
+$situation = isset($input['situation']) ? trim($input['situation']) : null;
+
 if (!in_array($input['inquiry_via'], ['whatsapp', 'telegram'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid inquiry_via']);
     exit;
@@ -49,8 +51,8 @@ try {
         exit;
     }
     
-    $stmt = $pdo->prepare("INSERT INTO product_inquiries (product_id, user_id, inquiry_via) VALUES (?, ?, ?)");
-    $stmt->execute([$product['id'], $user_id, $input['inquiry_via']]);
+    $stmt = $pdo->prepare("INSERT INTO product_inquiries (product_id, user_id, inquiry_via, situation) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$product['id'], $user_id, $input['inquiry_via'], $situation]);
     
     echo json_encode(['success' => true, 'message' => 'Inquiry recorded']);
     

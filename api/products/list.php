@@ -56,7 +56,7 @@ $categoryId  = isset($_GET['category']) ? (int)$_GET['category'] : null;
 $withDesc    = isset($_GET['include_descendants']) ? (int)$_GET['include_descendants'] === 1 : true;
 
 $q           = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
-$status      = isset($_GET['status']) ? trim((string)$_GET['status']) : 'published';
+$status      = isset($_GET['status']) ? trim((string)$_GET['status']) : '';
 
 $allowedSort = [
     'price_asc'  => 'p.price ASC',
@@ -65,6 +65,7 @@ $allowedSort = [
     'popular'    => 'p.views DESC',
     'name_asc'   => 'p.name ASC',
     'name_desc'  => 'p.name DESC',
+    'discount'   => '(CASE WHEN p.status = "out_of_stock" THEN 0 WHEN p.sale_price IS NOT NULL AND p.sale_price < p.price THEN ((p.price - p.sale_price) / p.price * 100) ELSE 0 END) DESC, (CASE WHEN p.status = "out_of_stock" THEN 1 ELSE 0 END) ASC',
 ];
 $sortKey     = isset($_GET['sort']) ? strtolower((string)$_GET['sort']) : 'newest';
 $orderBy     = $allowedSort[$sortKey] ?? $allowedSort['newest'];
@@ -92,7 +93,7 @@ try {
 
     // Search filter
     if ($q !== '') {
-        $where[] = '(p.name LIKE :q OR p.slug LIKE :q OR p.short_desc LIKE :q)';
+        $where[] = '(p.name LIKE :q OR p.slug LIKE :q OR p.description LIKE :q)';
         $params[':q'] = '%' . $q . '%';
     }
 
@@ -162,7 +163,7 @@ try {
     }
 
     // Base SELECT (مثل نسخه‌ی شما)
-    $baseSelect = 'SELECT p.id, p.slug, p.name, p.price, p.thumbnail, p.short_desc, p.category_id, p.created_at, p.views';
+    $baseSelect = 'SELECT p.id, p.slug, p.name, p.price, p.sale_price, p.thumbnail, p.category_id, p.created_at, p.views, p.status';
     $baseFrom   = ' FROM products p ';
 
     // ---- Count query ----
@@ -226,11 +227,13 @@ try {
             'slug'        => $r['slug'],
             'name'        => $r['name'],
             'price'       => isset($r['price']) ? (float)$r['price'] : null,
+            'sale_price'  => isset($r['sale_price']) && $r['sale_price'] !== null ? (float)$r['sale_price'] : null,
             'thumbnail'   => $r['thumbnail'] ?? null,
-            'short_desc'  => $r['short_desc'] ?? null,
+            'short_desc'  => null,
             'category_id' => isset($r['category_id']) ? (int)$r['category_id'] : null,
             'created_at'  => $r['created_at'] ?? null,
             'views'       => isset($r['views']) ? (int)$r['views'] : null,
+            'status'      => $r['status'] ?? 'published',
         ];
     }, $rows);
 
@@ -253,11 +256,13 @@ try {
         ],
     ]);
 } catch (Throwable $e) {
+    error_log('Products API Error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'error' => true,
-        'message' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
+        'message' => 'Database error: ' . $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
     ]);
     exit;
 }

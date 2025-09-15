@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Sep 11, 2025 at 02:12 PM
--- Server version: 5.7.43
--- PHP Version: 8.1.33
+-- Host: 127.0.0.1
+-- Generation Time: Sep 15, 2025 at 09:45 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,90 +32,76 @@ CREATE TABLE `categories` (
   `name` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `parent_id` int(11) DEFAULT NULL,
-  `description` text,
+  `description` text DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `parent_id`, `description`, `image`, `created_at`) VALUES
-(1, 'Electronics', 'electronics', NULL, 'Electronic products category', NULL, '2025-09-02 11:22:06'),
-(2, 'Home Appliances', 'home-appliances', NULL, 'Home appliances category', NULL, '2025-09-02 11:22:06'),
-(3, 'Clothing', 'clothing', NULL, 'Clothing and fashion category', NULL, '2025-09-02 11:22:06'),
-(4, 'Sports', 'sports', NULL, 'Sports equipment category', NULL, '2025-09-02 11:22:06'),
-(5, 'Books', 'books', NULL, 'Books and literature category', NULL, '2025-09-02 11:22:06'),
-(6, 'Furniture', 'furniture', NULL, 'Furniture and home decor category', NULL, '2025-09-02 11:22:06'),
-(7, 'Toys', 'toys', NULL, 'Toys and games category', NULL, '2025-09-02 11:22:06'),
-(8, 'Beauty', 'beauty', NULL, 'Beauty and personal care category', NULL, '2025-09-02 11:22:06'),
-(9, 'Jewelry', 'jewelry', NULL, 'Jewelry and accessories category', NULL, '2025-09-02 11:22:06'),
-(10, 'Automotive', 'automotive', NULL, 'Automotive parts and accessories category', NULL, '2025-09-02 11:22:06'),
-(11, 'Tools', 'tools', NULL, 'Tools and hardware category', NULL, '2025-09-02 11:22:06'),
-(12, 'Food', 'food', NULL, 'Food and beverages category', NULL, '2025-09-02 11:22:06'),
-(13, 'Health', 'health', NULL, 'Health and wellness category', NULL, '2025-09-02 11:22:06'),
-(14, 'Pet Supplies', 'pet-supplies', NULL, 'Pet supplies category', NULL, '2025-09-02 11:22:06'),
-(15, 'Office', 'office', NULL, 'Office supplies category', NULL, '2025-09-02 11:22:06'),
-(16, 'Gardening', 'gardening', NULL, 'Gardening supplies category', NULL, '2025-09-02 11:22:06'),
-(17, 'Art', 'art', NULL, 'Art and craft supplies category', NULL, '2025-09-02 11:22:06'),
-(18, 'Music', 'music', NULL, 'Musical instruments category', NULL, '2025-09-02 11:22:06'),
-(19, 'Baby', 'baby', NULL, 'Baby products category', NULL, '2025-09-02 11:22:06'),
-(20, 'Travel', 'travel', NULL, 'Travel and luggage category', NULL, '2025-09-02 11:22:06'),
-(21, 'Smartphones', 'smartphones', 1, 'Smartphones and mobile devices', NULL, '2025-09-02 11:22:06'),
-(22, 'Laptops', 'laptops', 1, 'Laptops and notebooks', NULL, '2025-09-02 11:22:06'),
-(23, 'Tablets', 'tablets', 1, 'Tablets and iPads', NULL, '2025-09-02 11:22:06'),
-(24, 'Cameras', 'cameras', 1, 'Cameras and photography equipment', NULL, '2025-09-02 11:22:06'),
-(25, 'Headphones', 'headphones', 1, 'Headphones and audio accessories', NULL, '2025-09-02 11:22:06'),
-(26, 'Wearables', 'wearables', 1, 'Wearable technology', NULL, '2025-09-02 11:22:06'),
-(27, 'Refrigerators', 'refrigerators', 2, 'Refrigerators and freezers', NULL, '2025-09-02 11:22:06'),
-(28, 'Washing Machines', 'washing-machines', 2, 'Washing machines and dryers', NULL, '2025-09-02 11:22:06'),
-(29, 'Air Conditioners', 'air-conditioners', 2, 'Air conditioning units', NULL, '2025-09-02 11:22:06'),
-(30, 'Vacuum Cleaners', 'vacuum-cleaners', 2, 'Vacuum cleaners', NULL, '2025-09-02 11:22:06'),
-(31, 'Microwaves', 'microwaves', 2, 'Microwave ovens', NULL, '2025-09-02 11:22:06'),
-(32, 'Coffee Makers', 'coffee-makers', 2, 'Coffee makers and machines', NULL, '2025-09-02 11:22:06'),
-(33, 'Men Clothing', 'men-clothing', 3, 'Men clothing and apparel', NULL, '2025-09-02 11:22:06'),
-(34, 'Women Clothing', 'women-clothing', 3, 'Women clothing and apparel', NULL, '2025-09-02 11:22:06'),
-(35, 'Kids Clothing', 'kids-clothing', 3, 'Kids clothing and apparel', NULL, '2025-09-02 11:22:06'),
-(36, 'Shoes', 'shoes', 3, 'Shoes and footwear', NULL, '2025-09-02 11:22:06'),
-(37, 'Accessories', 'accessories', 3, 'Fashion accessories', NULL, '2025-09-02 11:22:06'),
-(38, 'Sportswear', 'sportswear', 3, 'Sports clothing and apparel', NULL, '2025-09-02 11:22:06'),
-(39, 'Fitness', 'fitness', 4, 'Fitness equipment', NULL, '2025-09-02 11:22:06'),
-(40, 'Outdoor', 'outdoor', 4, 'Outdoor sports equipment', NULL, '2025-09-02 11:22:06'),
-(41, 'Water Sports', 'water-sports', 4, 'Water sports equipment', NULL, '2025-09-02 11:22:06'),
-(42, 'Team Sports', 'team-sports', 4, 'Team sports equipment', NULL, '2025-09-02 11:22:06'),
-(43, 'Cycling', 'cycling', 4, 'Cycling equipment', NULL, '2025-09-02 11:22:06'),
-(44, 'Camping', 'camping', 4, 'Camping gear', NULL, '2025-09-02 11:22:06'),
-(45, 'Fiction', 'fiction', 5, 'Fiction books', NULL, '2025-09-02 11:22:06'),
-(46, 'Non-Fiction', 'non-fiction', 5, 'Non-fiction books', NULL, '2025-09-02 11:22:06'),
-(47, 'Children Books', 'children-books', 5, 'Children books', NULL, '2025-09-02 11:22:06'),
-(48, 'Educational', 'educational', 5, 'Educational books', NULL, '2025-09-02 11:22:06'),
-(49, 'Cookbooks', 'cookbooks', 5, 'Cookbooks and recipes', NULL, '2025-09-02 11:22:06'),
-(50, 'Biographies', 'biographies', 5, 'Biographies and memoirs', NULL, '2025-09-02 11:22:06'),
-(51, 'Living Room', 'living-room', 6, 'Living room furniture', NULL, '2025-09-02 11:22:06'),
-(52, 'Bedroom', 'bedroom', 6, 'Bedroom furniture', NULL, '2025-09-02 11:22:06'),
-(53, 'Kitchen', 'kitchen', 6, 'Kitchen furniture', NULL, '2025-09-02 11:22:06'),
-(54, 'Office Furniture', 'office-furniture', 6, 'Office furniture', NULL, '2025-09-02 11:22:06'),
-(55, 'Outdoor Furniture', 'outdoor-furniture', 6, 'Outdoor furniture', NULL, '2025-09-02 11:22:06'),
-(56, 'Storage', 'storage', 6, 'Storage solutions', NULL, '2025-09-02 11:22:06'),
-(57, 'Educational Toys', 'educational-toys', 7, 'Educational toys', NULL, '2025-09-02 11:22:06'),
-(58, 'Action Figures', 'action-figures', 7, 'Action figures', NULL, '2025-09-02 11:22:06'),
-(59, 'Board Games', 'board-games', 7, 'Board games', NULL, '2025-09-02 11:22:06'),
-(60, 'Puzzles', 'puzzles', 7, 'Puzzles and brain teasers', NULL, '2025-09-02 11:22:06'),
-(61, 'Outdoor Toys', 'outdoor-toys', 7, 'Outdoor toys', NULL, '2025-09-02 11:22:06'),
-(62, 'Dolls', 'dolls', 7, 'Dolls and accessories', NULL, '2025-09-02 11:22:06'),
-(63, 'Skincare', 'skincare', 8, 'Skincare products', NULL, '2025-09-02 11:22:06'),
-(64, 'Makeup', 'makeup', 8, 'Makeup and cosmetics', NULL, '2025-09-02 11:22:06'),
-(65, 'Hair Care', 'hair-care', 8, 'Hair care products', NULL, '2025-09-02 11:22:06'),
-(66, 'Fragrances', 'fragrances', 8, 'Perfumes and fragrances', NULL, '2025-09-02 11:22:06'),
-(67, 'Bath & Body', 'bath-body', 8, 'Bath and body products', NULL, '2025-09-02 11:22:06'),
-(68, 'Men Grooming', 'men-grooming', 8, 'Men grooming products', NULL, '2025-09-02 11:22:06'),
-(69, 'Rings', 'rings', 9, 'Rings and bands', NULL, '2025-09-02 11:22:06'),
-(70, 'Necklaces', 'necklaces', 9, 'Necklaces and pendants', NULL, '2025-09-02 11:22:06'),
-(71, 'Bracelets', 'bracelets', 9, 'Bracelets and bangles', NULL, '2025-09-02 11:22:06'),
-(72, 'Earrings', 'earrings', 9, 'Earrings and studs', NULL, '2025-09-02 11:22:06'),
-(73, 'Watches', 'watches', 9, 'Watches and timepieces', NULL, '2025-09-02 11:22:06'),
-(74, 'Accessories', 'jewelry-accessories', 9, 'Jewelry accessories', NULL, '2025-09-02 11:22:06');
+(35, 'Perfumes', 'perfumes', 31, 'Fragrances and colognes.', 'perfumes.jpg', '2025-09-15 06:18:25'),
+(34, 'Hair Care', 'hair-care', 31, 'Shampoos, conditioners, and hair styling products.', 'hair-care.jpg', '2025-09-15 06:18:25'),
+(33, 'Makeup', 'makeup', 31, 'Cosmetics and makeup products.', 'makeup.jpg', '2025-09-15 06:18:25'),
+(32, 'Skincare', 'skincare', 31, 'Face creams, cleansers, and skincare products.', 'skincare.jpg', '2025-09-15 06:18:25'),
+(31, 'Health & Beauty', 'health-beauty', NULL, 'Cosmetics, skincare, and health products.', 'health-beauty.jpg', '2025-09-15 06:18:25'),
+(30, 'Music', 'music', 25, 'CDs, vinyl records, and digital music.', 'music.jpg', '2025-09-15 06:18:25'),
+(29, 'Video Games', 'video-games', 25, 'Console and PC games.', 'video-games.jpg', '2025-09-15 06:18:25'),
+(28, 'Movies & TV', 'movies-tv', 25, 'DVDs, Blu-rays, and streaming media.', 'movies-tv.jpg', '2025-09-15 06:18:25'),
+(27, 'Non-Fiction Books', 'non-fiction-books', 25, 'Educational and factual books.', 'non-fiction-books.jpg', '2025-09-15 06:18:25'),
+(26, 'Fiction Books', 'fiction-books', 25, 'Novels and fiction literature.', 'fiction-books.jpg', '2025-09-15 06:18:25'),
+(25, 'Books & Media', 'books-media', NULL, 'Books, movies, music, and games.', 'books-media.jpg', '2025-09-15 06:18:25'),
+(24, 'Team Sports', 'team-sports', 19, 'Equipment for soccer, basketball, and other team sports.', 'team-sports.jpg', '2025-09-15 06:18:25'),
+(23, 'Water Sports', 'water-sports', 19, 'Equipment for swimming, diving, and water activities.', 'water-sports.jpg', '2025-09-15 06:18:25'),
+(22, 'Cycling', 'cycling', 19, 'Bicycles, parts, and cycling accessories.', 'cycling.jpg', '2025-09-15 06:18:25'),
+(21, 'Camping Gear', 'camping-gear', 19, 'Tents, sleeping bags, and camping supplies.', 'camping-gear.jpg', '2025-09-15 06:18:25'),
+(20, 'Fitness Equipment', 'fitness-equipment', 19, 'Exercise machines, weights, and fitness accessories.', 'fitness-equipment.jpg', '2025-09-15 06:18:25'),
+(19, 'Sports & Outdoors', 'sports-outdoors', NULL, 'Sports equipment and outdoor gear.', 'sports-outdoors.jpg', '2025-09-15 06:18:25'),
+(18, 'Accessories', 'accessories', 13, 'Fashion accessories like bags, belts, and watches.', 'accessories.jpg', '2025-09-15 06:18:25'),
+(17, 'Women\'s Shoes', 'womens-shoes', 13, 'Footwear for women including heels, sandals, and boots.', 'womens-shoes.jpg', '2025-09-15 06:18:25'),
+(16, 'Men\'s Shoes', 'mens-shoes', 13, 'Footwear for men including sneakers, boots, and formal shoes.', 'mens-shoes.jpg', '2025-09-15 06:18:25'),
+(15, 'Women\'s Clothing', 'womens-clothing', 13, 'Clothing for women including dresses, tops, and skirts.', 'womens-clothing.jpg', '2025-09-15 06:18:25'),
+(14, 'Men\'s Clothing', 'mens-clothing', 13, 'Clothing for men including shirts, pants, and jackets.', 'mens-clothing.jpg', '2025-09-15 06:18:25'),
+(13, 'Fashion', 'fashion', NULL, 'Clothing, footwear, and accessories.', 'fashion.jpg', '2025-09-15 06:18:25'),
+(12, 'Vacuum Cleaners', 'vacuum-cleaners', 7, 'Vacuum cleaners and floor care.', 'vacuum-cleaners.jpg', '2025-09-15 06:18:25'),
+(11, 'Microwaves', 'microwaves', 7, 'Microwave ovens and kitchen appliances.', 'microwaves.jpg', '2025-09-15 06:18:25'),
+(10, 'Air Conditioners', 'air-conditioners', 7, 'AC units and cooling systems.', 'air-conditioners.jpg', '2025-09-15 06:18:25'),
+(9, 'Washing Machines', 'washing-machines', 7, 'Washing machines and dryers.', 'washing-machines.jpg', '2025-09-15 06:18:25'),
+(8, 'Refrigerators', 'refrigerators', 7, 'Refrigerators and freezers for home use.', 'refrigerators.jpg', '2025-09-15 06:18:25'),
+(7, 'Home Appliances', 'home-appliances', NULL, 'Appliances for your home and kitchen.', 'home-appliances.jpg', '2025-09-15 06:18:25'),
+(6, 'Cameras', 'cameras', 1, 'Digital cameras, DSLRs, and photography equipment.', 'cameras.jpg', '2025-09-15 06:18:25'),
+(5, 'Headphones', 'headphones', 1, 'Headphones, earphones, and audio accessories.', 'headphones.jpg', '2025-09-15 06:18:25'),
+(4, 'Tablets', 'tablets', 1, 'Tablet computers and iPads.', 'tablets.jpg', '2025-09-15 06:18:25'),
+(3, 'Laptops', 'laptops', 1, 'Laptops, notebooks, and ultrabooks for work and gaming.', 'laptops.jpg', '2025-09-15 06:18:25'),
+(2, 'Mobile Phones', 'mobile-phones', 1, 'Smartphones and feature phones from various brands.', 'mobile-phones.jpg', '2025-09-15 06:18:25'),
+(1, 'Electronics', 'electronics', NULL, 'All kinds of electronic devices and gadgets.', 'electronics.jpg', '2025-09-15 06:18:25'),
+(36, 'Vitamins', 'vitamins', 31, 'Dietary supplements and vitamins.', 'vitamins.jpg', '2025-09-15 06:18:25'),
+(37, 'Toys & Games', 'toys-games', NULL, 'Toys, games, and hobbies for all ages.', 'toys-games.jpg', '2025-09-15 06:18:25'),
+(38, 'Action Figures', 'action-figures', 37, 'Action figures and collectibles.', 'action-figures.jpg', '2025-09-15 06:18:25'),
+(39, 'Board Games', 'board-games', 37, 'Classic and modern board games.', 'board-games.jpg', '2025-09-15 06:18:25'),
+(40, 'Puzzles', 'puzzles', 37, 'Jigsaw puzzles and brain teasers.', 'puzzles.jpg', '2025-09-15 06:18:25'),
+(41, 'Outdoor Toys', 'outdoor-toys', 37, 'Toys for outdoor play.', 'outdoor-toys.jpg', '2025-09-15 06:18:25'),
+(42, 'Educational Toys', 'educational-toys', 37, 'Toys that promote learning and development.', 'educational-toys.jpg', '2025-09-15 06:18:25'),
+(43, 'Automotive', 'automotive', NULL, 'Car parts, accessories, and tools.', 'automotive.jpg', '2025-09-15 06:18:25'),
+(44, 'Car Parts', 'car-parts', 43, 'Replacement parts and components for vehicles.', 'car-parts.jpg', '2025-09-15 06:18:25'),
+(45, 'Car Accessories', 'car-accessories', 43, 'Interior and exterior car accessories.', 'car-accessories.jpg', '2025-09-15 06:18:25'),
+(46, 'Tools & Equipment', 'tools-equipment', 43, 'Automotive tools and repair equipment.', 'tools-equipment.jpg', '2025-09-15 06:18:25'),
+(47, 'Motorcycle Gear', 'motorcycle-gear', 43, 'Parts and accessories for motorcycles.', 'motorcycle-gear.jpg', '2025-09-15 06:18:25'),
+(48, 'Oils & Fluids', 'oils-fluids', 43, 'Engine oils, lubricants, and fluids.', 'oils-fluids.jpg', '2025-09-15 06:18:25'),
+(49, 'Home & Garden', 'home-garden', NULL, 'Furniture, decor, and garden supplies.', 'home-garden.jpg', '2025-09-15 06:18:25'),
+(50, 'Furniture', 'furniture', 49, 'Home and office furniture.', 'furniture.jpg', '2025-09-15 06:18:25'),
+(51, 'Home Decor', 'home-decor', 49, 'Decorative items for home interior.', 'home-decor.jpg', '2025-09-15 06:18:25'),
+(52, 'Kitchen & Dining', 'kitchen-dining', 49, 'Kitware, utensils, and dining accessories.', 'kitchen-dining.jpg', '2025-09-15 06:18:25'),
+(53, 'Garden Tools', 'garden-tools', 49, 'Tools and equipment for gardening.', 'garden-tools.jpg', '2025-09-15 06:18:25'),
+(54, 'Outdoor Furniture', 'outdoor-furniture', 49, 'Furniture for patios and gardens.', 'outdoor-furniture.jpg', '2025-09-15 06:18:25'),
+(55, 'Jewelry', 'jewelry', NULL, 'Fine jewelry and watches.', 'jewelry.jpg', '2025-09-15 06:18:25'),
+(56, 'Necklaces', 'necklaces', 55, 'Gold and silver necklaces.', 'necklaces.jpg', '2025-09-15 06:18:25'),
+(57, 'Rings', 'rings', 55, 'Engagement rings and fashion rings.', 'rings.jpg', '2025-09-15 06:18:25'),
+(58, 'Watches', 'watches', 55, 'Luxury and casual watches.', 'watches.jpg', '2025-09-15 06:18:25'),
+(59, 'Bracelets', 'bracelets', 55, 'Bracelets and bangles.', 'bracelets.jpg', '2025-09-15 06:18:25'),
+(60, 'Earrings', 'earrings', 55, 'Stud earrings and danglers.', 'earrings.jpg', '2025-09-15 06:18:25');
 
 -- --------------------------------------------------------
 
@@ -128,8 +114,8 @@ CREATE TABLE `counters` (
   `title` varchar(255) NOT NULL,
   `count` int(11) NOT NULL,
   `icon` varchar(50) NOT NULL,
-  `sort_order` int(11) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `sort_order` int(11) DEFAULT 0
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `counters`
@@ -149,11 +135,11 @@ INSERT INTO `counters` (`id`, `title`, `count`, `icon`, `sort_order`) VALUES
 CREATE TABLE `login_logs` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `login_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `login_time` timestamp NOT NULL DEFAULT current_timestamp(),
   `ip_address` varchar(45) DEFAULT NULL,
   `user_agent` varchar(255) DEFAULT NULL,
-  `success` tinyint(1) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `success` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `login_logs`
@@ -189,7 +175,71 @@ INSERT INTO `login_logs` (`id`, `user_id`, `login_time`, `ip_address`, `user_age
 (0, 1, '2025-09-09 16:34:44', '83.217.9.64', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0', 1),
 (0, 1, '2025-09-09 17:47:46', '5.210.91.172', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36', 1),
 (0, 1, '2025-09-09 17:52:20', '5.210.91.172', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36', 1),
-(0, 1, '2025-09-10 06:09:44', '89.198.179.18', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36', 1);
+(0, 1, '2025-09-10 06:09:44', '89.198.179.18', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36', 1),
+(0, 1, '2025-09-11 10:58:14', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-11 11:19:08', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 07:51:34', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 08:33:38', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 09:16:16', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 09:36:45', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 12:09:21', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 12:47:24', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 12:49:19', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 12:54:35', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 13:05:43', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 13:10:26', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0', 1),
+(0, 1, '2025-09-13 13:17:03', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 13:26:14', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 14:00:10', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 14:04:01', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 14:07:09', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 14:14:42', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 14:20:09', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-13 14:46:55', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 05:44:10', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 05:51:47', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:03:34', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:03:37', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:10:08', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:24:02', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:25:04', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:25:08', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:41:10', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:43:01', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:43:43', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:43:59', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:45:40', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:48:18', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:48:57', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:49:05', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:49:13', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:51:05', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:52:46', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 06:52:52', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 06:53:05', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 07:08:46', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 08:25:49', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 08:25:53', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 08:34:24', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 0),
+(0, 1, '2025-09-14 08:37:40', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 08:55:11', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 08:59:41', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 09:01:48', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 10:21:26', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 11:19:23', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0', 1),
+(0, 1, '2025-09-14 11:26:22', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 12:23:35', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 12:33:39', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 12:50:41', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 13:09:37', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 13:17:26', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 13:20:49', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 14:12:34', '127.0.0.1', 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36', 1),
+(0, 1, '2025-09-14 14:17:13', '127.0.0.1', 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36 Edg/140.0.0.0', 1),
+(0, 1, '2025-09-14 14:52:07', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 15:51:58', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-14 15:58:09', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1),
+(0, 1, '2025-09-15 05:18:49', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 1);
 
 -- --------------------------------------------------------
 
@@ -201,82 +251,87 @@ CREATE TABLE `products` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
-  `description` text,
-  `short_description` text,
+  `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `sale_price` decimal(10,2) DEFAULT NULL,
-  `sku` varchar(100) DEFAULT NULL,
-  `stock_quantity` int(11) DEFAULT '0',
+  `stock_quantity` int(11) DEFAULT 0,
   `category_id` int(11) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `gallery` text,
-  `featured` tinyint(1) DEFAULT '0',
+  `gallery` text DEFAULT NULL,
   `status` enum('published','draft','out_of_stock') DEFAULT 'published',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `thumbnail` varchar(255) DEFAULT NULL,
-  `short_desc` text,
-  `views` int(11) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `views` int(11) DEFAULT 0,
+  `unit` varchar(50) DEFAULT NULL,
+  `moq` int(11) DEFAULT NULL,
+  `monthly_supply_quantity` int(11) DEFAULT NULL,
+  `payment_methods` varchar(255) DEFAULT 'L/C, TT, Payoneer, PayPal'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `slug`, `description`, `short_description`, `price`, `sale_price`, `sku`, `stock_quantity`, `category_id`, `image`, `gallery`, `featured`, `status`, `created_at`, `updated_at`, `thumbnail`, `short_desc`, `views`) VALUES
-(1, 'iPhone 15 Pro', 'iphone-15-pro', 'Latest iPhone with advanced features', 'Premium smartphone', 999.99, 949.99, 'IP15-PRO', 50, 21, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 04:49:08', 'assets/images/products/s.jpg', NULL, 15),
-(2, 'Samsung Galaxy S23', 'samsung-galaxy-s23', 'Powerful Android smartphone', 'Flagship Android device', 899.99, 849.99, 'SM-S231', 45, 21, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 04:56:29', 'assets/images/products/s.jpg', NULL, 2),
-(3, 'Google Pixel 7', 'google-pixel-7', 'Google flagship smartphone', 'Best camera phone', 799.99, 749.99, 'GP-P7', 35, 21, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-09 04:54:11', 'assets/images/products/s.jpg', NULL, 4),
-(4, 'MacBook Pro 16\"', 'macbook-pro-16', 'Professional laptop for creatives', 'Powerful creative workstation', 2399.99, 2299.99, 'MBP16-M2', 25, 22, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 05:01:51', 'assets/images/products/s.jpg', NULL, 2),
-(5, 'Dell XPS 15', 'dell-xps-15', 'Premium Windows laptop', 'High-performance Windows laptop', 1899.99, 1799.99, 'DLL-XPS15', 30, 22, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 04:58:52', 'assets/images/products/s.jpg', NULL, 2),
-(6, 'Lenovo ThinkPad X1', 'lenovo-thinkpad-x1', 'Business professional laptop', 'Enterprise-grade laptop', 1699.99, 1599.99, 'LNV-TPX1', 20, 22, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-09 04:53:00', 'assets/images/products/s.jpg', NULL, 1),
-(7, 'iPad Pro 12.9\"', 'ipad-pro-12-9', 'Professional tablet for creatives', 'Powerful tablet device', 1099.99, 999.99, 'APP-IPDP12', 40, 23, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 04:55:45', 'assets/images/products/s.jpg', NULL, 2),
-(8, 'Samsung Galaxy Tab S8', 'samsung-galaxy-tab-s8', 'Android tablet with S Pen', 'Premium Android tablet', 899.99, 849.99, 'SM-TABS8', 35, 23, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-09 11:16:34', 'assets/images/products/s.jpg', NULL, 2),
-(9, 'Microsoft Surface Pro 9', 'microsoft-surface-pro-9', '2-in-1 tablet and laptop', 'Versatile computing device', 1299.99, 1199.99, 'MS-SP9', 25, 23, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 15:13:55', 'assets/images/products/s.jpg', NULL, 4),
-(10, 'LG French Door Refrigerator', 'lg-french-door-refrigerator', 'Spacious French door fridge', 'Energy efficient refrigerator', 1899.99, 1799.99, 'LG-FDR500', 15, 27, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 04:53:25', 'assets/images/products/s.jpg', NULL, 2),
-(11, 'Samsung Family Hub Refrigerator', 'samsung-family-hub-refrigerator', 'Smart refrigerator with touchscreen', 'Connected kitchen appliance', 2499.99, 2299.99, 'SM-FHUB', 10, 27, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-09 04:51:27', 'assets/images/products/s.jpg', NULL, 1),
-(12, 'Whirlpool Side-by-Side Refrigerator', 'whirlpool-side-by-side-refrigerator', 'Reliable side-by-side fridge', 'Durable cooling solution', 1599.99, 1499.99, 'WH-SBS', 20, 27, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-09 05:00:22', 'assets/images/products/s.jpg', NULL, 2),
-(13, 'Samsung Front Load Washer', 'samsung-front-load-washer', 'Efficient front loading washer', 'Energy saving washing machine', 899.99, 849.99, 'SM-FLW', 25, 28, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(14, 'Maytag Top Load Washer', 'maytag-top-load-washer', 'Durable top loading washer', 'Reliable laundry solution', 799.99, 749.99, 'MY-TLW', 30, 28, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(15, 'Men Casual Shirt', 'men-casual-shirt', 'Comfortable casual shirt', 'Everyday wear shirt', 49.99, 44.99, 'MCS-001', 100, 33, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-07 09:53:19', 'assets/images/products/s.jpg', NULL, 1),
-(16, 'Men Formal Suit', 'men-formal-suit', 'Professional business suit', 'Premium formal wear', 299.99, 279.99, 'MFS-001', 50, 33, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(17, 'Men Jeans', 'men-jeans', 'Durable denim jeans', 'Comfortable casual pants', 79.99, 69.99, 'MJ-001', 80, 33, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(18, 'Women Summer Dress', 'women-summer-dress', 'Lightweight summer dress', 'Perfect for warm weather', 89.99, 79.99, 'WSD-001', 60, 34, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(19, 'Women Blouse', 'women-blouse', 'Elegant women blouse', 'Office and casual wear', 59.99, 49.99, 'WB-001', 70, 34, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(20, 'Women Skirt', 'women-skirt', 'Fashionable women skirt', 'Versatile bottom wear', 69.99, 59.99, 'WS-001', 65, 34, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(21, 'Yoga Mat', 'yoga-mat', 'Non-slip yoga mat', 'Comfortable exercise surface', 39.99, 34.99, 'YM-001', 120, 39, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(22, 'Dumbbell Set', 'dumbbell-set', 'Adjustable weight dumbbells', 'Home workout equipment', 129.99, 119.99, 'DS-001', 40, 39, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(23, 'Resistance Bands', 'resistance-bands', 'Set of exercise bands', 'Portable workout solution', 29.99, 24.99, 'RB-001', 150, 39, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(24, 'Camping Tent', 'camping-tent', '4-person camping tent', 'Weather-resistant shelter', 199.99, 179.99, 'CT-001', 30, 40, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(25, 'Hiking Backpack', 'hiking-backpack', '60L hiking backpack', 'Comfortable carrying solution', 149.99, 139.99, 'HB-001', 45, 40, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:45:29', 'assets/images/products/s.jpg', NULL, 1),
-(26, 'Sleeping Bag', 'sleeping-bag', 'All-weather sleeping bag', 'Warm and comfortable', 89.99, 79.99, 'SB-001', 60, 40, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(27, 'The Great Gatsby', 'the-great-gatsby', 'Classic American novel', 'F. Scott Fitzgerald masterpiece', 12.99, 10.99, 'B-FIC-001', 200, 45, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(28, 'To Kill a Mockingbird', 'to-kill-a-mockingbird', 'American classic literature', 'Harper Lee novel', 14.99, 12.99, 'B-FIC-002', 180, 45, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-07 17:29:11', 'assets/images/products/s.jpg', NULL, 1),
-(29, '1984', '1984-book', 'Dystopian classic novel', 'George Orwell masterpiece', 13.99, 11.99, 'B-FIC-003', 190, 45, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(30, 'Sapiens', 'sapiens-book', 'Brief history of humankind', 'Yuval Noah Harari', 18.99, 16.99, 'B-NF-001', 150, 46, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(31, 'Atomic Habits', 'atomic-habits', 'Build good habits framework', 'James Clear bestseller', 16.99, 14.99, 'B-NF-002', 170, 46, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(32, 'Educated', 'educated-book', 'Memoir about education', 'Tara Westover autobiography', 17.99, 15.99, 'B-NF-003', 140, 46, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(33, 'Leather Sofa', 'leather-sofa', 'Premium genuine leather sofa', 'Comfortable seating', 1299.99, 1199.99, 'F-LS-001', 15, 51, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(34, 'Coffee Table', 'coffee-table', 'Modern wooden coffee table', 'Living room centerpiece', 299.99, 279.99, 'F-CT-001', 25, 51, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(35, 'TV Stand', 'tv-stand', 'Entertainment center unit', 'Media storage solution', 399.99, 349.99, 'F-TVS-001', 20, 51, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(36, 'Queen Size Bed', 'queen-size-bed', 'Comfortable queen bed frame', 'Bedroom centerpiece', 899.99, 849.99, 'F-QB-001', 12, 52, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(37, 'Dresser', 'dresser', '6-drawer wooden dresser', 'Clothing storage solution', 499.99, 449.99, 'F-DR-001', 18, 52, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(38, 'Nightstand', 'nightstand', 'Bedside table with drawer', 'Convenient bedroom accessory', 199.99, 179.99, 'F-NS-001', 30, 52, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(39, 'STEM Robotics Kit', 'stem-robotics-kit', 'Educational robotics set', 'Learn programming basics', 89.99, 79.99, 'T-EDU-001', 40, 57, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(40, 'Building Blocks Set', 'building-blocks-set', 'Creative construction toys', 'Develop motor skills', 49.99, 44.99, 'T-EDU-002', 60, 57, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(41, 'Science Experiment Kit', 'science-experiment-kit', 'Hands-on learning kit', 'Discover scientific principles', 69.99, 59.99, 'T-EDU-003', 35, 57, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(42, 'Chess Set', 'chess-set', 'Classic strategy game', 'Wooden chess board', 39.99, 34.99, 'T-BG-001', 50, 59, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(43, 'Monopoly', 'monopoly-game', 'Classic property trading game', 'Family game night', 29.99, 24.99, 'T-BG-002', 70, 59, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(44, 'Jenga', 'jenga-game', 'Stacking tower game', 'Test your steady hands', 19.99, 16.99, 'T-BG-003', 80, 59, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(45, 'Face Moisturizer', 'face-moisturizer', 'Hydrating daily moisturizer', 'Nourish your skin', 34.99, 29.99, 'B-SK-001', 90, 63, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(46, 'Sunscreen SPF 50', 'sunscreen-spf50', 'Daily protection sunscreen', 'UV protection', 24.99, 19.99, 'B-SK-002', 110, 63, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(47, 'Face Serum', 'face-serum', 'Anti-aging vitamin C serum', 'Brighten and even skin', 49.99, 44.99, 'B-SK-003', 75, 63, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(48, 'Foundation', 'foundation-makeup', 'Natural finish foundation', 'Flawless coverage', 39.99, 34.99, 'B-MU-001', 85, 64, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(49, 'Mascara', 'mascara', 'Lengthening and volumizing', 'Dramatic lashes', 24.99, 19.99, 'B-MU-002', 100, 64, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(50, 'Lipstick Set', 'lipstick-set', '6 shades lipstick collection', 'Variety of colors', 49.99, 44.99, 'B-MU-003', 65, 64, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(51, 'Diamond Engagement Ring', 'diamond-engagement-ring', '1 carat solitaire diamond', 'Timeless proposal ring', 2999.99, 2799.99, 'J-R-001', 8, 69, 'assets/images/products/s.jpg', NULL, 1, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(52, 'Gold Wedding Band', 'gold-wedding-band', 'Classic 14k gold band', 'Traditional wedding ring', 899.99, 849.99, 'J-R-002', 15, 69, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0),
-(53, 'Silver Statement Ring', 'silver-statement-ring', 'Bold sterling silver ring', 'Fashion accessory', 129.99, 119.99, 'J-R-003', 25, 69, 'assets/images/products/s.jpg', NULL, 0, 'published', '2025-09-01 07:42:04', '2025-09-02 06:29:27', 'assets/images/products/s.jpg', NULL, 0);
+INSERT INTO `products` (`id`, `name`, `slug`, `description`, `price`, `sale_price`, `stock_quantity`, `category_id`, `gallery`, `status`, `created_at`, `updated_at`, `thumbnail`, `views`, `unit`, `moq`, `monthly_supply_quantity`, `payment_methods`) VALUES
+(31, 'Adidas Predator Soccer Cleats', 'adidas-predator-soccer-cleats', 'Professional soccer cleats with enhanced control and precision.', 250.00, 220.00, 50, 24, 'assets/images/products/adidas-cleats.jpg,assets/images/products/adidas-cleats-1.jpg,assets/images/products/adidas-cleats-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 07:39:32', 'assets/images/products/adidas-cleats-thumb.jpg', 91, 'pair', 10, 500, 'L/C, TT, PayPal'),
+(30, 'Spalding NBA Basketball Hoop', 'spalding-nba-basketball-hoop', 'Adjustable basketball hoop with professional NBA design.', 399.00, 349.00, 15, 24, 'spalding-hoop-1.jpg,spalding-hoop-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'spalding-hoop-thumb.jpg', 40, 'piece', 1, 200, 'L/C, TT'),
+(29, 'Wilson Evolution Basketball', 'wilson-evolution-basketball', 'Official game basketball with superior grip and feel.', 69.99, 59.99, 80, 24, 'wilson-basketball-1.jpg,wilson-basketball-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'wilson-basketball-thumb.jpg', 65, 'piece', 10, 600, 'L/C, TT, PayPal'),
+(28, 'Coleman Sundome Tent', 'coleman-sundome-tent', 'Easy-to-setup dome tent for 4 people with weatherproof design.', 89.99, 79.99, 35, 21, 'coleman-tent-1.jpg,coleman-tent-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'coleman-tent-thumb.jpg', 55, 'piece', 1, 400, 'L/C, TT, PayPal'),
+(27, 'Patagonia Fleece Jacket', 'patagonia-fleece-jacket', 'Warm and sustainable fleece jacket made from recycled materials.', 139.00, 119.00, 60, 14, 'patagonia-jacket-1.jpg,patagonia-jacket-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'patagonia-jacket-thumb.jpg', 70, 'piece', 10, 1000, 'L/C, TT, PayPal'),
+(26, 'North Face Jacket', 'north-face-jacket', 'Waterproof and breathable jacket for outdoor activities.', 229.00, 199.00, 45, 14, 'northface-jacket-1.jpg,northface-jacket-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'northface-jacket-thumb.jpg', 85, 'piece', 10, 800, 'L/C, TT, PayPal'),
+(25, 'Yeti Tundra 45 Cooler', 'yeti-tundra-45-cooler', 'Roto-molded cooler with bear-proof design and excellent insulation.', 375.00, 350.00, 25, 21, 'yeti-cooler-1.jpg,yeti-cooler-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'yeti-cooler-thumb.jpg', 60, 'piece', 1, 300, 'L/C, TT'),
+(24, 'Garmin Forerunner 955', 'garmin-forerunner-955', 'GPS running watch with advanced training metrics and mapping.', 499.99, 449.99, 30, 20, 'garmin-watch-1.jpg,garmin-watch-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'garmin-watch-thumb.jpg', 75, 'piece', 1, 500, 'L/C, TT'),
+(23, 'Fitbit Charge 5', 'fitbit-charge-5', 'Advanced fitness tracker with ECG app and stress management tools.', 179.95, 149.95, 85, 20, 'fitbit-charge5-1.jpg,fitbit-charge5-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'fitbit-charge5-thumb.jpg', 130, 'piece', 1, 1200, 'L/C, TT, PayPal'),
+(22, 'Instant Pot Duo Plus', 'instant-pot-duo-plus', '9-in-1 multi-use pressure cooker with easy-to-use controls.', 99.95, 89.99, 65, 52, 'instant-pot-1.jpg,instant-pot-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'instant-pot-thumb.jpg', 110, 'piece', 1, 800, 'L/C, TT, PayPal'),
+(21, 'Nespresso Vertuo Plus', 'nespresso-vertuo-plus', 'Coffee machine with centrifusion technology for perfect coffee extraction.', 179.00, 159.00, 40, 52, 'nespresso-machine-1.jpg,nespresso-machine-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'nespresso-machine-thumb.jpg', 90, 'piece', 1, 600, 'L/C, TT, PayPal'),
+(20, 'Bose QuietComfort Earbuds', 'bose-quietcomfort-earbuds', 'Wireless earbuds with world-class noise cancellation.', 279.00, 249.00, 70, 5, 'bose-earbuds-1.jpg,bose-earbuds-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'bose-earbuds-thumb.jpg', 120, 'pair', 1, 1000, 'L/C, TT, PayPal'),
+(19, 'Samsung Galaxy Watch 6', 'samsung-galaxy-watch-6', 'Smartwatch with advanced health monitoring and long battery life.', 299.99, 279.99, 55, 1, 'samsung-watch-1.jpg,samsung-watch-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'samsung-watch-thumb.jpg', 100, 'piece', 1, 900, 'L/C, TT, PayPal'),
+(18, 'Apple Watch Series 9', 'apple-watch-series-9', 'Advanced smartwatch with health monitoring and fitness tracking features.', 399.00, 379.00, 60, 1, 'apple-watch-1.jpg,apple-watch-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'apple-watch-thumb.jpg', 140, 'piece', 1, 1200, 'L/C, TT, PayPal'),
+(17, 'Xbox Series X', 'xbox-series-x', 'Powerful gaming console with 12 teraflops of processing power.', 499.99, NULL, 18, 29, 'xbox-seriesx-1.jpg,xbox-seriesx-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'xbox-seriesx-thumb.jpg', 180, 'piece', 1, 700, 'L/C, TT'),
+(16, 'PlayStation 5 Console', 'playstation-5-console', 'Next-generation gaming console with ultra-high speed SSD.', 499.99, NULL, 15, 29, 'ps5-console-1.jpg,ps5-console-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'ps5-console-thumb.jpg', 250, 'piece', 1, 800, 'L/C, TT'),
+(15, 'Dyson V11 Vacuum Cleaner', 'dyson-v11-vacuum-cleaner', 'Cordless vacuum with powerful suction and intelligent cleaning modes.', 599.00, 549.00, 40, 12, 'dyson-vacuum-1.jpg,dyson-vacuum-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'dyson-vacuum-thumb.jpg', 110, 'piece', 1, 600, 'L/C, TT, PayPal'),
+(14, 'KitchenAid Stand Mixer', 'kitchenaid-stand-mixer', 'Professional stand mixer with 10-speed settings and various attachments.', 429.99, 399.99, 30, 52, 'kitchenaid-mixer-1.jpg,kitchenaid-mixer-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'kitchenaid-mixer-thumb.jpg', 80, 'piece', 1, 500, 'L/C, TT, PayPal'),
+(13, 'Sony 65-inch 4K TV', 'sony-65-inch-4k-tv', 'Smart TV with Cognitive Processor XR for realistic picture quality.', 1399.00, 1299.00, 25, 1, 'sony-tv-1.jpg,sony-tv-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'sony-tv-thumb.jpg', 95, 'piece', 1, 400, 'L/C, TT'),
+(12, 'Levi\'s 501 Original Jeans', 'levis-501-original-jeans', 'Classic straight fit jeans in original shrink-to-fit design.', 89.50, 79.99, 200, 14, 'levis-jeans-1.jpg,levis-jeans-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'levis-jeans-thumb.jpg', 150, 'piece', 20, 3000, 'L/C, TT, PayPal'),
+(11, 'Adidas Ultraboost 22', 'adidas-ultraboost-22', 'Running shoes with Boost technology for responsive cushioning.', 180.00, 160.00, 80, 16, 'adidas-ultraboost-1.jpg,adidas-ultraboost-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'adidas-ultraboost-thumb.jpg', 120, 'pair', 10, 1500, 'L/C, TT, PayPal'),
+(10, 'Nike Air Max 270', 'nike-air-max-270', 'Comfortable sneakers with maximal air cushioning for all-day comfort.', 150.00, 135.00, 100, 16, 'nike-airmax-1.jpg,nike-airmax-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'nike-airmax-thumb.jpg', 180, 'pair', 10, 2000, 'L/C, TT, PayPal'),
+(9, 'iPad Pro 12.9-inch', 'ipad-pro-12-9-inch', 'Professional tablet with M2 chip and Liquid Retina XDR display.', 1099.00, 999.00, 35, 4, 'ipad-pro-1.jpg,ipad-pro-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'ipad-pro-thumb.jpg', 90, 'piece', 1, 700, 'L/C, TT, PayPal'),
+(8, 'Dell XPS 15 Laptop', 'dell-xps-15-laptop', 'Powerful Windows laptop with OLED display and Intel Core i9 processor.', 1899.00, 1799.00, 40, 3, 'dell-xps15-1.jpg,dell-xps15-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'dell-xps15-thumb.jpg', 110, 'piece', 1, 600, 'L/C, TT, Payoneer'),
+(7, 'Samsung Front Load Washer', 'samsung-front-load-washer', 'Energy efficient front load washing machine with steam technology.', 899.00, 849.00, 25, 9, 'samsung-washer-1.jpg,samsung-washer-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'samsung-washer-thumb.jpg', 70, 'piece', 1, 300, 'L/C, TT'),
+(6, 'LG Smart Refrigerator', 'lg-smart-refrigerator', 'Smart fridge with Wi-Fi connectivity and door-in-door design.', 2199.00, 1999.00, 15, 8, 'lg-refrigerator-1.jpg,lg-refrigerator-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'lg-refrigerator-thumb.jpg', 60, 'piece', 1, 200, 'L/C, TT, PayPal'),
+(5, 'Canon EOS R5 Camera', 'canon-eos-r5', 'Professional mirrorless camera with 45MP sensor and 8K video recording.', 3899.00, 3799.00, 20, 6, 'canon-eos-r5-1.jpg,canon-eos-r5-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'canon-eos-r5-thumb.jpg', 85, 'piece', 1, 300, 'L/C, TT'),
+(4, 'Sony WH-1000XM5 Headphones', 'sony-wh-1000xm5', 'Industry-leading noise canceling headphones with exceptional sound quality.', 349.99, 329.99, 75, 5, 'sony-xm5-1.jpg,sony-xm5-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'sony-xm5-thumb.jpg', 200, 'piece', 1, 1200, 'L/C, TT, PayPal'),
+(3, 'MacBook Pro 16-inch', 'macbook-pro-16-inch', 'Professional laptop with M3 Max chip for extreme performance.', 2499.00, 2399.00, 30, 3, 'macbook-pro-16-1.jpg,macbook-pro-16-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'macbook-pro-16-thumb.jpg', 150, 'piece', 1, 500, 'L/C, TT, Payoneer'),
+(2, 'Samsung Galaxy S24 Ultra', 'samsung-galaxy-s24-ultra', 'Samsung\'s premium smartphone with S Pen and advanced AI capabilities.', 1299.00, NULL, 45, 2, 'galaxy-s24-ultra-1.jpg,galaxy-s24-ultra-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'galaxy-s24-ultra-thumb.jpg', 95, 'piece', 1, 800, 'L/C, TT, PayPal'),
+(1, 'iPhone 15 Pro Max', 'iphone-15-pro-max', 'The latest flagship smartphone from Apple with advanced camera system and A17 Pro chip.', 1199.00, 1099.00, 50, 2, 'iphone15-pro-max-1.jpg,iphone15-pro-max-2.jpg,iphone15-pro-max-3.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'iphone15-pro-max-thumb.jpg', 120, 'piece', 1, 1000, 'L/C, TT, Payoneer, PayPal'),
+(32, 'Nike Mercurial Vapor Cleats', 'nike-mercurial-vapor-cleats', 'Lightweight soccer cleats designed for speed and agility.', 275.00, 250.00, 45, 24, 'nike-cleats-1.jpg,nike-cleats-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'nike-cleats-thumb.jpg', 80, 'pair', 10, 450, 'L/C, TT, PayPal'),
+(33, 'Kindle Paperwhite', 'kindle-paperwhite', 'Waterproof e-reader with glare-free display and built-in light.', 139.99, 129.99, 90, 26, 'kindle-paperwhite-1.jpg,kindle-paperwhite-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'kindle-paperwhite-thumb.jpg', 120, 'piece', 1, 1500, 'L/C, TT, PayPal'),
+(34, 'Bose SoundLink Speaker', 'bose-soundlink-speaker', 'Portable Bluetooth speaker with deep, loud sound.', 129.00, 109.00, 70, 30, 'bose-speaker-1.jpg,bose-speaker-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'bose-speaker-thumb.jpg', 95, 'piece', 1, 900, 'L/C, TT, PayPal'),
+(35, 'JBL Flip 6 Speaker', 'jbl-flip-6-speaker', 'Portable Bluetooth speaker with powerful sound and waterproof design.', 129.95, 119.95, 85, 30, 'jbl-speaker-1.jpg,jbl-speaker-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'jbl-speaker-thumb.jpg', 110, 'piece', 1, 1000, 'L/C, TT, PayPal'),
+(36, 'GoPro Hero 12 Black', 'gopro-hero-12-black', 'Action camera with 5.3K video and HyperSmooth 6.0 stabilization.', 399.99, 379.99, 40, 6, 'gopro-hero12-1.jpg,gopro-hero12-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'gopro-hero12-thumb.jpg', 130, 'piece', 1, 600, 'L/C, TT, PayPal'),
+(37, 'DJI Mini 3 Pro Drone', 'dji-mini-3-pro-drone', 'Compact drone with 4K camera and tri-directional obstacle sensing.', 759.00, 709.00, 25, 6, 'dji-drone-1.jpg,dji-drone-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'dji-drone-thumb.jpg', 95, 'piece', 1, 400, 'L/C, TT'),
+(38, 'Apple AirPods Pro', 'apple-airpods-pro', 'Wireless earbuds with active noise cancellation and spatial audio.', 249.00, 229.00, 100, 5, 'airpods-pro-1.jpg,airpods-pro-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'airpods-pro-thumb.jpg', 200, 'pair', 1, 2000, 'L/C, TT, PayPal'),
+(39, 'Samsung T7 SSD', 'samsung-t7-ssd', 'Portable SSD with fast transfer speeds and rugged design.', 109.99, 99.99, 75, 1, 'samsung-ssd-1.jpg,samsung-ssd-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'samsung-ssd-thumb.jpg', 85, 'piece', 1, 800, 'L/C, TT, PayPal'),
+(40, 'Logitech MX Master 3', 'logitech-mx-master-3', 'Advanced wireless mouse with ergonomic design and precision scrolling.', 99.99, 89.99, 60, 1, 'logitech-mouse-1.jpg,logitech-mouse-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'logitech-mouse-thumb.jpg', 110, 'piece', 1, 700, 'L/C, TT, PayPal'),
+(41, 'Microsoft Surface Laptop 5', 'microsoft-surface-laptop-5', 'Sleek Windows laptop with touchscreen and premium design.', 1299.00, 1199.00, 35, 3, 'surface-laptop-1.jpg,surface-laptop-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'surface-laptop-thumb.jpg', 90, 'piece', 1, 500, 'L/C, TT'),
+(42, 'HP LaserJet Printer', 'hp-laserjet-printer', 'Reliable laser printer for home and office use.', 199.99, 179.99, 40, 1, 'hp-printer-1.jpg,hp-printer-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'hp-printer-thumb.jpg', 65, 'piece', 1, 400, 'L/C, TT, PayPal'),
+(43, 'Epson EcoTank Printer', 'epson-ecotank-printer', 'Ink tank printer with high page yield and low printing cost.', 299.99, 279.99, 30, 1, 'epson-printer-1.jpg,epson-printer-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'epson-printer-thumb.jpg', 55, 'piece', 1, 300, 'L/C, TT'),
+(44, 'Anker PowerCore Battery', 'anker-powercore-battery', 'High-capacity portable charger for smartphones and devices.', 79.99, 69.99, 100, 1, 'anker-battery-1.jpg,anker-battery-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'anker-battery-thumb.jpg', 120, 'piece', 1, 1500, 'L/C, TT, PayPal'),
+(45, 'Tile Pro Tracker', 'tile-pro-tracker', 'Bluetooth tracker to find your keys, wallet, and other items.', 34.99, 29.99, 150, 1, 'tile-tracker-1.jpg,tile-tracker-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'tile-tracker-thumb.jpg', 80, 'piece', 10, 2000, 'L/C, TT, PayPal'),
+(46, 'Ring Video Doorbell', 'ring-video-doorbell', 'Smart doorbell with HD video and two-way talk.', 99.99, 89.99, 50, 1, 'ring-doorbell-1.jpg,ring-doorbell-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'ring-doorbell-thumb.jpg', 95, 'piece', 1, 600, 'L/C, TT, PayPal'),
+(47, 'Nest Learning Thermostat', 'nest-learning-thermostat', 'Smart thermostat that learns your schedule and saves energy.', 249.99, 229.99, 40, 1, 'nest-thermostat-1.jpg,nest-thermostat-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'nest-thermostat-thumb.jpg', 70, 'piece', 1, 500, 'L/C, TT'),
+(48, 'Philips Hue Starter Kit', 'philips-hue-starter-kit', 'Smart lighting system with color changing bulbs and bridge.', 199.99, 179.99, 45, 1, 'philips-hue-1.jpg,philips-hue-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'philips-hue-thumb.jpg', 85, 'kit', 1, 700, 'L/C, TT, PayPal'),
+(49, 'iRobot Roomba i4', 'irobot-roomba-i4', 'Robot vacuum with powerful suction and smart mapping.', 399.00, 349.00, 30, 12, 'roomba-vacuum-1.jpg,roomba-vacuum-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'roomba-vacuum-thumb.jpg', 75, 'piece', 1, 400, 'L/C, TT, PayPal'),
+(50, 'Shark Navigator Vacuum', 'shark-navigator-vacuum', 'Upright vacuum with powerful suction and lift-away technology.', 199.99, 179.99, 55, 12, 'shark-vacuum-1.jpg,shark-vacuum-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'shark-vacuum-thumb.jpg', 65, 'piece', 1, 500, 'L/C, TT, PayPal'),
+(51, 'KitchenAid Food Processor', 'kitchenaid-food-processor', '13-cup food processor with precise slicing and dicing.', 229.99, 199.99, 35, 52, 'kitchenaid-processor-1.jpg,kitchenaid-processor-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'kitchenaid-processor-thumb.jpg', 60, 'piece', 1, 400, 'L/C, TT, PayPal'),
+(52, 'Vitamix Blender', 'vitamix-blender', 'Professional-grade blender with powerful motor and variable speed control.', 449.95, 399.95, 25, 52, 'vitamix-blender-1.jpg,vitamix-blender-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'vitamix-blender-thumb.jpg', 70, 'piece', 1, 300, 'L/C, TT'),
+(53, 'Ninja Air Fryer', 'ninja-air-fryer', 'Air fryer that crisps with little or no oil for healthier cooking.', 99.99, 89.99, 70, 52, 'ninja-airfryer-1.jpg,ninja-airfryer-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'ninja-airfryer-thumb.jpg', 90, 'piece', 1, 800, 'L/C, TT, PayPal'),
+(54, 'Cuisinart Coffee Maker', 'cuisinart-coffee-maker', 'Programmable coffee maker with thermal carafe to keep coffee hot.', 119.99, 99.99, 60, 52, 'cuisinart-coffeemaker-1.jpg,cuisinart-coffeemaker-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'cuisinart-coffeemaker-thumb.jpg', 75, 'piece', 1, 600, 'L/C, TT, PayPal'),
+(55, 'Breville Smart Oven', 'breville-smart-oven', 'Countertop oven with multiple cooking functions and element IQ.', 299.99, 279.99, 40, 52, 'breville-oven-1.jpg,breville-oven-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'breville-oven-thumb.jpg', 65, 'piece', 1, 400, 'L/C, TT'),
+(56, 'Zojirushi Rice Cooker', 'zojirushi-rice-cooker', 'Advanced rice cooker with fuzzy logic technology for perfect rice.', 199.99, 179.99, 50, 52, 'zojirushi-ricecooker-1.jpg,zojirushi-ricecooker-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'zojirushi-ricecooker-thumb.jpg', 55, 'piece', 1, 500, 'L/C, TT, PayPal'),
+(57, 'Lodge Cast Iron Skillet', 'lodge-cast-iron-skillet', 'Pre-seasoned cast iron skillet for even heating and versatile cooking.', 24.90, 21.99, 100, 52, 'lodge-skillet-1.jpg,lodge-skillet-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'lodge-skillet-thumb.jpg', 80, 'piece', 10, 1200, 'L/C, TT, PayPal'),
+(58, 'All-Clad Stainless Cookware', 'all-clad-stainless-cookware', 'Professional stainless steel cookware with even heat distribution.', 299.99, 279.99, 20, 52, 'allclad-cookware-1.jpg,allclad-cookware-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'allclad-cookware-thumb.jpg', 45, 'set', 1, 300, 'L/C, TT'),
+(59, 'OXO Good Grips Tools', 'oxo-good-grips-tools', 'Ergonomic kitchen tools with comfortable non-slip handles.', 39.99, 34.99, 120, 52, 'oxo-tools-1.jpg,oxo-tools-2.jpg', 'published', '2025-09-15 06:22:48', '2025-09-15 06:22:48', 'oxo-tools-thumb.jpg', 70, 'set', 10, 1500, 'L/C, TT, PayPal');
 
 -- --------------------------------------------------------
 
@@ -289,22 +344,28 @@ CREATE TABLE `product_inquiries` (
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `inquiry_via` enum('whatsapp','telegram') NOT NULL,
-  `inquiry_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `situation` varchar(255) DEFAULT NULL,
+  `inquiry_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Flag for soft delete: 0=active, 1=deleted'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `product_inquiries`
 --
 
-INSERT INTO `product_inquiries` (`id`, `product_id`, `user_id`, `inquiry_via`, `inquiry_date`) VALUES
-(10, 30, 1, 'whatsapp', '2025-09-09 17:48:39'),
-(9, 1, 1, 'telegram', '2025-09-09 05:39:51'),
-(8, 1, 1, 'whatsapp', '2025-09-09 05:38:37'),
-(4, 9, 1, 'whatsapp', '2025-09-08 13:44:49'),
-(5, 1, 1, 'whatsapp', '2025-09-08 14:53:39'),
-(6, 27, 1, 'whatsapp', '2025-09-08 16:04:34'),
-(7, 27, 1, 'telegram', '2025-09-08 16:04:39'),
-(11, 30, 1, 'telegram', '2025-09-09 17:49:10');
+INSERT INTO `product_inquiries` (`id`, `product_id`, `user_id`, `inquiry_via`, `situation`, `inquiry_date`, `is_deleted`) VALUES
+(10, 30, 1, 'whatsapp', NULL, '2025-09-09 17:48:39', 1),
+(9, 1, 1, 'telegram', NULL, '2025-09-09 05:39:51', 1),
+(8, 1, 1, 'whatsapp', NULL, '2025-09-09 05:38:37', 1),
+(4, 9, 1, 'whatsapp', NULL, '2025-09-08 13:44:49', 1),
+(5, 1, 1, 'whatsapp', NULL, '2025-09-08 14:53:39', 1),
+(6, 27, 1, 'whatsapp', NULL, '2025-09-08 16:04:34', 1),
+(7, 27, 1, 'telegram', NULL, '2025-09-08 16:04:39', 0),
+(11, 30, 1, 'telegram', NULL, '2025-09-09 17:49:10', 0),
+(12, 1, 1, 'telegram', NULL, '2025-09-13 14:48:52', 1),
+(13, 1, 1, 'whatsapp', NULL, '2025-09-14 08:32:12', 1),
+(14, 1, 1, 'telegram', NULL, '2025-09-14 16:24:08', 1),
+(15, 6, 1, 'whatsapp', NULL, '2025-09-14 16:24:29', 0);
 
 -- --------------------------------------------------------
 
@@ -316,13 +377,13 @@ CREATE TABLE `slides` (
   `id` int(11) NOT NULL,
   `image_url` varchar(255) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `description` text,
+  `description` text DEFAULT NULL,
   `button_text` varchar(50) DEFAULT NULL,
   `button_link` varchar(255) DEFAULT NULL,
-  `sort_order` int(11) DEFAULT '0',
-  `is_active` tinyint(1) DEFAULT '1',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `sort_order` int(11) DEFAULT 0,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `slides`
@@ -347,9 +408,9 @@ CREATE TABLE `tickets` (
   `message` text NOT NULL,
   `status` enum('open','in_progress','closed') NOT NULL DEFAULT 'open',
   `priority` enum('low','medium','high') NOT NULL DEFAULT 'medium',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tickets`
@@ -361,7 +422,15 @@ INSERT INTO `tickets` (`id`, `ticket_number`, `user_id`, `subject`, `message`, `
 (5502, 5502, 1, 'TestFinal', 'testFinal testFinal testFinal testFinal testFinal testFinal testFinal', 'open', 'high', '2025-09-08 11:12:08', '2025-09-08 16:21:56'),
 (5503, 5503, 1, 'FinalTest', 'FinalTestFinalTestFinalTestFinalTestFinalTestFinalTestFinalTestFinalTest', 'open', 'low', '2025-09-08 11:24:30', '2025-09-08 16:21:53'),
 (5504, 5504, 1, 'test for long message test for long message test for long message test for long message', 'سیبلاسا', 'open', 'medium', '2025-09-08 16:17:18', '2025-09-08 16:17:18'),
-(5505, 5505, 1, 'test', 'test', 'open', 'medium', '2025-09-09 05:44:15', '2025-09-09 05:44:15');
+(5505, 5505, 1, 'test', 'test', 'open', 'medium', '2025-09-09 05:44:15', '2025-09-09 05:44:15'),
+(5506, 5506, 1, 'asdfasdf', 'asdfasdfasdfasdf', 'open', 'medium', '2025-09-13 14:22:36', '2025-09-13 14:22:36'),
+(5507, 5507, 1, 'asdfasdf', 'asdfasdfasdfasdf', 'open', 'medium', '2025-09-13 14:22:37', '2025-09-13 14:22:37'),
+(5508, 5508, 1, 'asfdgsdfgd', 'cvbxcvb', 'open', 'medium', '2025-09-13 14:23:01', '2025-09-13 14:23:01'),
+(5509, 5509, 1, 'asfdgsdfgd', 'cvbxcvb', 'open', 'medium', '2025-09-13 14:23:01', '2025-09-13 14:23:01'),
+(5510, 5510, 1, 'sdfgdfg', 'sdfgsdfg', 'open', 'medium', '2025-09-13 14:23:35', '2025-09-13 14:23:35'),
+(5511, 5511, 1, 'sdfgdfg', 'sdfgsdfg', 'open', 'medium', '2025-09-13 14:23:35', '2025-09-13 14:23:35'),
+(5512, 5512, 1, 'sdfgsdfg', 'sdfgsdf5wtythe5363674576', 'closed', 'medium', '2025-09-13 14:25:01', '2025-09-14 13:36:44'),
+(5513, 5513, 1, 'sdfgsdfg', 'sdfgsdf5wtythe5363674576', 'open', 'medium', '2025-09-13 14:25:01', '2025-09-13 14:25:01');
 
 --
 -- Triggers `tickets`
@@ -386,9 +455,9 @@ CREATE TABLE `ticket_replies` (
   `ticket_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `message` text NOT NULL,
-  `is_admin` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `is_admin` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `ticket_replies`
@@ -405,7 +474,19 @@ INSERT INTO `ticket_replies` (`id`, `ticket_id`, `user_id`, `message`, `is_admin
 (19, 5505, 2, 'test', 1, '2025-09-09 05:54:29'),
 (20, 5505, 1, 'تست', 0, '2025-09-09 15:37:25'),
 (21, 5505, 2, 'admin', 1, '2025-09-09 15:37:35'),
-(22, 5505, 1, 'Test', 0, '2025-09-09 17:50:40');
+(22, 5505, 1, 'Test', 0, '2025-09-09 17:50:40'),
+(23, 5505, 1, 'hi', 0, '2025-09-13 09:30:06'),
+(24, 5509, 1, 'sadfasdf', 0, '2025-09-13 14:35:00'),
+(25, 5509, 1, 'asdfasdfasdf', 0, '2025-09-13 14:35:05'),
+(26, 5509, 1, 'asdfasdf', 0, '2025-09-13 14:35:11'),
+(27, 5512, 1, 'sdfgsd', 0, '2025-09-14 10:24:29'),
+(28, 5512, 1, 'sdfgsdfg', 0, '2025-09-14 10:24:31'),
+(29, 5512, 1, 'sdfgsdfg', 0, '2025-09-14 10:24:33'),
+(30, 5512, 1, 'sdfgsdfg', 0, '2025-09-14 10:25:47'),
+(31, 5512, 1, 'dfbdfghjdyjrtyur67yu', 0, '2025-09-14 10:25:53'),
+(32, 5512, 1, 'qwfdqwef', 0, '2025-09-14 10:29:30'),
+(33, 5512, 1, 'dfhgfdgh', 0, '2025-09-14 10:29:35'),
+(34, 5507, 1, 'asdfasdf', 0, '2025-09-14 13:21:07');
 
 -- --------------------------------------------------------
 
@@ -419,16 +500,16 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_picture`, `created_at`, `updated_at`) VALUES
-(1, 'Meisam', 'm.hajiloo@gmail.com', '$2y$10$R2R7BpE1iBtyvorT8qrPEusYEGzSDmeU6XOIAGwUj9xVHG2MJT6Ly', 'assets/images/users/user_1_1757440408.jpg', '2025-08-31 14:40:52', '2025-09-09 17:53:28'),
+(1, 'Meisam', 'm.hajiloo@gmail.com', '$2y$10$R2R7BpE1iBtyvorT8qrPEusYEGzSDmeU6XOIAGwUj9xVHG2MJT6Ly', 'assets/images/users/user_1_1757588318.png', '2025-08-31 14:40:52', '2025-09-11 10:58:38'),
 (2, 'Admin', 'admin@marfatrade.com', '$2y$10$ImVhjouMqqfnJi3fGPnCZ.8ob3ygyv3odC4S61X2ACVJWiaU1MNxa', NULL, '2025-09-08 16:27:38', '2025-09-08 16:27:38');
 
 --
@@ -455,7 +536,6 @@ ALTER TABLE `counters`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug` (`slug`),
-  ADD UNIQUE KEY `sku` (`sku`),
   ADD KEY `category_id` (`category_id`);
 
 --
@@ -514,13 +594,13 @@ ALTER TABLE `counters`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `product_inquiries`
 --
 ALTER TABLE `product_inquiries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `slides`
@@ -532,19 +612,19 @@ ALTER TABLE `slides`
 -- AUTO_INCREMENT for table `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5506;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5514;
 
 --
 -- AUTO_INCREMENT for table `ticket_replies`
 --
 ALTER TABLE `ticket_replies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

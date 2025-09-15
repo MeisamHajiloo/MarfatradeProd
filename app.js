@@ -151,6 +151,8 @@ class ViewManager {
         return await this.getProfileView();
       case 'tickets':
         return await this.getTicketsView();
+      case 'inquiries':
+        return await this.getInquiriesView();
       case 'about':
         return this.getAboutView();
       case 'contact':
@@ -202,6 +204,7 @@ class ViewManager {
                 <option value="name_desc">Name Z-A</option>
                 <option value="price_asc">Price Low to High</option>
                 <option value="price_desc">Price High to Low</option>
+                <option value="discount">Best Discount</option>
               </select>
             </div>
           </div>
@@ -240,6 +243,7 @@ class ViewManager {
                 <option value="name_desc">Name Z-A</option>
                 <option value="price_asc">Price Low to High</option>
                 <option value="price_desc">Price High to Low</option>
+                <option value="discount">Best Discount</option>
               </select>
             </div>
             <div class="filter-group">
@@ -284,16 +288,48 @@ class ViewManager {
         <main class="product-detail">
           <div class="page-container">
             <div class="product-container">
-              <div class="product-image">
-                <img src="${product.thumbnail || '/assets/images/no-image.png'}" alt="${product.name}">
+              <div class="product-gallery">
+                <div class="main-image">
+                  <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}" id="main-product-image">
+                  <div class="image-counter" id="image-counter">1 / 1</div>
+                </div>
+                ${product.gallery && product.gallery.length > 0 ? `
+                  <div class="gallery-grid">
+                    <div class="gallery-item active" onclick="showImage('${product.thumbnail || 'assets/images/no-image.png'}', 0)">
+                      <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}">
+                    </div>
+                    ${product.gallery.map((img, index) => `
+                      <div class="gallery-item" onclick="showImage('${img}', ${index + 1})">
+                        <img src="${img}" alt="${product.name}">
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
               </div>
               <div class="product-info">
                 <h1>${product.name}</h1>
-                <div class="price">${product.price ? product.price + ' $' : 'Price not available'}</div>
+                <div class="price-section">
+                  ${product.sale_price && product.sale_price > 0 && product.sale_price < product.price ? `
+                    <div class="price-sale">$${product.sale_price}</div>
+                    <div class="price-original">$${product.price}</div>
+                    <div class="discount-info">
+                      <span class="discount-badge-large">${Math.round(((product.price - product.sale_price) / product.price) * 100)}% OFF</span>
+                      <span class="savings">You save $${(product.price - product.sale_price).toFixed(2)}</span>
+                    </div>
+                  ` : `
+                    <div class="price">${product.price ? '$' + product.price : 'Price not available'}</div>
+                  `}
+                </div>
+                <div class="product-details">
+                  ${product.unit ? `<div class="detail-item"><strong>Unit:</strong> ${product.unit}</div>` : ''}
+                  ${product.moq ? `<div class="detail-item"><strong>MOQ:</strong> ${product.moq}</div>` : ''}
+                  ${product.monthly_supply_quantity ? `<div class="detail-item"><strong>Monthly Supply:</strong> ${product.monthly_supply_quantity}</div>` : ''}
+                  ${product.payment_methods ? `<div class="detail-item"><strong>Payment Methods:</strong> ${product.payment_methods}</div>` : ''}
+                </div>
                 <div class="description">${product.description || 'No description available'}</div>
                 <div class="actions">
                   <button class="btn btn-primary inquiry-btn" data-product="${product.name}" data-slug="${product.slug}">Inquiry</button>
-                  <button class="btn btn-primary">Add to Cart</button>
+                  <button class="btn btn-primary">Request for Sample</button>
                 </div>
               </div>
             </div>
@@ -348,7 +384,21 @@ class ViewManager {
             <p>Manage your account information</p>
           </div>
           
-          <div class="profile-content">
+          <div class="profile-layout">
+            <div class="profile-sidebar">
+              <nav class="profile-nav">
+                <a href="/profile" class="profile-nav-item active">
+                  <i class="fas fa-user"></i>
+                  <span>Profile Settings</span>
+                </a>
+                <a href="/profile/inquiries" class="profile-nav-item">
+                  <i class="fas fa-question-circle"></i>
+                  <span>My Inquiries</span>
+                </a>
+              </nav>
+            </div>
+            <div class="profile-content-area">
+              <div class="profile-content">
             <div class="profile-card">
               <div class="profile-avatar-section">
                 <div class="avatar-container">
@@ -414,6 +464,46 @@ class ViewManager {
                   </button>
                 </form>
               </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    `;
+  }
+
+  async getInquiriesView() {
+    return `
+      <main class="inquiries-page">
+        <div class="page-container">
+          <div class="page-header">
+            <h1 style="color: white;">My Inquiries</h1>
+            <p>View your product inquiries</p>
+          </div>
+          <div class="profile-layout">
+            <div class="profile-sidebar">
+              <nav class="profile-nav">
+                <a href="/profile" class="profile-nav-item">
+                  <i class="fas fa-user"></i>
+                  <span>Profile Settings</span>
+                </a>
+                <a href="/profile/inquiries" class="profile-nav-item active">
+                  <i class="fas fa-question-circle"></i>
+                  <span>My Inquiries</span>
+                </a>
+              </nav>
+            </div>
+            <div class="profile-content-area">
+          <div class="inquiries-toolbar">
+            <div class="toolbar-left"></div>
+            <div class="group-selector">
+              <select id="group-by">
+                <option value="date">Group by Date</option>
+                <option value="category">Group by Category</option>
+                <option value="via">Group by Method</option>
+              </select>
+            </div>
+          </div>
+              <div id="inquiries-container" class="inquiries-container"></div>
             </div>
           </div>
         </div>
@@ -805,6 +895,9 @@ class ViewManager {
       case 'tickets':
         this.initTickets();
         break;
+      case 'inquiries':
+        this.initInquiries();
+        break;
       case 'contact':
         this.initContact();
         break;
@@ -873,10 +966,31 @@ class ViewManager {
       });
     });
     
+    // Initialize gallery
+    this.initGallery();
+    
     // Load related products - get category_id from the fetched product data
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug');
     this.loadRelatedProductsBySlug(slug);
+  }
+  
+  initGallery() {
+    window.showImage = (src, index) => {
+      const mainImg = document.getElementById('main-product-image');
+      const counter = document.getElementById('image-counter');
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      
+      if (mainImg) mainImg.src = src;
+      
+      galleryItems.forEach(item => item.classList.remove('active'));
+      if (galleryItems[index]) galleryItems[index].classList.add('active');
+      
+      if (counter) {
+        const total = galleryItems.length;
+        counter.textContent = `${index + 1} / ${total}`;
+      }
+    };
   }
 
   async loadRelatedProductsBySlug(currentSlug) {
@@ -938,12 +1052,22 @@ class ViewManager {
     if (!container) return;
     
     container.innerHTML = products.map(product => `
-      <div class="related-product-item">
-        <a href="/product?slug=${product.slug}" onclick="window.scrollTo(0, 0);">
-          <img src="${product.thumbnail || '/assets/images/no-image.png'}" alt="${product.name}">
+      <div class="related-product-item${product.status === 'out_of_stock' ? ' out-of-stock' : ''}">
+        ${product.sale_price && product.sale_price > 0 && product.sale_price < product.price && product.status !== 'out_of_stock' ? `
+          <div class="discount-badge">${Math.round(((product.price - product.sale_price) / product.price) * 100)}% OFF</div>
+        ` : ''}
+        <${product.status === 'out_of_stock' ? 'div' : 'a href="/product?slug=' + product.slug + '" onclick="window.scrollTo(0, 0);"'}>
+          <img src="${product.thumbnail || 'assets/images/no-image.png'}" alt="${product.name}">
           <h4>${product.name}</h4>
-          <div class="price">${product.price ? product.price + ' $' : 'Price not available'}</div>
-        </a>
+          <div class="price-container">
+            ${product.sale_price && product.sale_price > 0 && product.sale_price < product.price && product.status !== 'out_of_stock' ? `
+              <div class="price-sale">${product.sale_price} $</div>
+              <div class="price-original">${product.price} $</div>
+            ` : `
+              <div class="price">${product.price ? product.price + ' $' : 'Price not available'}</div>
+            `}
+          </div>
+        </${product.status === 'out_of_stock' ? 'div' : 'a'}>
       </div>
     `).join('');
   }
@@ -1014,6 +1138,180 @@ class ViewManager {
         });
       }
     }, 100);
+  }
+
+  initInquiries() {
+    this.currentGrouping = 'date';
+    this.loadInquiries();
+    
+    const groupBy = document.getElementById('group-by');
+    if (groupBy) {
+      groupBy.addEventListener('change', () => {
+        this.currentGrouping = groupBy.value;
+        this.renderInquiries(this.inquiriesData, groupBy.value);
+      });
+    }
+    
+    // Add event delegation for delete buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.delete-inquiry-btn')) {
+        const btn = e.target.closest('.delete-inquiry-btn');
+        const inquiryId = btn.dataset.id;
+        this.showDeleteConfirmation(inquiryId);
+      }
+    });
+  }
+
+  async loadInquiries(autoRender = true) {
+    try {
+      const response = await fetch('/api/profile/inquiries.php');
+      const data = await response.json();
+      
+      if (data.success) {
+        this.inquiriesData = data.inquiries;
+        if (autoRender) {
+          this.renderInquiries(data.inquiries, 'date');
+        }
+      } else {
+        document.getElementById('inquiries-container').innerHTML = '<div class="error">Failed to load inquiries</div>';
+      }
+    } catch (error) {
+      document.getElementById('inquiries-container').innerHTML = '<div class="error">Failed to load inquiries</div>';
+    }
+  }
+
+  renderInquiries(inquiries, groupBy = 'date') {
+    const container = document.getElementById('inquiries-container');
+    if (!inquiries || inquiries.length === 0) {
+      container.innerHTML = '<div class="no-data">No inquiries found</div>';
+      return;
+    }
+    
+    const grouped = this.groupInquiries(inquiries, groupBy);
+    
+    container.innerHTML = `<div class="grouped-container">${Object.entries(grouped).map(([group, items]) => `
+      <div class="group-section">
+        <div class="group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <h3 class="group-title">${group}</h3>
+          <i class="fas fa-chevron-down group-toggle"></i>
+        </div>
+        <div class="group-content">
+          <div class="group-items">
+            ${items.map(inquiry => `
+              <div class="group-item inquiry-item">
+                <div class="inquiry-product">
+                  <a href="/product?slug=${inquiry.product_slug}" class="product-link">
+                    <img src="${inquiry.thumbnail ? '/' + inquiry.thumbnail : '/assets/images/no-image.png'}" alt="${inquiry.product_name}" onerror="this.src='/assets/images/no-image.png'">
+                  </a>
+                  <div class="inquiry-details">
+                    <a href="/product?slug=${inquiry.product_slug}" class="product-title-link">
+                      <h4>${inquiry.product_name}</h4>
+                    </a>
+                    <div class="inquiry-meta">
+                      ${groupBy !== 'via' ? `<span class="inquiry-via">${inquiry.inquiry_via}</span>` : ''}
+                      ${groupBy !== 'category' && inquiry.category_name ? `<span class="inquiry-category">${inquiry.category_name}</span>` : ''}
+                      ${groupBy !== 'date' ? `<span class="inquiry-date">${new Date(inquiry.inquiry_date).toLocaleDateString()}</span>` : ''}
+                    </div>
+                    ${inquiry.situation ? `<div class="inquiry-situation">${inquiry.situation}</div>` : ''}
+                  </div>
+                </div>
+                <div class="inquiry-actions">
+                  <button class="delete-inquiry-btn" data-id="${inquiry.id}" title="Delete inquiry">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('')}</div>`;
+  }
+  
+  groupInquiries(inquiries, groupBy) {
+    const groups = {};
+    
+    inquiries.forEach(inquiry => {
+      let key;
+      switch (groupBy) {
+        case 'category':
+          key = inquiry.category_name || 'Uncategorized';
+          break;
+        case 'via':
+          key = inquiry.inquiry_via.charAt(0).toUpperCase() + inquiry.inquiry_via.slice(1);
+          break;
+        case 'date':
+        default:
+          const date = new Date(inquiry.inquiry_date);
+          key = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+          break;
+      }
+      
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(inquiry);
+    });
+    
+    return groups;
+  }
+  
+  showDeleteConfirmation(inquiryId) {
+    const modal = document.createElement('div');
+    modal.className = 'delete-confirmation-modal';
+    modal.innerHTML = `
+      <div class="delete-confirmation-content">
+        <h3>Delete Inquiry</h3>
+        <p>Are you sure you want to delete this inquiry?</p>
+        <div class="delete-confirmation-actions">
+          <button class="btn btn-secondary cancel-btn">No</button>
+          <button class="btn btn-danger confirm-btn">Yes</button>
+        </div>
+      </div>
+    `;
+    
+    const cancelBtn = modal.querySelector('.cancel-btn');
+    const confirmBtn = modal.querySelector('.confirm-btn');
+    
+    cancelBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      modal.remove();
+    });
+    
+    confirmBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.deleteInquiry(inquiryId);
+    });
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+    
+    document.body.appendChild(modal);
+  }
+  
+  async deleteInquiry(inquiryId) {
+    try {
+      const response = await fetch('/api/profile/delete-inquiry.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inquiry_id: inquiryId })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        document.querySelector('.delete-confirmation-modal').remove();
+        this.loadInquiries(false).then(() => {
+          this.renderInquiries(this.inquiriesData, this.currentGrouping);
+          const groupBy = document.getElementById('group-by');
+          if (groupBy) groupBy.value = this.currentGrouping;
+        });
+      } else {
+        alert('Failed to delete inquiry');
+      }
+    } catch (error) {
+      alert('Error deleting inquiry');
+    }
   }
 
   initTickets() {
@@ -1163,6 +1461,10 @@ router.addRoute('/product', async () => {
 
 router.addRoute('/profile', async () => {
   await viewManager.loadView('profile');
+}, true);
+
+router.addRoute('/profile/inquiries', async () => {
+  await viewManager.loadView('inquiries');
 }, true);
 
 router.addRoute('/tickets', async () => {

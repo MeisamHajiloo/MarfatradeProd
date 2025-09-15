@@ -53,8 +53,9 @@ try {
     $db  = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS);
     $pdo = $db->getConnection();
 
-    $sql = "SELECT p.id, p.slug, p.name, p.price, p.description, p.thumbnail, p.gallery, 
-                   p.category_id, p.created_at, p.views, c.name AS category_name
+    $sql = "SELECT p.id, p.slug, p.name, p.price, p.sale_price, p.description, p.thumbnail, p.gallery, 
+                   p.category_id, p.created_at, p.views, p.unit, p.moq, p.monthly_supply_quantity, 
+                   p.payment_methods, c.name AS category_name
             FROM products p
             LEFT JOIN categories c ON c.id = p.category_id
             WHERE ";
@@ -85,6 +86,7 @@ try {
         'slug'        => $row['slug'],
         'name'        => $row['name'],
         'price'       => isset($row['price']) ? (float)$row['price'] : null,
+        'sale_price'  => isset($row['sale_price']) && $row['sale_price'] !== null ? (float)$row['sale_price'] : null,
         'description' => $row['description'] ?? null,
         'thumbnail'   => $row['thumbnail'] ?? null,
         'gallery'     => $row['gallery'] ? explode(',', $row['gallery']) : [],
@@ -94,6 +96,10 @@ try {
         ],
         'created_at'  => $row['created_at'] ?? null,
         'views'       => isset($row['views']) ? (int)$row['views'] : null,
+        'unit'        => $row['unit'] ?? null,
+        'moq'         => isset($row['moq']) ? (int)$row['moq'] : null,
+        'monthly_supply_quantity' => isset($row['monthly_supply_quantity']) ? (int)$row['monthly_supply_quantity'] : null,
+        'payment_methods' => $row['payment_methods'] ?? null,
     ];
 
     // Increment view counter (optional)

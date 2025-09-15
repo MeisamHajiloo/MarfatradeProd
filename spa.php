@@ -21,6 +21,7 @@ require_once __DIR__ . '/classes/Database.php';
     <link rel="stylesheet" href="assets/css/products.css">
     <link rel="stylesheet" href="assets/css/profile.css">
     <link rel="stylesheet" href="assets/css/tickets.css">
+    <link rel="stylesheet" href="assets/css/groups.css">
     <link rel="stylesheet" href="assets/css/about-us.css">
     <link rel="stylesheet" href="assets/css/contact-us.css">
     <link rel="stylesheet" href="assets/css/faq.css">

@@ -461,23 +461,29 @@
     if (!gridEl) return;
 
     const card = document.createElement("div");
-    card.className = "product-card";
+    card.className = `product-card${p.status === 'out_of_stock' ? ' out-of-stock' : ''}`;
     card.innerHTML = `
-    <a href="/product?slug=${p.slug}" class="thumb">
+    <${p.status === 'out_of_stock' ? 'div' : 'a href="/product?slug=' + p.slug + '"'} class="thumb">
       <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
       p.name
     }">
-    </a>
+      ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `<div class="discount-badge">${Math.round(((p.price - p.sale_price) / p.price) * 100)}% OFF</div>` : ''}
+    </${p.status === 'out_of_stock' ? 'div' : 'a'}>
     <div class="info">
       <h3 class="name">${p.name}</h3>
-      <div class="price">${
-        p.price ? p.price + " $" : "Price not available"
-      }</div>
+      <div class="price-container">
+        ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `
+          <div class="price-sale">$${p.sale_price}</div>
+          <div class="price-original">$${p.price}</div>
+        ` : `
+          <div class="price">${p.price ? '$' + p.price : 'Price not available'}</div>
+        `}
+      </div>
       <div class="actions">
         <button class="btn btn-primary inquiry-btn" data-product="${
           p.name
         }" data-slug="${p.slug}">Inquiry</button>
-        <button class="btn btn-primary">Add to Cart</button>
+        <button class="btn btn-primary"${p.status === 'out_of_stock' ? ' disabled' : ''}>Request for Sample</button>
       </div>
     </div>
   `;
@@ -487,7 +493,7 @@
     const inquiryBtn = card.querySelector(".inquiry-btn");
     if (inquiryBtn) {
       inquiryBtn.addEventListener("click", function () {
-        openInquiryModal(this.dataset.product, this.dataset.slug);
+        openInquiryModal(this.dataset.product, this.dataset.slug, p.price, p.sale_price);
       });
     }
   }
@@ -496,24 +502,30 @@
     if (!gridEl) return;
 
     const listItem = document.createElement("div");
-    listItem.className = "product-list-item";
+    listItem.className = `product-list-item${p.status === 'out_of_stock' ? ' out-of-stock' : ''}`;
     listItem.innerHTML = `
-    <a href="/product?slug=${p.slug}" class="thumb">
+    <${p.status === 'out_of_stock' ? 'div' : 'a href="/product?slug=' + p.slug + '"'} class="thumb">
       <img src="${p.thumbnail || "/assets/images/no-image.png"}" alt="${
       p.name
     }">
-    </a>
+      ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `<div class="discount-badge">${Math.round(((p.price - p.sale_price) / p.price) * 100)}% OFF</div>` : ''}
+    </${p.status === 'out_of_stock' ? 'div' : 'a'}>
     <div class="info">
       <h3 class="name">${p.name}</h3>
-      <div class="price">${
-        p.price ? p.price + " $" : "Price not available"
-      }</div>
+      <div class="price-container">
+        ${p.sale_price && p.sale_price > 0 && p.sale_price < p.price && p.status !== 'out_of_stock' ? `
+          <div class="price-sale">$${p.sale_price}</div>
+          <div class="price-original">$${p.price}</div>
+        ` : `
+          <div class="price">${p.price ? '$' + p.price : 'Price not available'}</div>
+        `}
+      </div>
       <p class="desc">${p.short_desc || "No description available."}</p>
       <div class="actions">
         <button class="btn btn-primary inquiry-btn" data-product="${
           p.name
         }" data-slug="${p.slug}">Inquiry</button>
-        <button class="btn btn-primary">Add to Cart</button>
+        <button class="btn btn-primary"${p.status === 'out_of_stock' ? ' disabled' : ''}>Request for Sample</button>
       </div>
     </div>
   `;
@@ -523,13 +535,13 @@
     const inquiryBtn = listItem.querySelector(".inquiry-btn");
     if (inquiryBtn) {
       inquiryBtn.addEventListener("click", function () {
-        openInquiryModal(this.dataset.product, this.dataset.slug);
+        openInquiryModal(this.dataset.product, this.dataset.slug, p.price, p.sale_price);
       });
     }
   }
 
   // Open inquiry modal
-  async function openInquiryModal(productName, productSlug) {
+  async function openInquiryModal(productName, productSlug, price, salePrice) {
     // Check if user is logged in
     const isLoggedIn = await checkLoginStatus();
 
@@ -618,9 +630,14 @@
       // Creating a complete product link
       const productUrl = `${window.location.origin}/product?slug=${productSlug}`;
 
+      const priceText = salePrice && salePrice > 0 && salePrice < price ? 
+        `*Price*: $${salePrice} (was $${price})` : 
+        `*Price*: $${price || 'Contact for pricing'}`;
+      
       const message = `*Product Inquiry*
 Hello, I'm interested in your product: *${productName}*
 
+${priceText}
 *Product Link*: ${productUrl}
 ----------------------------
 Please provide more information and pricing details.`;
@@ -649,7 +666,11 @@ Please provide more information and pricing details.`;
 
       // Use telegramUsername from API
       const productUrl = `${window.location.origin}/product?slug=${productSlug}`;
-      const message = `Hello, I have a question about the product ${productName}.\nProduct Link: ${productUrl}`;
+      const priceText = salePrice && salePrice > 0 && salePrice < price ? 
+        `Price: $${salePrice} (was $${price})` : 
+        `Price: $${price || 'Contact for pricing'}`;
+      
+      const message = `Hello, I have a question about the product ${productName}.\n${priceText}\nProduct Link: ${productUrl}`;
       const telegramUrl = `https://t.me/${telegramUsername}`;
 
       // Auto copy text to clipboard (help user)
@@ -776,7 +797,6 @@ Please provide more information and pricing details.`;
         <div class="loading-spinner-dot"></div>
         <div class="loading-spinner-dot"></div>
       </div>
-      <div class="loading-text">Loading products...</div>
     </div>
   `;
   }
