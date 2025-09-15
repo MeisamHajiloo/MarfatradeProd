@@ -134,23 +134,17 @@ require_once __DIR__ . '/classes/Database.php';
     </div>
 
     <script>
-        console.log('SPA loaded, checking router...');
-        setTimeout(() => {
+        // Initialize router immediately when available
+        function initializeRouter() {
             if (window.router) {
-                console.log('Router found, navigating to home...');
-                console.log('Current route:', window.location.pathname);
-                console.log('Available routes:', Object.keys(window.router.routes));
-                window.router.navigate('/', false);
+                console.log('Router found, initializing...');
+                // Router will handle initial route after auth check
             } else {
-                console.error('Router not found!');
+                // Retry if router not loaded yet
+                setTimeout(initializeRouter, 50);
             }
-        }, 1000);
-
-        // Check if content loads
-        setTimeout(() => {
-            const content = document.getElementById('main-content').innerHTML;
-            console.log('Content after 2 seconds:', content.substring(0, 100));
-        }, 2000);
+        }
+        initializeRouter();
     </script>
 
     <?php include 'includes/auth-modal.php'; ?>

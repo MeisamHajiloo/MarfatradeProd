@@ -305,6 +305,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Make updateAuthUI globally available for router
+  window.updateAuthUI = updateAuthUI;
+
   // Logout user
   async function logoutUser() {
     try {
@@ -363,19 +366,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Check if user is already logged in on page load
-  checkAuthStatus();
-
-  async function checkAuthStatus() {
-    try {
-      const response = await fetch("api/auth/check.php");
-      const data = await safeJsonParse(response);
-
-      if (data.loggedIn) {
-        updateAuthUI(true, data.user);
-      }
-    } catch (error) {
-      console.error("Error checking auth status:", error);
-    }
-  }
+  // Auth status is checked by the router, no need to duplicate here
+  // The router will call updateAuthUI when needed
 });

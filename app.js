@@ -6,16 +6,28 @@ class SPARouter {
     this.currentRoute = null;
     this.isAuthenticated = false;
     this.userData = null;
+    this.authChecked = false;
     this.init();
   }
 
   init() {
     window.addEventListener('popstate', () => this.handleRoute());
+    
+    // Check auth status immediately when script loads
+    this.checkAuthStatus().then(() => {
+      // Handle route after auth check
+      this.handleRoute();
+      this.bindNavigation();
+    });
+    
+    // Also check on DOM ready as fallback
     document.addEventListener('DOMContentLoaded', () => {
-      this.checkAuthStatus().then(() => {
-        this.handleRoute();
-        this.bindNavigation();
-      });
+      if (!this.authChecked) {
+        this.checkAuthStatus().then(() => {
+          this.handleRoute();
+          this.bindNavigation();
+        });
+      }
     });
   }
 
@@ -74,31 +86,39 @@ class SPARouter {
       const data = await response.json();
       this.isAuthenticated = data.loggedIn;
       this.userData = data.user || null;
+      this.authChecked = true;
       this.updateAuthUI();
     } catch (error) {
       console.error('Auth check failed:', error);
+      this.authChecked = true;
     }
   }
 
   updateAuthUI() {
-    const authLink = document.getElementById('auth-link');
-    const desktopUserMenu = document.getElementById('desktop-user-menu');
-    const mobileUserInfo = document.querySelector('.mobile-user-info-item');
-
-    if (this.isAuthenticated && this.userData) {
-      document.body.classList.add('user-logged-in');
-      if (authLink) authLink.style.display = 'none';
-      if (desktopUserMenu) desktopUserMenu.style.display = 'flex';
-      if (mobileUserInfo) mobileUserInfo.style.display = 'block';
-      
-      if (typeof updateUserMenu === 'function') {
-        updateUserMenu(this.userData);
-      }
+    // Use the global updateAuthUI function if available
+    if (typeof window.updateAuthUI === 'function') {
+      window.updateAuthUI(this.isAuthenticated, this.userData);
     } else {
-      document.body.classList.remove('user-logged-in');
-      if (authLink) authLink.style.display = 'block';
-      if (desktopUserMenu) desktopUserMenu.style.display = 'none';
-      if (mobileUserInfo) mobileUserInfo.style.display = 'none';
+      // Fallback to basic UI updates
+      const authLink = document.getElementById('auth-link');
+      const desktopUserMenu = document.getElementById('desktop-user-menu');
+      const mobileUserInfo = document.querySelector('.mobile-user-info-item');
+
+      if (this.isAuthenticated && this.userData) {
+        document.body.classList.add('user-logged-in');
+        if (authLink) authLink.style.display = 'none';
+        if (desktopUserMenu) desktopUserMenu.style.display = 'flex';
+        if (mobileUserInfo) mobileUserInfo.style.display = 'block';
+        
+        if (typeof updateUserMenu === 'function') {
+          updateUserMenu(this.userData);
+        }
+      } else {
+        document.body.classList.remove('user-logged-in');
+        if (authLink) authLink.style.display = 'block';
+        if (desktopUserMenu) desktopUserMenu.style.display = 'none';
+        if (mobileUserInfo) mobileUserInfo.style.display = 'none';
+      }
     }
   }
 
