@@ -26,6 +26,7 @@ require_once __DIR__ . '/classes/Database.php';
     <link rel="stylesheet" href="assets/css/contact-us.css">
     <link rel="stylesheet" href="assets/css/faq.css">
     <link rel="stylesheet" href="assets/css/spa.css">
+    <link rel="stylesheet" href="assets/css/sample-requests.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -148,6 +149,7 @@ require_once __DIR__ . '/classes/Database.php';
     </script>
 
     <?php include 'includes/auth-modal.php'; ?>
+    <?php include 'includes/sample-request-modal.php'; ?>
 
     <!-- Privacy Policy Modal -->
     <div id="privacy-modal" class="modal" style="display: none;">
@@ -301,6 +303,8 @@ require_once __DIR__ . '/classes/Database.php';
     <script src="assets/js/user-menu.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/profile-functions.js"></script>
+    <script src="assets/js/sample-request.js"></script>
+    <script src="assets/js/sample-requests.js"></script>
     <script src="app.js"></script>
 
     <script>

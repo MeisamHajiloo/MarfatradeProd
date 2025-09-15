@@ -511,7 +511,9 @@
         <button class="btn btn-primary inquiry-btn" data-product="${
           p.name
         }" data-slug="${p.slug}">Inquiry</button>
-        <button class="btn btn-primary"${
+        <button class="btn btn-primary sample-request-btn" data-product-id="${
+          p.id
+        }"${
           p.status === "out_of_stock" ? " disabled" : ""
         }>Request for Sample</button>
       </div>
@@ -529,6 +531,16 @@
           p.price,
           p.sale_price
         );
+      });
+    }
+    
+    // Add event listener to the sample request button
+    const sampleBtn = card.querySelector(".sample-request-btn");
+    if (sampleBtn) {
+      sampleBtn.addEventListener("click", function () {
+        if (window.openSampleRequestModal) {
+          window.openSampleRequestModal(this.dataset.productId);
+        }
       });
     }
   }
@@ -584,7 +596,9 @@
         <button class="btn btn-primary inquiry-btn" data-product="${
           p.name
         }" data-slug="${p.slug}">Inquiry</button>
-        <button class="btn btn-primary"${
+        <button class="btn btn-primary sample-request-btn" data-product-id="${
+          p.id
+        }"${
           p.status === "out_of_stock" ? " disabled" : ""
         }>Request for Sample</button>
       </div>
@@ -602,6 +616,16 @@
           p.price,
           p.sale_price
         );
+      });
+    }
+    
+    // Add event listener to the sample request button
+    const sampleBtn = listItem.querySelector(".sample-request-btn");
+    if (sampleBtn) {
+      sampleBtn.addEventListener("click", function () {
+        if (window.openSampleRequestModal) {
+          window.openSampleRequestModal(this.dataset.productId);
+        }
       });
     }
   }

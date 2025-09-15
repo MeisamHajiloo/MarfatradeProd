@@ -1,3 +1,50 @@
+// Request Manager for throttling API calls
+class RequestManager {
+  constructor() {
+    this.activeRequests = new Map();
+    this.requestQueue = [];
+    this.maxConcurrent = 2;
+    this.lastRequestTime = 0;
+    this.minDelay = 200;
+  }
+
+  async fetch(url, options = {}) {
+    // Add delay between requests
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    if (timeSinceLastRequest < this.minDelay) {
+      await new Promise(resolve => setTimeout(resolve, this.minDelay - timeSinceLastRequest));
+    }
+    this.lastRequestTime = Date.now();
+
+    // Cancel duplicate requests
+    if (this.activeRequests.has(url)) {
+      this.activeRequests.get(url).abort();
+    }
+
+    const controller = new AbortController();
+    this.activeRequests.set(url, controller);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      this.activeRequests.delete(url);
+      return response;
+    } catch (error) {
+      this.activeRequests.delete(url);
+      if (error.name === 'AbortError') {
+        throw new Error('Request cancelled');
+      }
+      throw error;
+    }
+  }
+}
+
+const requestManager = new RequestManager();
+window.requestManager = requestManager;
+
 // SPA Router and Application Core
 if (!window.SPARouter) {
 class SPARouter {
@@ -7,6 +54,8 @@ class SPARouter {
     this.isAuthenticated = false;
     this.userData = null;
     this.authChecked = false;
+    this.navigationTimeout = null;
+    this.isLoading = false;
     this.init();
   }
 
@@ -36,10 +85,24 @@ class SPARouter {
   }
 
   navigate(path, pushState = true) {
+    // Prevent navigation if already loading
+    if (this.isLoading) {
+      return;
+    }
+    
+    // Clear any pending navigation
+    if (this.navigationTimeout) {
+      clearTimeout(this.navigationTimeout);
+    }
+    
     if (pushState) {
       history.pushState(null, '', path);
     }
-    this.handleRoute();
+    
+    // Debounce rapid navigation
+    this.navigationTimeout = setTimeout(() => {
+      this.handleRoute();
+    }, 100);
   }
 
   async handleRoute() {
@@ -53,12 +116,15 @@ class SPARouter {
 
     this.currentRoute = path;
     this.updateActiveNavigation();
+    this.isLoading = true;
     
     try {
       await route.handler();
     } catch (error) {
       console.error('Route handler error:', error);
-      this.showError('Page loading failed');
+      this.handleRouteError(error, path);
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -82,43 +148,39 @@ class SPARouter {
 
   async checkAuthStatus() {
     try {
-      const response = await fetch('api/auth/check.php');
+      const response = await requestManager.fetch('api/auth/check.php');
       const data = await response.json();
       this.isAuthenticated = data.loggedIn;
       this.userData = data.user || null;
       this.authChecked = true;
       this.updateAuthUI();
     } catch (error) {
-      console.error('Auth check failed:', error);
+      if (error.message !== 'Request cancelled') {
+        console.error('Auth check failed:', error);
+      }
       this.authChecked = true;
     }
   }
 
   updateAuthUI() {
-    // Use the global updateAuthUI function if available
-    if (typeof window.updateAuthUI === 'function') {
-      window.updateAuthUI(this.isAuthenticated, this.userData);
-    } else {
-      // Fallback to basic UI updates
-      const authLink = document.getElementById('auth-link');
-      const desktopUserMenu = document.getElementById('desktop-user-menu');
-      const mobileUserInfo = document.querySelector('.mobile-user-info-item');
+    const authLink = document.getElementById('auth-link');
+    const desktopUserMenu = document.getElementById('desktop-user-menu');
+    const mobileUserInfo = document.querySelector('.mobile-user-info-item');
 
-      if (this.isAuthenticated && this.userData) {
-        document.body.classList.add('user-logged-in');
-        if (authLink) authLink.style.display = 'none';
-        if (desktopUserMenu) desktopUserMenu.style.display = 'flex';
-        if (mobileUserInfo) mobileUserInfo.style.display = 'block';
-        
-        if (typeof updateUserMenu === 'function') {
-          updateUserMenu(this.userData);
-        }
-      } else {
-        document.body.classList.remove('user-logged-in');
-        if (authLink) authLink.style.display = 'block';
-        if (desktopUserMenu) desktopUserMenu.style.display = 'none';
-        if (mobileUserInfo) mobileUserInfo.style.display = 'none';
+    if (this.isAuthenticated && this.userData) {
+      document.body.classList.add('user-logged-in');
+      if (authLink) authLink.style.display = 'none';
+      if (desktopUserMenu) desktopUserMenu.style.display = 'flex';
+      if (mobileUserInfo) mobileUserInfo.style.display = 'block';
+      
+      if (typeof updateUserMenu === 'function') {
+        updateUserMenu(this.userData);
       }
+    } else {
+      document.body.classList.remove('user-logged-in');
+      if (authLink) authLink.style.display = 'block';
+      if (desktopUserMenu) desktopUserMenu.style.display = 'none';
+      if (mobileUserInfo) mobileUserInfo.style.display = 'none';
     }
   }
 
@@ -126,6 +188,20 @@ class SPARouter {
     if (typeof showNotification === 'function') {
       showNotification(message, 'warning');
     }
+  }
+
+  handleRouteError(error, path) {
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.innerHTML = `
+        <div class="error-page">
+          <h2>Page Temporarily Unavailable</h2>
+          <p>We're experiencing technical difficulties. Please try again later.</p>
+          <button onclick="window.location.reload()" class="btn btn-primary">Retry</button>
+        </div>
+      `;
+    }
+    this.showError('Page loading failed');
   }
 }
 
@@ -138,6 +214,7 @@ class ViewManager {
   async loadView(viewName, data = {}) {
     if (!this.mainContent) return;
     
+    // Show loading immediately
     this.mainContent.innerHTML = `
       <div class="loading-overlay">
         <div class="loading-spinner">
@@ -150,7 +227,12 @@ class ViewManager {
     `;
     
     try {
-      const viewContent = await this.getViewContent(viewName, data);
+      // Add minimum loading delay to prevent rapid API calls
+      const [viewContent] = await Promise.all([
+        this.getViewContent(viewName, data),
+        new Promise(resolve => setTimeout(resolve, 300))
+      ]);
+      
       this.mainContent.innerHTML = viewContent;
       await this.initializeViewScripts(viewName, data);
     } catch (error) {
@@ -179,6 +261,8 @@ class ViewManager {
         return this.getContactView();
       case 'faq':
         return this.getFaqView();
+      case 'sample-requests':
+        return await this.getSampleRequestsView();
       default:
         return '<div class="error">Page not found</div>';
     }
@@ -297,7 +381,10 @@ class ViewManager {
     if (!slug) return '<div class="error">Product not found</div>';
     
     try {
-      const response = await fetch(`api/products/detail.php?slug=${slug}`);
+      const response = await requestManager.fetch(`api/products/detail.php?slug=${slug}`);
+      if (!response.ok) {
+        return '<div class="error">Product not available</div>';
+      }
       const product = await response.json();
       
       if (!product || product.error) {
@@ -349,7 +436,7 @@ class ViewManager {
                 <div class="description">${product.description || 'No description available'}</div>
                 <div class="actions">
                   <button class="btn btn-primary inquiry-btn" data-product="${product.name}" data-slug="${product.slug}">Inquiry</button>
-                  <button class="btn btn-primary">Request for Sample</button>
+                  <button class="btn btn-primary sample-request-btn" data-product-id="${product.id}">Request for Sample</button>
                 </div>
               </div>
             </div>
@@ -414,6 +501,10 @@ class ViewManager {
                 <a href="/profile/inquiries" class="profile-nav-item">
                   <i class="fas fa-question-circle"></i>
                   <span>My Inquiries</span>
+                </a>
+                <a href="/sample-requests" class="profile-nav-item">
+                  <i class="fas fa-vial"></i>
+                  <span>Sample Requests</span>
                 </a>
               </nav>
             </div>
@@ -509,6 +600,10 @@ class ViewManager {
                 <a href="/profile/inquiries" class="profile-nav-item active">
                   <i class="fas fa-question-circle"></i>
                   <span>My Inquiries</span>
+                </a>
+                <a href="/sample-requests" class="profile-nav-item">
+                  <i class="fas fa-vial"></i>
+                  <span>Sample Requests</span>
                 </a>
               </nav>
             </div>
@@ -769,14 +864,59 @@ class ViewManager {
     `;
   }
 
+  async getSampleRequestsView() {
+    return `
+      <main class="sample-requests-page">
+        <div class="page-container">
+          <div class="page-header">
+            <h1 style="color: white;">My Sample Requests</h1>
+            <p>Track your sample requests and their status</p>
+          </div>
+          <div class="profile-layout">
+            <div class="profile-sidebar">
+              <nav class="profile-nav">
+                <a href="/profile" class="profile-nav-item">
+                  <i class="fas fa-user"></i>
+                  <span>Profile Settings</span>
+                </a>
+                <a href="/profile/inquiries" class="profile-nav-item">
+                  <i class="fas fa-question-circle"></i>
+                  <span>My Inquiries</span>
+                </a>
+                <a href="/sample-requests" class="profile-nav-item active">
+                  <i class="fas fa-vial"></i>
+                  <span>Sample Requests</span>
+                </a>
+              </nav>
+            </div>
+            <div class="profile-content-area">
+              <div class="sample-requests-toolbar">
+                <div class="toolbar-left"></div>
+                <div class="group-selector">
+                  <select id="group-by">
+                    <option value="date">Group by Date</option>
+                    <option value="status">Group by Status</option>
+                  </select>
+                </div>
+              </div>
+              <div id="sample-requests-container" class="sample-requests-container"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    `;
+  }
+
   async getSlides() {
     try {
-      const response = await fetch('api/slides.php');
+      const response = await requestManager.fetch('api/slides.php');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const slides = await response.json();
-      console.log('Loaded slides:', slides); // Debug log
       return slides && slides.length > 0 ? slides : [];
     } catch (error) {
-      console.error('Error loading slides:', error);
+      if (error.message !== 'Request cancelled') {
+        console.error('Error loading slides:', error);
+      }
       return [];
     }
   }
@@ -835,10 +975,14 @@ class ViewManager {
 
   async getCounterHTML() {
     try {
-      const response = await fetch('api/counters.php');
-      let counters = await response.json();
+      const response = await requestManager.fetch('api/counters.php');
+      let counters = [];
       
-      // Use default counters if none from database
+      if (response.ok) {
+        counters = await response.json();
+      }
+      
+      // Use default counters if API fails or returns empty
       if (!counters || counters.length === 0) {
         counters = [
           { title: 'Our Customers', count: 5, icon: 'fas fa-users' },
@@ -924,6 +1068,9 @@ class ViewManager {
       case 'faq':
         this.initFaq();
         break;
+      case 'sample-requests':
+        this.initSampleRequests();
+        break;
     }
   }
 
@@ -941,11 +1088,29 @@ class ViewManager {
   }
 
   async initProducts(data) {
+    // Show loading for products
+    const productsGrid = document.getElementById('products-grid');
+    if (productsGrid) {
+      productsGrid.innerHTML = `
+        <div class="loading-overlay">
+          <div class="loading-spinner">
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+          </div>
+        </div>
+      `;
+    }
+
     // Load products script if not already loaded
     if (!window.productsLoaded) {
       await this.loadScript('assets/js/products.js');
       window.productsLoaded = true;
     }
+    
+    // Add delay before initializing
+    await new Promise(resolve => setTimeout(resolve, 300));
     
     // Initialize products functionality
     setTimeout(() => {
@@ -960,7 +1125,7 @@ class ViewManager {
             categorySelect.value = data.category;
             categorySelect.dispatchEvent(new Event('change'));
           }
-        }, 200);
+        }, 400);
       }
     }, 100);
   }
@@ -982,6 +1147,16 @@ class ViewManager {
       btn.addEventListener('click', function() {
         if (typeof window.openInquiryModal === 'function') {
           window.openInquiryModal(this.dataset.product, this.dataset.slug);
+        }
+      });
+    });
+    
+    // Initialize sample request buttons
+    const sampleBtns = document.querySelectorAll('.sample-request-btn');
+    sampleBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (window.openSampleRequestModal) {
+          window.openSampleRequestModal(this.dataset.productId);
         }
       });
     });
@@ -1015,22 +1190,23 @@ class ViewManager {
 
   async loadRelatedProductsBySlug(currentSlug) {
     try {
-      console.log('Loading related products for slug:', currentSlug);
-      
       // First get the current product to get its category_id
-      const productResponse = await fetch(`api/products/detail.php?slug=${currentSlug}`);
+      const productResponse = await requestManager.fetch(`api/products/detail.php?slug=${currentSlug}`);
+      if (!productResponse.ok) {
+        document.querySelector('.related-products-section').style.display = 'none';
+        return;
+      }
       const product = await productResponse.json();
-      
-      console.log('Current product:', product);
-      console.log('Product category:', product.category);
-      console.log('Product category_id:', product.category?.id);
       
       if (product && product.category && product.category.id) {
         // Then get products from the same category
         const categoryUrl = `api/products/list.php?category=${product.category.id}&per_page=9`;
-        console.log('Fetching related products from:', categoryUrl);
         
-        const response = await fetch(categoryUrl);
+        const response = await requestManager.fetch(categoryUrl);
+        if (!response.ok) {
+          document.querySelector('.related-products-section').style.display = 'none';
+          return;
+        }
         const data = await response.json();
         
         console.log('Related products response:', data);
@@ -1303,8 +1479,26 @@ class ViewManager {
   }
 
   initInquiries() {
+    // Show loading for inquiries
+    const container = document.getElementById('inquiries-container');
+    if (container) {
+      container.innerHTML = `
+        <div class="loading-overlay">
+          <div class="loading-spinner">
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+          </div>
+        </div>
+      `;
+    }
+
     this.currentGrouping = 'date';
-    this.loadInquiries();
+    // Add delay before loading inquiries
+    setTimeout(() => {
+      this.loadInquiries();
+    }, 300);
     
     const groupBy = document.getElementById('group-by');
     if (groupBy) {
@@ -1326,7 +1520,11 @@ class ViewManager {
 
   async loadInquiries(autoRender = true) {
     try {
-      const response = await fetch('/api/profile/inquiries.php');
+      const response = await requestManager.fetch('/api/profile/inquiries.php');
+      if (!response.ok) {
+        document.getElementById('inquiries-container').innerHTML = '<div class="error">Service temporarily unavailable</div>';
+        return;
+      }
       const data = await response.json();
       
       if (data.success) {
@@ -1338,7 +1536,7 @@ class ViewManager {
         document.getElementById('inquiries-container').innerHTML = '<div class="error">Failed to load inquiries</div>';
       }
     } catch (error) {
-      document.getElementById('inquiries-container').innerHTML = '<div class="error">Failed to load inquiries</div>';
+      document.getElementById('inquiries-container').innerHTML = '<div class="error">Service temporarily unavailable</div>';
     }
   }
 
@@ -1454,7 +1652,7 @@ class ViewManager {
   
   async deleteInquiry(inquiryId) {
     try {
-      const response = await fetch('/api/profile/delete-inquiry.php', {
+      const response = await requestManager.fetch('/api/profile/delete-inquiry.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ inquiry_id: inquiryId })
@@ -1504,14 +1702,18 @@ class ViewManager {
   
   openTicketDetail(ticketId) {
     // Load ticket details and show modal
-    fetch(`api/tickets/detail.php?id=${ticketId}`)
+    requestManager.fetch(`api/tickets/detail.php?id=${ticketId}`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           this.displayTicketDetail(data.ticket);
         }
       })
-      .catch(error => console.error('Error loading ticket:', error));
+      .catch(error => {
+        if (error.message !== 'Request cancelled') {
+          console.error('Error loading ticket:', error);
+        }
+      });
   }
   
   displayTicketDetail(ticket) {
@@ -1592,6 +1794,204 @@ class ViewManager {
       }
     });
   }
+
+  initSampleRequests() {
+    this.currentSampleGrouping = 'date';
+    setTimeout(() => {
+      this.loadSampleRequests();
+    }, 300);
+    
+    const groupBy = document.getElementById('group-by');
+    if (groupBy) {
+      groupBy.addEventListener('change', () => {
+        this.currentSampleGrouping = groupBy.value;
+        this.renderSampleRequests(this.sampleRequestsData, groupBy.value);
+      });
+    }
+  }
+
+  async loadSampleRequests(autoRender = true) {
+    const container = document.getElementById('sample-requests-container');
+    if (container) {
+      container.innerHTML = `
+        <div class="loading-overlay">
+          <div class="loading-spinner">
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+            <div class="loading-spinner-dot"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    try {
+      const response = await requestManager.fetch('/api/profile/sample-requests.php');
+      if (!response.ok) {
+        container.innerHTML = '<div class="error">Service temporarily unavailable</div>';
+        return;
+      }
+      const data = await response.json();
+      
+      if (data.success) {
+        this.sampleRequestsData = data.data;
+        if (autoRender) {
+          this.renderSampleRequests(data.data, 'date');
+        }
+      } else {
+        container.innerHTML = '<div class="error">Failed to load sample requests</div>';
+      }
+    } catch (error) {
+      container.innerHTML = '<div class="error">Service temporarily unavailable</div>';
+    }
+  }
+
+  renderSampleRequests(requests, groupBy = 'date') {
+    const container = document.getElementById('sample-requests-container');
+    if (!requests || requests.length === 0) {
+      container.innerHTML = '<div class="no-data">No sample requests found</div>';
+      return;
+    }
+    
+    const grouped = this.groupSampleRequests(requests, groupBy);
+    
+    container.innerHTML = `<div class="grouped-container">${Object.entries(grouped).map(([group, items]) => `
+      <div class="group-section">
+        <div class="group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <h3 class="group-title">${group}</h3>
+          <i class="fas fa-chevron-down group-toggle"></i>
+        </div>
+        <div class="group-content">
+          <div class="group-items">
+            ${items.map(request => this.createSampleRequestCard(request).outerHTML).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('')}</div>`;
+  }
+
+  createSampleRequestCard(request) {
+    const card = document.createElement('div');
+    card.className = 'group-item sample-request-card';
+    
+    const statusSteps = [
+        { key: 'pending', label: 'Pending', icon: 'fas fa-clock' },
+        { key: 'approved', label: 'Approved', icon: 'fas fa-check' },
+        { key: 'payment', label: 'Payment', icon: 'fas fa-credit-card' },
+        { key: 'shipped', label: 'Shipped', icon: 'fas fa-shipping-fast' },
+        { key: 'delivered', label: 'Delivered', icon: 'fas fa-box-open' }
+    ];
+    
+    const currentStatusIndex = statusSteps.findIndex(step => step.key === request.status);
+    const isCancelled = request.status === 'cancelled';
+    
+    card.innerHTML = `
+        <div class="request-header">
+            <a href="/product?slug=${request.product_slug || ''}" class="product-link">
+                <img src="${request.product_image || 'assets/images/no-image.png'}" 
+                     alt="${request.product_name}" class="product-image"
+                     onerror="this.src='assets/images/no-image.png'">
+            </a>
+            <div class="request-info">
+                <a href="/product?slug=${request.product_slug || ''}" class="product-title-link">
+                    <h3>${request.product_name || 'Unknown Product'}</h3>
+                </a>
+                <div class="request-date">Requested on ${this.formatSampleDate(request.created_at)}</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-line ${request.status}">
+                ${statusSteps.map((step, index) => {
+                    let stepClass = '';
+                    if (isCancelled) {
+                        stepClass = index === 0 ? 'cancelled' : '';
+                    } else if (index < currentStatusIndex) {
+                        stepClass = 'completed';
+                    } else if (index === currentStatusIndex) {
+                        stepClass = 'active';
+                    }
+                    
+                    return `
+                        <div class="progress-step">
+                            <div class="step-icon ${stepClass}">
+                                <i class="${step.icon}"></i>
+                            </div>
+                            <div class="step-label ${stepClass}">${step.label}</div>
+                            ${(index === currentStatusIndex || (isCancelled && index === 0)) ? `<div class="step-date">${this.formatSampleDate(request.updated_at)}</div>` : ''}
+                        </div>
+                    `;
+                }).join('')}
+                ${isCancelled ? `
+                    <div class="progress-step">
+                        <div class="step-icon cancelled">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="step-label cancelled">Cancelled</div>
+                        <div class="step-date">${this.formatSampleDate(request.updated_at)}</div>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        
+        <div class="request-details">
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value">${request.full_name}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value">${request.email}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Company</div>
+                <div class="detail-value">${request.company_name || 'N/A'}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">City</div>
+                <div class="detail-value">${request.city}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Country</div>
+                <div class="detail-value">${request.country}</div>
+            </div>
+        </div>
+    `;
+    
+    return card;
+  }
+
+  groupSampleRequests(requests, groupBy) {
+    const groups = {};
+    
+    requests.forEach(request => {
+      let key;
+      switch (groupBy) {
+        case 'status':
+          key = request.status.charAt(0).toUpperCase() + request.status.slice(1);
+          break;
+        case 'date':
+        default:
+          const date = new Date(request.created_at);
+          key = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+          break;
+      }
+      
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(request);
+    });
+    
+    return groups;
+  }
+
+  formatSampleDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+  }
 }
 
 // Initialize SPA
@@ -1627,6 +2027,10 @@ router.addRoute('/profile', async () => {
 
 router.addRoute('/profile/inquiries', async () => {
   await viewManager.loadView('inquiries');
+}, true);
+
+router.addRoute('/sample-requests', async () => {
+  await viewManager.loadView('sample-requests');
 }, true);
 
 router.addRoute('/tickets', async () => {

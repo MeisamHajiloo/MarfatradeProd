@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       console.log("Registering user:", { name, email });
 
-      const response = await fetch("api/auth/register.php", {
+      const response = await (window.requestManager || { fetch }).fetch("api/auth/register.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       console.log("Logging in user:", { email });
 
-      const response = await fetch("api/auth/login.php", {
+      const response = await (window.requestManager || { fetch }).fetch("api/auth/login.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -281,26 +281,34 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateAuthUI(isLoggedIn, userData) {
+    // Update router auth state without calling updateAuthUI
+    if (window.router) {
+      window.router.isAuthenticated = isLoggedIn;
+      window.router.userData = userData;
+    }
+    
+    // Update UI elements directly
+    const authLink = document.getElementById('auth-link');
+    const desktopUserMenu = document.getElementById('desktop-user-menu');
+    const mobileUserInfo = document.querySelector('.mobile-user-info-item');
+
     if (isLoggedIn && userData) {
-      // Use the updateUserMenu function from user-menu.js
+      document.body.classList.add('user-logged-in');
+      if (authLink) authLink.style.display = 'none';
+      if (desktopUserMenu) desktopUserMenu.style.display = 'flex';
+      if (mobileUserInfo) mobileUserInfo.style.display = 'block';
+      
       if (typeof updateUserMenu === "function") {
         updateUserMenu(userData);
       }
-      // Update router auth state
-      if (window.router) {
-        window.router.isAuthenticated = true;
-        window.router.userData = userData;
-        window.router.updateAuthUI();
-      }
     } else {
+      document.body.classList.remove('user-logged-in');
+      if (authLink) authLink.style.display = 'block';
+      if (desktopUserMenu) desktopUserMenu.style.display = 'none';
+      if (mobileUserInfo) mobileUserInfo.style.display = 'none';
+      
       if (typeof updateUserMenu === "function") {
         updateUserMenu(null);
-      }
-      // Update router auth state
-      if (window.router) {
-        window.router.isAuthenticated = false;
-        window.router.userData = null;
-        window.router.updateAuthUI();
       }
     }
   }
@@ -313,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       console.log("Logging out user...");
 
-      const response = await fetch("api/auth/logout.php", {
+      const response = await (window.requestManager || { fetch }).fetch("api/auth/logout.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

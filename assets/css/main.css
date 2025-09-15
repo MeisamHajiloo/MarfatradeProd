@@ -131,6 +131,15 @@ main {
   .counter-icon {
     font-size: 2.5rem;
   }
+
+  .error-page {
+    margin: 10px;
+    padding: 30px 15px;
+  }
+
+  .error-page h2 {
+    font-size: 1.3rem;
+  }
 }
 
 
@@ -228,6 +237,48 @@ main {
   position: relative;
   z-index: 3;
   transition: all 0.3s ease;
+}
+
+/* Error Page Styles */
+.error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  margin: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.error-page h2 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.error-page p {
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+  font-size: 1rem;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+  color: var(--error);
+  font-size: 1.1rem;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  margin: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
 }
 
 
