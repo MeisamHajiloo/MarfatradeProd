@@ -43,13 +43,15 @@
 }
 
 .group-content {
-  max-height: 1000px;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+  height: auto;
+  overflow: visible;
+  transition: none;
 }
 
 .group-section.collapsed .group-content {
   max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }
 
 .group-items {

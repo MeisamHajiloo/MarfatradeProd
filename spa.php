@@ -20,6 +20,7 @@ require_once __DIR__ . '/classes/Database.php';
     <link rel="stylesheet" href="assets/css/notification.css">
     <link rel="stylesheet" href="assets/css/products.css">
     <link rel="stylesheet" href="assets/css/profile.css">
+    <link rel="stylesheet" href="assets/css/inquiry-product.css">
     <link rel="stylesheet" href="assets/css/tickets.css">
     <link rel="stylesheet" href="assets/css/groups.css">
     <link rel="stylesheet" href="assets/css/about-us.css">
@@ -27,6 +28,7 @@ require_once __DIR__ . '/classes/Database.php';
     <link rel="stylesheet" href="assets/css/faq.css">
     <link rel="stylesheet" href="assets/css/spa.css">
     <link rel="stylesheet" href="assets/css/sample-requests.css">
+    <link rel="stylesheet" href="assets/css/error.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -305,6 +307,7 @@ require_once __DIR__ . '/classes/Database.php';
     <script src="assets/js/profile-functions.js"></script>
     <script src="assets/js/sample-request.js"></script>
     <script src="assets/js/sample-requests.js"></script>
+    <script src="assets/js/inquiries.js"></script>
     <script src="app.js"></script>
 
     <script>

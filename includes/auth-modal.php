@@ -6,7 +6,7 @@
                 <h2>Welcome Back</h2>
                 <p>Sign in to your account</p>
             </div>
-            <form id="login-form" class="auth-form">
+            <form id="login-form" class="auth-form" novalidate>
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-envelope input-icon"></i>
@@ -33,7 +33,7 @@
                 <h2>Create Account</h2>
                 <p>Join us today</p>
             </div>
-            <form id="register-form" class="auth-form">
+            <form id="register-form" class="auth-form" novalidate>
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-user input-icon"></i>

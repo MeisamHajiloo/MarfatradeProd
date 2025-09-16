@@ -25,14 +25,16 @@ hamburger.addEventListener("click", toggleMenu);
 
 // Swipe detection for mobile
 let touchStartX = 0,
-  touchEndX = 0;
+  touchEndX = 0,
+  touchTarget = null;
 const swipeThreshold = 50;
-const edgeThreshold = 50;
+const edgeThreshold = 20;
 
 document.addEventListener(
   "touchstart",
   (e) => {
     touchStartX = e.changedTouches[0].screenX;
+    touchTarget = e.target;
   },
   { passive: true }
 );
@@ -45,7 +47,7 @@ document.addEventListener(
     const distance = touchStartX - currentX;
 
     if (
-      (touchStartX > screenWidth - edgeThreshold &&
+      (touchStartX >= screenWidth - edgeThreshold &&
         !navLinks.classList.contains("active")) ||
       navLinks.classList.contains("active")
     ) {
@@ -69,10 +71,17 @@ document.addEventListener(
 function handleSwipe() {
   const screenWidth = window.innerWidth;
   const difference = touchStartX - touchEndX;
+  
+  // Check if touch started on a scrollable element
+  const isScrollableElement = touchTarget && (
+    touchTarget.closest('.progress-container') ||
+    touchTarget.closest('[style*="overflow-x: auto"]') ||
+    touchTarget.closest('[style*="overflow: auto"]')
+  );
 
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 768 && !isScrollableElement) {
     if (
-      touchStartX > screenWidth - edgeThreshold &&
+      touchStartX >= screenWidth - edgeThreshold &&
       !navLinks.classList.contains("active") &&
       difference > swipeThreshold
     ) {
@@ -84,8 +93,6 @@ function handleSwipe() {
     ) {
       hamburger.classList.remove("active");
       navLinks.classList.remove("active");
-    } else {
-
     }
   }
 }

@@ -1,0 +1,247 @@
+/* My Inquiries Page Styles */
+
+/* Inquiries Page */
+.inquiries-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.inquiry-item {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.inquiry-product {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.inquiry-product img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.inquiry-item:hover .inquiry-product img {
+  transform: scale(1.05);
+}
+
+.product-link {
+  text-decoration: none;
+}
+
+.product-title-link {
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.product-title-link:hover {
+  color: var(--primary-color);
+}
+
+.inquiry-details h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.inquiry-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.inquiry-via {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.inquiry-date {
+  background: var(--gray-light);
+  color: var(--text-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.inquiry-situation {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Inquiries Toolbar */
+.inquiries-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--secondary-color1);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  flex-direction: row;
+}
+
+.inquiries-toolbar .toolbar-left {
+  order: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.inquiries-toolbar .group-selector {
+  order: 2;
+}
+
+.group-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.group-selector select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  font-size: 0.9rem;
+  min-width: 180px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.group-selector select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(64, 1, 40, 0.1);
+}
+
+.inquiry-details h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.inquiry-category {
+  background: var(--secondary-color1);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* Inquiry Actions */
+.inquiry-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-inquiry-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.delete-inquiry-btn:hover {
+  background: #cc0000;
+}
+
+/* Delete Confirmation Modal */
+.delete-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-confirmation-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.delete-confirmation-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.btn-danger {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: #cc0000;
+}
+
+@media (max-width: 768px) {
+  .inquiry-item {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .inquiry-product {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .inquiry-meta {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .inquiries-toolbar {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .group-selector select {
+    min-width: 150px;
+    font-size: 0.8rem;
+  }
+
+  .inquiry-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

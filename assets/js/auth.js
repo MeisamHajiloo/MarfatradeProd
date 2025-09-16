@@ -1,3 +1,9 @@
+// Email validation function
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 // Global showNotification function
 function showNotification(message, type = "info") {
   const notification = document.createElement("div");
@@ -89,8 +95,29 @@ document.addEventListener("DOMContentLoaded", function () {
       const password = document.getElementById("login-password").value;
 
       // Simple validation
-      if (!email || !password) {
-        AppUtils.showError("Please fill in all fields");
+      let emptyFields = [];
+      const emailField = document.getElementById("login-email");
+      const passwordField = document.getElementById("login-password");
+      
+      // Clear previous errors
+      emailField.classList.remove('field-error');
+      passwordField.classList.remove('field-error');
+      
+      if (!email) {
+        emailField.classList.add('field-error');
+        emptyFields.push('Email');
+      } else if (!isValidEmail(email)) {
+        emailField.classList.add('field-error');
+        AppUtils.showError('Please enter a valid email address');
+        return;
+      }
+      if (!password) {
+        passwordField.classList.add('field-error');
+        emptyFields.push('Password');
+      }
+      
+      if (emptyFields.length > 0) {
+        AppUtils.showError(`Please fill in: ${emptyFields.join(', ')}`);
         return;
       }
 
@@ -113,8 +140,40 @@ document.addEventListener("DOMContentLoaded", function () {
       const termsAccepted = document.getElementById("terms-acceptance").checked;
 
       // Validation
-      if (!name || !email || !password || !confirmPassword) {
-        AppUtils.showError("Please fill in all fields");
+      let emptyFields = [];
+      const nameField = document.getElementById("register-name");
+      const emailField = document.getElementById("register-email");
+      const passwordField = document.getElementById("register-password");
+      const confirmPasswordField = document.getElementById("register-confirm-password");
+      
+      // Clear previous errors
+      [nameField, emailField, passwordField, confirmPasswordField].forEach(field => {
+        field.classList.remove('field-error');
+      });
+      
+      if (!name) {
+        nameField.classList.add('field-error');
+        emptyFields.push('Name');
+      }
+      if (!email) {
+        emailField.classList.add('field-error');
+        emptyFields.push('Email');
+      } else if (!isValidEmail(email)) {
+        emailField.classList.add('field-error');
+        AppUtils.showError('Please enter a valid email address');
+        return;
+      }
+      if (!password) {
+        passwordField.classList.add('field-error');
+        emptyFields.push('Password');
+      }
+      if (!confirmPassword) {
+        confirmPasswordField.classList.add('field-error');
+        emptyFields.push('Confirm Password');
+      }
+      
+      if (emptyFields.length > 0) {
+        AppUtils.showError(`Please fill in: ${emptyFields.join(', ')}`);
         return;
       }
 
@@ -124,11 +183,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (password !== confirmPassword) {
+        passwordField.classList.add('field-error');
+        confirmPasswordField.classList.add('field-error');
         AppUtils.showError("Passwords do not match");
         return;
       }
 
       if (password.length < 6) {
+        passwordField.classList.add('field-error');
         AppUtils.showError("Password must be at least 6 characters");
         return;
       }
@@ -157,36 +219,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // Reset forms
       if (loginForm) loginForm.reset();
       if (registerForm) registerForm.reset();
-
-      // Clear error messages
-      const errorMessages = document.querySelectorAll(".error-message");
-      errorMessages.forEach((msg) => msg.remove());
+      
+      // Clear field errors
+      authModal.querySelectorAll('.field-error').forEach(field => field.classList.remove('field-error'));
     }
   }
 
-  // Function to show error message
-  function showError(form, message) {
-    // Remove any existing error messages
-    const existingError = form.querySelector(".error-message");
-    if (existingError) {
-      existingError.remove();
-    }
-
-    // Create and display new error message
-    const errorElement = document.createElement("div");
-    errorElement.className = "error-message";
-    errorElement.textContent = message;
-    errorElement.style.cssText =
-      "color: #ff3860; margin-top: 10px; padding: 10px; background: #ffe6e6; border-radius: 4px;";
-    form.appendChild(errorElement);
-
-    // Remove error after 5 seconds
-    setTimeout(() => {
-      if (errorElement.parentNode) {
-        errorElement.remove();
-      }
-    }, 5000);
-  }
+  // Function to show error message (removed - using notifications only)
 
   // Function to show success message
   function showSuccess(message, duration = 5000) {
@@ -374,6 +413,39 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Add real-time validation for auth forms
+  function addAuthRealTimeValidation() {
+    const authModal = document.getElementById('auth-modal');
+    if (!authModal) return;
+    
+    const requiredFields = authModal.querySelectorAll('input[required]');
+    
+    requiredFields.forEach(field => {
+      field.addEventListener('input', function() {
+        if (this.value.trim()) {
+          if (this.type === 'email') {
+            if (isValidEmail(this.value.trim())) {
+              this.classList.remove('field-error');
+            }
+          } else {
+            this.classList.remove('field-error');
+          }
+        }
+      });
+      
+      field.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+          this.classList.add('field-error');
+        } else if (this.type === 'email' && !isValidEmail(this.value.trim())) {
+          this.classList.add('field-error');
+        }
+      });
+    });
+  }
+  
+  // Initialize real-time validation
+  addAuthRealTimeValidation();
+  
   // Auth status is checked by the router, no need to duplicate here
   // The router will call updateAuthUI when needed
 });

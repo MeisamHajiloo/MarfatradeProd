@@ -266,19 +266,6 @@ main {
   font-size: 1rem;
 }
 
-.error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  text-align: center;
-  color: var(--error);
-  font-size: 1.1rem;
-  background: var(--white);
-  border-radius: var(--radius-md);
-  margin: 20px;
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-}
+
 
 

@@ -22,8 +22,14 @@ async function loadSampleRequests() {
                     </div>
                 `;
             } else {
-                result.data.forEach(request => {
-                    container.appendChild(createRequestCard(request));
+                // Group requests by status
+                const groupedRequests = groupRequestsByStatus(result.data);
+                
+                Object.entries(groupedRequests).forEach(([status, requests]) => {
+                    if (requests.length > 0) {
+                        const groupSection = createGroupSection(status, requests);
+                        container.appendChild(groupSection);
+                    }
                 });
             }
         } else {
@@ -37,9 +43,84 @@ async function loadSampleRequests() {
     }
 }
 
+function groupRequestsByStatus(requests) {
+    const groups = {
+        'pending': [],
+        'approved': [],
+        'payment': [],
+        'shipped': [],
+        'delivered': [],
+        'cancelled': []
+    };
+    
+    requests.forEach(request => {
+        if (groups[request.status]) {
+            groups[request.status].push(request);
+        }
+    });
+    
+    return groups;
+}
+
+function createGroupSection(status, requests) {
+    const section = document.createElement('div');
+    section.className = 'group-section';
+    
+    const statusLabels = {
+        'pending': 'Pending Requests',
+        'approved': 'Approved Requests', 
+        'payment': 'Payment Required',
+        'shipped': 'Shipped Requests',
+        'delivered': 'Delivered Requests',
+        'cancelled': 'Cancelled Requests'
+    };
+    
+    section.innerHTML = `
+        <div class="group-header">
+            <h3 class="group-title">${statusLabels[status]} (${requests.length})</h3>
+            <i class="fas fa-chevron-up group-toggle"></i>
+        </div>
+        <div class="group-content">
+            <div class="group-items">
+                ${requests.map(request => createRequestCard(request).outerHTML).join('')}
+            </div>
+        </div>
+    `;
+    
+    // Calculate and set proper height for flexible expansion
+    const groupContent = section.querySelector('.group-content');
+    const groupItems = section.querySelector('.group-items');
+    
+    if (groupContent && groupItems) {
+        // Set initial height based on content
+        const contentHeight = groupItems.scrollHeight;
+        groupContent.style.maxHeight = contentHeight + 'px';
+    }
+    
+    // Add click event listener to header
+    const header = section.querySelector('.group-header');
+    if (header) {
+        header.addEventListener('click', function() {
+            if (section.classList.contains('collapsed')) {
+                // Expanding: set max-height to content height
+                const contentHeight = groupItems.scrollHeight;
+                groupContent.style.maxHeight = contentHeight + 'px';
+            } else {
+                // Collapsing: set max-height to 0
+                groupContent.style.maxHeight = '0px';
+            }
+            section.classList.toggle('collapsed');
+        });
+    }
+    
+    return section;
+}
+
+
+
 function createRequestCard(request) {
     const card = document.createElement('div');
-    card.className = 'sample-request-card';
+    card.className = 'sample-request-item';
     
     const statusSteps = [
         { key: 'pending', label: 'Pending', icon: 'fas fa-clock' },
@@ -49,21 +130,25 @@ function createRequestCard(request) {
         { key: 'delivered', label: 'Delivered', icon: 'fas fa-box-open' }
     ];
     
-    const currentStatusIndex = statusSteps.findIndex(step => step.key === request.status);
+    const currentStatusIndex = request.status === 'cancelled' ? -1 : statusSteps.findIndex(step => step.key === request.status);
     const isCancelled = request.status === 'cancelled';
     
     card.innerHTML = `
-        <div class="request-header">
+        <div class="sample-request-product">
             <a href="/product?slug=${request.product_slug || ''}" class="product-link">
                 <img src="${request.product_image || 'assets/images/no-image.png'}" 
                      alt="${request.product_name}" class="product-image"
                      onerror="this.src='assets/images/no-image.png'">
             </a>
-            <div class="request-info">
+            <div class="sample-request-details">
                 <a href="/product?slug=${request.product_slug || ''}" class="product-title-link">
                     <h3>${request.product_name || 'Unknown Product'}</h3>
                 </a>
-                <div class="request-date">Requested on ${formatDate(request.created_at)}</div>
+                <div class="sample-request-meta">
+                    <div class="sample-request-status">${request.status}</div>
+                    <div class="sample-request-date">${formatDate(request.created_at)}</div>
+                </div>
+                <div class="sample-request-situation">Status: ${capitalizeFirst(request.status)}</div>
             </div>
         </div>
         
@@ -71,12 +156,12 @@ function createRequestCard(request) {
             <div class="progress-line ${request.status}">
                 ${statusSteps.map((step, index) => {
                     let stepClass = '';
-                    if (isCancelled) {
-                        stepClass = index === 0 ? 'cancelled' : '';
-                    } else if (index < currentStatusIndex) {
-                        stepClass = 'completed';
-                    } else if (index === currentStatusIndex) {
-                        stepClass = 'active';
+                    if (!isCancelled) {
+                        if (index < currentStatusIndex) {
+                            stepClass = 'completed';
+                        } else if (index === currentStatusIndex) {
+                            stepClass = 'active';
+                        }
                     }
                     
                     return `
@@ -85,7 +170,7 @@ function createRequestCard(request) {
                                 <i class="${step.icon}"></i>
                             </div>
                             <div class="step-label ${stepClass}">${step.label}</div>
-                            ${(index === currentStatusIndex || (isCancelled && index === 0)) ? `<div class="step-date">${formatDate(request.updated_at)}</div>` : ''}
+                            ${(!isCancelled && index === currentStatusIndex) ? `<div class="step-date">${formatDate(request.updated_at)}</div>` : ''}
                         </div>
                     `;
                 }).join('')}
@@ -125,6 +210,23 @@ function createRequestCard(request) {
 
         </div>
     `;
+    
+    // Auto-scroll to active icon after card is rendered
+    setTimeout(() => {
+        const progressContainer = card.querySelector('.progress-container');
+        const activeIcon = card.querySelector('.step-icon.active');
+        
+        if (progressContainer && activeIcon) {
+            const containerRect = progressContainer.getBoundingClientRect();
+            const iconRect = activeIcon.getBoundingClientRect();
+            const scrollLeft = iconRect.left - containerRect.left - (containerRect.width / 2) + (iconRect.width / 2);
+            
+            progressContainer.scrollTo({
+                left: progressContainer.scrollLeft + scrollLeft,
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
     
     return card;
 }
